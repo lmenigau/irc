@@ -68,17 +68,19 @@ int main(int ac, char **av) {
         size_t len = read(c->fd, c->buf + c->start, 512 - c->start);
         if (len == 0)
           close(c->fd);
-        for (void *lf; (lf = std::memchr(c->buf, '\n', len)); c->start += len) {
+        for (void *lf; (lf = std::memchr(c->buf, '\n', len));) {
           std::cout << "len:" << len << "\n";
           std::cout.write(c->buf, (char *)lf - c->buf);
 		  std::cout << std::endl;
-		  len = read(c->fd, c->buf + c->start, 512 - c->start);
+		  bzero(c->buf, 512);
+		  len = read(c->fd, c->buf, 512);
 		  if (len == 0)
 		  {
 			close(c->fd);
 			break	;
 		  }
         }
+		c->start = 0;
       }
     }
   }
