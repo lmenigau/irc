@@ -1,15 +1,15 @@
 #include <asm-generic/socket.h>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <ostream>
-#include <sstream>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-std::ostream &operator<<(std::ostream &os, epoll_event &ev) {
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <ostream>
+#include <sstream>
+std::ostream& operator<<(std::ostream& os, epoll_event& ev) {
   if (ev.events & EPOLLHUP)
     os << "HUP";
   if (ev.events & EPOLLIN)
@@ -30,20 +30,19 @@ struct client {
   int fd;
   int start;
   int end;
-  char buf[512];
-  std::stringstream str;
+  std::string buf;
 };
 
 client clients[1024];
 
-int main(int ac, char **av) {
+int main(int ac, char** av) {
   int tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
   int a = 1;
   setsockopt(tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
   struct sockaddr_in6 addr = {AF_INET6};
   addr.sin6_port = htons(6667);
   addr.sin6_addr = in6addr_any;
-  int ret = bind(tcp6_socket, (sockaddr *)&addr, sizeof(addr));
+  int ret = bind(tcp6_socket, (sockaddr*)&addr, sizeof(addr));
   if (ret < 0)
     std::perror("ircserv");
   listen(tcp6_socket, 256);
@@ -58,29 +57,28 @@ int main(int ac, char **av) {
     std::cout << "nev:" << nev << "\n";
     for (int i = 0; i < nev; i++) {
       if (events[i].data.fd == tcp6_socket) {
-        int fd = accept(tcp6_socket, (sockaddr *)&peer_addr, &len);
+        int fd = accept(tcp6_socket, (sockaddr*)&peer_addr, &len);
         clients[fd].fd = fd;
         clients[fd].start = 0;
         epoll_event event = {EPOLLIN, {.ptr = &clients[fd]}};
         epoll_ctl(pollfd, EPOLL_CTL_ADD, fd, &event);
+        clients[fd].buf.reserve(512);
       } else {
-        client *c = (client *)events[i].data.ptr;
-        size_t len = read(c->fd, c->buf + c->start, 512 - c->start);
-        if (len == 0)
+        client* c = (client*)events[i].data.ptr;
+        char buf[512];
+        size_t len = read(c->fd, buf, 512);
+        if (len == 0) {
           close(c->fd);
-        for (void *lf; (lf = std::memchr(c->buf, '\n', len));) {
-          std::cout << "len:" << len << "\n";
-          std::cout.write(c->buf, (char *)lf - c->buf);
-		  std::cout << std::endl;
-		  bzero(c->buf, 512);
-		  len = read(c->fd, c->buf, 512);
-		  if (len == 0)
-		  {
-			close(c->fd);
-			break	;
-		  }
+          std::cout << "close" << c->fd << '\n';
         }
-		c->start = 0;
+        c->buf.append(buf, len);
+        for (;;) {
+          size_t pos = c->buf.find("\n");
+          if (pos == std::string::npos)
+            break;
+          std::cout << c->fd << ':' << c->buf.substr(0, pos) << '\n';
+          c->buf.erase(0, pos + 1);
+        }
       }
     }
   }
