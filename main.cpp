@@ -71,6 +71,13 @@ int main(int ac, char **av) {
         for (void *lf; (lf = std::memchr(c->buf, '\n', len)); c->start += len) {
           std::cout << "len:" << len << "\n";
           std::cout.write(c->buf, (char *)lf - c->buf);
+		  std::cout << std::endl;
+		  len = read(c->fd, c->buf + c->start, 512 - c->start);
+		  if (len == 0)
+		  {
+			close(c->fd);
+			break	;
+		  }
         }
       }
     }
