@@ -66,28 +66,29 @@ void process_events(epoll_event& ev) {
     }
 }
 
-int main(int ac, char **av) {
-  tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
-  int a = 1;
-  std::string *test = parse("je suis un magnifique papillon !");
-  setsockopt(tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
-  struct sockaddr_in6 addr = {AF_INET6};
-  addr.sin6_port = htons(6667);
-  addr.sin6_addr = in6addr_any;
-  int ret = bind(tcp6_socket, (sockaddr *)&addr, sizeof(addr));
-  if (ret < 0)
-    std::perror("ircserv");
-  listen(tcp6_socket, 256);
-  sockaddr_in6 peer_addr = {};
-  socklen_t len = sizeof(peer_addr);
-  pollfd = epoll_create(1);
-  epoll_event event = {EPOLLIN, {.fd = tcp6_socket}};
-  epoll_ctl(pollfd, EPOLL_CTL_ADD, tcp6_socket, &event);
-  for (;;) {
-    epoll_event events[64];
-    int nev = epoll_wait(pollfd, events, 64, -1);
-    std::cerr << "nev:" << nev << "\n";
-    for (int i = 0; i < nev; i++) {
-      process_events(events[i]);
+int main(int ac, char** av) {
+    tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
+    int a = 1;
+    std::string* test = parse("je suis un magnifique papillon !");
+    setsockopt(tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
+    struct sockaddr_in6 addr = {AF_INET6};
+    addr.sin6_port = htons(6667);
+    addr.sin6_addr = in6addr_any;
+    int ret = bind(tcp6_socket, (sockaddr*)&addr, sizeof(addr));
+    if (ret < 0)
+        std::perror("ircserv");
+    listen(tcp6_socket, 256);
+    sockaddr_in6 peer_addr = {};
+    socklen_t len = sizeof(peer_addr);
+    pollfd = epoll_create(1);
+    epoll_event event = {EPOLLIN, {.fd = tcp6_socket}};
+    epoll_ctl(pollfd, EPOLL_CTL_ADD, tcp6_socket, &event);
+    for (;;) {
+        epoll_event events[64];
+        int nev = epoll_wait(pollfd, events, 64, -1);
+        std::cerr << "nev:" << nev << "\n";
+        for (int i = 0; i < nev; i++) {
+            process_events(events[i]);
+        }
     }
 }
