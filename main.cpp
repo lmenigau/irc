@@ -69,7 +69,14 @@ void process_events(epoll_event& ev) {
 int main(int ac, char** av) {
     tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
     int a = 1;
-    std::string* test = parse("je suis un magnifique papillon !");
+    std::list<std::string> *test = parse("je suis un :magnifique papillon !");
+    std::list<std::string>::iterator i = test->begin();
+    std::list<std::string>::iterator ite = test->end();
+    while(i != ite)
+    {
+        std::cout << *i << "\n";
+        i++;
+    }
     setsockopt(tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
     struct sockaddr_in6 addr = {AF_INET6};
     addr.sin6_port = htons(6667);

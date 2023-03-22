@@ -14,7 +14,7 @@
 # define PARSING_HPP
 
 #include <iostream>
-
-std::string *parse(std::string input);
+#include <list>
+std::list<std::string> *parse(std::string input);
 
 #endif
