@@ -1,0 +1,4 @@
+Standard: c++03
+BasedOnStyle: GNU
+SeparateDefinitionBlocks: true
+RemoveSemicolon: true
