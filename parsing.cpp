@@ -18,7 +18,11 @@ static size_t	count_word(std::string &input)
 	for (size_t i = 0; i < input.length(); i++)
 	{
 		if (input[i] == ' ')
+        {
+            while (input[i] == ' ')
+               i++;
 			ret_v ++;
+        }
 		if (input[i] == ':')
 			break ;
 	}
@@ -36,7 +40,6 @@ std::string *parse(std::string input)
 			ret_v[i].assign(input.substr(cursor, input.find(' ', cursor + 1)));
 		else
 			ret_v[i].assign(input.substr(cursor, std::string::npos));
-
 	}
 	return ret_v;
 }
