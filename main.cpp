@@ -1,21 +1,5 @@
-#include <asm-generic/socket.h>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <ostream>
-#include <sstream>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
-struct client {
-  int fd;
-  int start;
-  int end;
-  std::string buf;
-};
+#include "irc.hpp"
 
 std::ostream &operator<<(std::ostream &os, epoll_event &ev) {
   if (ev.events & EPOLLHUP)
@@ -85,6 +69,7 @@ void process_events(epoll_event &ev) {
 int main(int ac, char **av) {
   tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
   int a = 1;
+  std::string *test = parse("je suis un magnifique papillon !");
   setsockopt(tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
   struct sockaddr_in6 addr = {AF_INET6};
   addr.sin6_port = htons(6667);
