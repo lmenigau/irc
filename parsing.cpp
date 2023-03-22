@@ -34,7 +34,7 @@ std::string *parse(std::string input)
 	size_t		len = count_word(input);
 	std::string *ret_v = new std::string[len];
 	size_t		cursor = 0;
-	for (size_t i = 0; i < len;)
+	for (size_t i = 0; i < len;i++)
 	{
 		if (i != len - 1)
 			ret_v[i].assign(input.substr(cursor, input.find(' ', cursor + 1)));
