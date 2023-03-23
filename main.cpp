@@ -1,4 +1,3 @@
-
 #include "irc.hpp"
 
 std::ostream& operator<<(std::ostream& os, epoll_event& ev) {
@@ -24,7 +23,8 @@ client clients[1024];
 
 void accept_client(epoll_event& ev) {
     sockaddr_in6 addr = {};
-    socklen_t addrlen = sizeof(sockaddr_in6);
+    //socklen_t addrlen = sizeof(sockaddr_in6);
+    (void)ev;
     int fd = accept(tcp6_socket, NULL, 0);
     std::cout << fd << " " << addr.sin6_port << '\n';
     if (fd >= 0) {
@@ -67,9 +67,11 @@ void process_events(epoll_event& ev) {
 }
 
 int main(int ac, char** av) {
+    (void) ac;
+    (void) av;
     tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
     int a = 1;
-    std::list<std::string> *test = parse("je suis un :magnifique papillon !");
+    std::list<std::string> *test = parse("PASS je suis un :magnifique papillon !");
     std::list<std::string>::iterator i = test->begin();
     std::list<std::string>::iterator ite = test->end();
     while(i != ite)
@@ -77,16 +79,17 @@ int main(int ac, char** av) {
         std::cout << *i << "\n";
         i++;
     }
+    handler(test);
     setsockopt(tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
-    struct sockaddr_in6 addr = {AF_INET6};
+    struct sockaddr_in6 addr = {AF_INET6, 0, 0, {}, 0};
     addr.sin6_port = htons(6667);
     addr.sin6_addr = in6addr_any;
     int ret = bind(tcp6_socket, (sockaddr*)&addr, sizeof(addr));
     if (ret < 0)
         std::perror("ircserv");
     listen(tcp6_socket, 256);
-    sockaddr_in6 peer_addr = {};
-    socklen_t len = sizeof(peer_addr);
+    //sockaddr_in6 peer_addr = {};
+    //socklen_t len = sizeof(peer_addr);
     pollfd = epoll_create(1);
     epoll_event event = {EPOLLIN, {.fd = tcp6_socket}};
     epoll_ctl(pollfd, EPOLL_CTL_ADD, tcp6_socket, &event);

@@ -1,13 +1,17 @@
 #include "irc.hpp"
+
 #define COMMAND_COUNT 2
+
 void    _pass(std::list<std::string> * args)
 {
     (void)args;
+    std::cout << "PASS COMMAND\n";
 }
 
 void    _user(std::list<std::string> * args)
 {
     (void)args;
+    std::cout << "USER COMMAND\n";
 }
 void    handler( std::list<std::string> * args)
 {

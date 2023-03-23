@@ -1,6 +1,7 @@
 CXX=clang++
 CXXFLAGS=-std=c++98 #-Wall -Werror -Wextra
-SRC = main.cpp\
+SRC = handler.cpp\
+	  	main.cpp\
 		parsing.cpp
 OBJ = $(SRC:.cpp=.o)
 NAME = ircserv
