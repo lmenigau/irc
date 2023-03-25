@@ -1,5 +1,4 @@
 #include "irc.hpp"
-
 std::ostream& operator<<(std::ostream& os, epoll_event& ev) {
     if (ev.events & EPOLLHUP)
         os << "HUP";
@@ -48,7 +47,7 @@ void process_events(epoll_event& ev) {
             size_t len = read(c->fd, buf, 512);
             if (len == 0) {
                 close(c->fd);
-                std::cerr << "close" << c->fd << '\n';
+                std::cerr << "closed : " << c->fd << '\n';
                 return;
             }
             c->buf.append(buf, len);
@@ -59,6 +58,7 @@ void process_events(epoll_event& ev) {
                 std::cerr << c->fd << ':' << c->buf.substr(0, pos) << '\n';
                 c->buf.erase(0, pos + 1);
             }
+            send(c->fd, "message de test\n", strlen("message de test\n"), 0);
         }
     } else if (ev.events & EPOLLOUT) {
     } else {
@@ -67,8 +67,12 @@ void process_events(epoll_event& ev) {
 }
 
 int main(int ac, char** av) {
-    (void) ac;
-    (void) av;
+    if ( ac != 3)
+    {
+        std::cout << "usage : ./ircserv <password> <port>" << std::endl;
+        return (1);
+    }
+    (void)av;
     tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
     int a = 1;
     std::list<std::string> *test = parse("PASS je suis un :magnifique papillon !");
