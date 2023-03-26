@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include "ostream.hpp"
+#include "handler.hpp"
 
 #define MAX_PORT 65535
 
@@ -90,22 +91,16 @@ void    ircserv::start( void )
 {
     _tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
     int a = 1;
-    std::list<std::string> *test = parse("PASS je suis un :magnifique papillon !");
-    std::list<std::string>::iterator i = test->begin();
-    std::list<std::string>::iterator ite = test->end();
-    while(i != ite)
-    {
-        std::cout << *i << "\n";
-        i++;
-    }
-    handler(test);
     setsockopt(_tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
     struct sockaddr_in6 addr = {AF_INET6, 0, 0, {}, 0};
     addr.sin6_port = htons(_port);
     addr.sin6_addr = in6addr_any;
     int ret = bind(_tcp6_socket, (sockaddr*)&addr, sizeof(addr));
     if (ret < 0)
+    {
         std::perror("ircserv");
+        return ;
+    }
     listen(_tcp6_socket, 256);
     //sockaddr_in6 peer_addr = {};
     //socklen_t len = sizeof(peer_addr);
