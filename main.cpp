@@ -15,6 +15,7 @@ std::ostream& operator<<(std::ostream& os, epoll_event& ev) {
     os << ", " << ev.data.ptr << "\n";
     return os;
 }
+#include "ircserv.hpp"
 
 int pollfd;
 int tcp6_socket;
@@ -69,40 +70,14 @@ void process_events(epoll_event& ev) {
 int main(int ac, char** av) {
     if ( ac != 3)
     {
-        std::cout << "usage : ./ircserv <password> <port>" << std::endl;
+        std::cout << "usage : ./ircserv <port> <password>" << std::endl;
         return (1);
     }
-    (void)av;
-    tcp6_socket = socket(AF_INET6, SOCK_STREAM, 0);
-    int a = 1;
-    std::list<std::string> *test = parse("PASS je suis un :magnifique papillon !");
-    std::list<std::string>::iterator i = test->begin();
-    std::list<std::string>::iterator ite = test->end();
-    while(i != ite)
+    ircserv::initialisation(av[2], av[1]);
+    if (ircserv::failed())
     {
-        std::cout << *i << "\n";
-        i++;
+        std::cout << "FATAL : initialisation has failed !\n";
+        return (1);
     }
-    handler(test);
-    setsockopt(tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof(a));
-    struct sockaddr_in6 addr = {AF_INET6, 0, 0, {}, 0};
-    addr.sin6_port = htons(6667);
-    addr.sin6_addr = in6addr_any;
-    int ret = bind(tcp6_socket, (sockaddr*)&addr, sizeof(addr));
-    if (ret < 0)
-        std::perror("ircserv");
-    listen(tcp6_socket, 256);
-    //sockaddr_in6 peer_addr = {};
-    //socklen_t len = sizeof(peer_addr);
-    pollfd = epoll_create(1);
-    epoll_event event = {EPOLLIN, {.fd = tcp6_socket}};
-    epoll_ctl(pollfd, EPOLL_CTL_ADD, tcp6_socket, &event);
-    for (;;) {
-        epoll_event events[64];
-        int nev = epoll_wait(pollfd, events, 64, -1);
-        std::cerr << "nev:" << nev << "\n";
-        for (int i = 0; i < nev; i++) {
-            process_events(events[i]);
-        }
-    }
+    ircserv::start(); 
 }
