@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include "irc.hpp"
+#include "client.hpp"
 
 class	ircserv{
 	private:
@@ -33,6 +34,8 @@ class	ircserv{
 		static void	start( void );
 
 		static bool	failed( void );
+
+        static int  getPollfd( void );
 };
 
 #endif

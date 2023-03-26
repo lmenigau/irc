@@ -116,3 +116,5 @@ void    ircserv::start( void )
         }
     }
 }
+
+int ircserv::getPollfd( void ) { return _pollfd; }

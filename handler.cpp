@@ -1,4 +1,5 @@
 #include "irc.hpp"
+#include "client.hpp"
 
 #define COMMAND_COUNT 4
 

@@ -1,6 +1,7 @@
 CXX=clang++
-CXXFLAGS=-std=c++98 -g #-Wall -Werror -Wextra
-SRC = handler.cpp\
+CXXFLAGS=-std=c++98 -g -Wall -Werror -Wextra
+SRC = client.cpp\
+	  	handler.cpp\
 		ircserv.cpp\
 		main.cpp\
 		ostream.cpp\
