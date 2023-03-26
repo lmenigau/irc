@@ -11,27 +11,31 @@
 /* ************************************************************************** */
 
 #ifndef IRC_HPP
-# define IRC_HPP
+#define IRC_HPP
 
 #include <asm-generic/socket.h>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <ostream>
-#include <sstream>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <ostream>
+#include <queue>
+#include <sstream>
 #include "parsing.hpp"
-#include "handler.hpp"
 struct client {
-  int fd;
-  int start;
-  int end;
-  std::string buf;
+    bool ispolled;
+    bool isregistered;
+    int fd;
+    int start;
+    int end;
+    std::string buf;
+    std::string nick;
+    std::string out;
+    void reply(std::string const str);
 };
 
 #endif
