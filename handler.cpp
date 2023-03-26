@@ -5,15 +5,19 @@
 
 void _pass(std::list<std::string>* args, client& c) {
     (void)args;
+    (void)c;
     std::cout << "PASS COMMAND\n";
 }
 
 void _user(std::list<std::string>* args, client& c) {
     (void)args;
+    (void)c;
     std::cout << "USER COMMAND\n";
 }
 
 void _join(std::list<std::string>* args, client& c) {
+    (void)args; 
+    (void)c;
     std::cout << c.nick << "wants to join \n";
 }
 void _nick(std::list<std::string>* args, client& c) {
