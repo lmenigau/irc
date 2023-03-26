@@ -11,31 +11,32 @@
 /* ************************************************************************** */
 
 #ifndef IRCSERV_HPP
-# define IRCSERV_HPP
+#define IRCSERV_HPP
 
 #include <iostream>
-#include "irc.hpp"
 #include "client.hpp"
+#include "irc.hpp"
 
-class	ircserv{
-	private:
-		ircserv();
-		static int          _port;
-		static bool         _failed;
-		static std::string  _password;
-        static client       _clients[1024];
-        static int          _pollfd;
-        static int          _tcp6_socket;
+class ircserv {
+   private:
+	ircserv();
+	static int         _port;
+	static bool        _failed;
+	static std::string _password;
+	static client      _clients[1024];
+	static int         _pollfd;
+	static int         _tcp6_socket;
 
-        static void accept_client( epoll_event & );
-        static void process_events( epoll_event & );
-	public:
-		static void	initialisation( char * pass, char * port );
-		static void	start( void );
+	static void accept_client( epoll_event& );
+	static void process_events( epoll_event& );
 
-		static bool	failed( void );
+   public:
+	static void initialisation( char* pass, char* port );
+	static void start( void );
 
-        static int  getPollfd( void );
+	static bool failed( void );
+
+	static int getPollfd( void );
 };
 
 #endif

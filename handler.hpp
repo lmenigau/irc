@@ -3,9 +3,9 @@
 
 #include <list>
 #include <string>
-#include "irc.hpp"
 #include "client.hpp"
+#include "irc.hpp"
 
-void handler(std::list<std::string>* args, client& c);
+void handler( std::list<std::string>* args, client& c );
 
 #endif

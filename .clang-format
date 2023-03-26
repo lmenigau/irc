@@ -1,3 +1,16 @@
 Standard: c++03
 BasedOnStyle: Chromium
 IndentWidth: 4
+
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+SpacesInConditionalStatement: true
+SpaceBeforeParens: true
+SpaceAfterCStyleCast: true
+SortUsingDeclarations: true
+SpaceBeforeAssignmentOperators: true
+SpacesInParentheses: true
+TabWidth: 4
+UseTab: ForIndentation
+AlignAfterOpenBracket: Align
+

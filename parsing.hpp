@@ -11,10 +11,10 @@
 /* ************************************************************************** */
 
 #ifndef PARSING_HPP
-# define PARSING_HPP
+#define PARSING_HPP
 
 #include <iostream>
 #include <list>
-std::list<std::string> *parse(std::string input);
+std::list<std::string>* parse( std::string input );
 
 #endif
