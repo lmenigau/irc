@@ -7,19 +7,23 @@
 
 void pass( std::list<std::string>* args, client& c ) {
 	(void) args;
+	(void) c;
 	std::cout << "PASS COMMAND\n";
 }
 
 void user( std::list<std::string>* args, client& c ) {
 	(void) args;
+	(void) c;
 	std::cout << "USER COMMAND\n";
 }
 
 void privmsg( std::list<std::string>* args, client& c ) {
+	(void) args;
 	std::cout << c.nick << "wants to send a message \n";
 }
 
 void join( std::list<std::string>* args, client& c ) {
+	(void) args;
 	std::cout << c.nick << "wants to join \n";
 }
 
@@ -52,5 +56,5 @@ void handler( std::list<std::string>* args, client& c ) {
 			return;
 		}
 	}
-	std::cout << args->front() << "COMMAND DO NOT EXIST (YET?)\n";
+	std::cout << args->front() << " COMMAND DO NOT EXIST (YET?)\n";
 }

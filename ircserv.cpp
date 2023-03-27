@@ -100,12 +100,12 @@ void ircserv::process_events( epoll_event& ev ) {
 }
 
 void ircserv::start( void ) {
-	_tcp6_socket = socket( AF_INET6, SOCK_STREAM, 0 );
-	int a        = 1;
-	setsockopt( _tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof( a ) );
+	_tcp6_socket             = socket( AF_INET6, SOCK_STREAM, 0 );
+	int                 a    = 1;
 	struct sockaddr_in6 addr = { AF_INET6, 0, 0, {}, 0 };
 	addr.sin6_port           = htons( _port );
 	addr.sin6_addr           = in6addr_any;
+	setsockopt( _tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof( a ) );
 	int ret = bind( _tcp6_socket, (sockaddr*) &addr, sizeof( addr ) );
 	if ( ret < 0 ) {
 		std::perror( "ircserv" );
