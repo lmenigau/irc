@@ -1,7 +1,7 @@
 #include "client.hpp"
 #include "irc.hpp"
 
-#define COMMAND_COUNT 4
+#define COMMAND_COUNT 5
 
 void _pass( std::list<std::string>* args, client& c ) {
 	(void) args;
@@ -32,10 +32,16 @@ void _nick( std::list<std::string>* args, client& c ) {
 	}
 }
 
+void _capls( std::list<std::string>* args, client& c ) {
+	(void) c;
+	(void) args;
+}
+
 void handler( std::list<std::string>* args, client& c ) {
-	std::string commands[COMMAND_COUNT] = { "PASS", "USER", "NICK", "JOIN" };
-	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, client & c ) = {
-	    &_pass, &_user, &_nick, &_join };
+	std::string commands[COMMAND_COUNT] = { "PASS", "USER", "NICK", "JOIN",
+	                                        "CAPLS" };
+	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, client& ) = {
+	    &_pass, &_user, &_nick, &_join, &_capls };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
@@ -43,5 +49,5 @@ void handler( std::list<std::string>* args, client& c ) {
 			return;
 		}
 	}
-	std::cout << "COMMAND DO NOT EXIST (YET?)\n";
+	std::cout << args->front() << "COMMAND DO NOT EXIST (YET?)\n";
 }
