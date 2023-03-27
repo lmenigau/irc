@@ -15,7 +15,7 @@
 
 #include <iostream>
 #include "client.hpp"
-#include "irc.hpp"
+#include "sys/epoll.h"
 
 class ircserv {
    private:

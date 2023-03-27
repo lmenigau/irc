@@ -13,18 +13,4 @@
 #ifndef IRC_HPP
 #define IRC_HPP
 
-#include <asm-generic/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <ostream>
-#include <queue>
-#include <sstream>
-#include "parsing.hpp"
-
 #endif

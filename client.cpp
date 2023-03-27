@@ -1,5 +1,9 @@
 #include "client.hpp"
+#include <sys/epoll.h>
 #include "ircserv.hpp"
+
+std::map<std::string, client> users;
+
 void client::reply( std::string const str ) {
 	if ( !ispolled ) {
 		epoll_event event = { EPOLLOUT | EPOLLIN, { .ptr = this } };

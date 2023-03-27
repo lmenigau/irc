@@ -1,5 +1,6 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
+#include <map>
 #include <string>
 
 struct client {
@@ -14,4 +15,5 @@ struct client {
 	void        reply( std::string const str );
 };
 
+extern std::map<std::string, client> users;
 #endif

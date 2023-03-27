@@ -25,7 +25,7 @@ $(NAME): $(OBJ)
 $(DEPS): arte/%.d: %.cpp
 	@set -e; rm -f $@; \
 		$(CXX) -MM $(CPPFLAGS) $< > $@.$$$$; \
-		sed 's,\($*\)\.o[ :]*, arte/ft_\1.o arte/std_\1.o $@ : ,g' < $@.$$$$ > $@; \
+		sed 's,\($*\)\.o[ :]*, arte/\1.o $@ : ,g' < $@.$$$$ > $@; \
 		rm -f $@.$$$$
 
 include $(DEPS)

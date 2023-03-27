@@ -1,4 +1,6 @@
 #include "ostream.hpp"
+#include <sys/epoll.h>
+#include <ostream>
 
 std::ostream& operator<<( std::ostream& os, epoll_event& ev ) {
 	if ( ev.events & EPOLLHUP )
