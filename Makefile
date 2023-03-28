@@ -7,7 +7,8 @@ SRC = client.cpp\
 		ircserv.cpp\
 		main.cpp\
 		ostream.cpp\
-		parsing.cpp
+		parsing.cpp\
+		utils.cpp
 OBJ = $(addprefix arte/, $(SRC:.cpp=.o))
 NAME = ircserv
 
