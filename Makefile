@@ -5,6 +5,7 @@ CXXFLAGS=-std=c++98 -g -Wall -Werror -Wextra -Wno-unused-parameter
 SRC = client.cpp\
 	  	handler.cpp\
 		ircserv.cpp\
+		logger.cpp\
 		main.cpp\
 		ostream.cpp\
 		parsing.cpp\

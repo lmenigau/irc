@@ -32,12 +32,12 @@ std::string format( std::string format, va_list va_args ) {
 	std::string s = format;
 	while ( s.find( '%', i ) != std::string::npos ) {
 		i = s.find( '%', i );
-		if ( i + 1 == 's' )
+		if ( s[i + 1] == 's' )
 			s.replace( i, 2, (char*) va_arg( va_args, char* ) );
-		else if ( i + 1 == 'c' ) {
+		else if ( s[i + 1] == 'c' ) {
 			s.replace( i, 1, 1, ' ' );
 			s.replace( i + 1, 1, 1, (char) va_arg( va_args, int ) );
-		} else if ( i + 1 == 'd' ) {
+		} else if ( s[i + 1] == 'd' ) {
 			std::stringstream ss;
 			ss << (int) va_arg( va_args, int );
 			s.replace( i, 2, ss.str() );
