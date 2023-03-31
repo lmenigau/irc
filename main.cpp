@@ -1,7 +1,7 @@
 #include "handler.hpp"
 #include "irc.hpp"
 #include "ircserv.hpp"
-
+#include "utils.hpp"
 int main( int ac, char** av ) {
 	if ( ac != 3 ) {
 		std::cout << "usage : ./ircserv <port> <password>" << std::endl;
@@ -9,7 +9,7 @@ int main( int ac, char** av ) {
 	}
 	ircserv::initialisation( av[2], av[1] );
 	if ( ircserv::failed() ) {
-		std::cout << "FATAL : initialisation has failed !\n";
+		logger( "FATAL", "initialisation has failed !" );
 		return ( 1 );
 	}
 	ircserv::start();

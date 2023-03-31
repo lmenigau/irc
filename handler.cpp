@@ -2,29 +2,30 @@
 #include <list>
 #include "client.hpp"
 #include "irc.hpp"
+#include "utils.hpp"
 
 #define COMMAND_COUNT 6
 
 void pass( std::list<std::string>* args, client& c ) {
 	(void) args;
 	(void) c;
-	std::cout << "PASS COMMAND\n";
+	logger( "DEBUG", "PASS COMMAND" );
 }
 
 void user( std::list<std::string>* args, client& c ) {
 	(void) args;
 	(void) c;
-	std::cout << "USER COMMAND\n";
+	logger( "DEBUG", "USER COMMAND" );
 }
 
 void privmsg( std::list<std::string>* args, client& c ) {
 	(void) args;
-	std::cout << c.nick << "wants to send a message \n";
+	logger( "INFO", "%s wants to send a message", c.nick.c_str() );
 }
 
 void join( std::list<std::string>* args, client& c ) {
 	(void) args;
-	std::cout << c.nick << "wants to join \n";
+	logger( "INFO", "%s wants to join", c.nick.c_str() );
 }
 
 void nick( std::list<std::string>* args, client& c ) {
@@ -35,7 +36,7 @@ void nick( std::list<std::string>* args, client& c ) {
 		c.nick         = args->front();
 		c.isregistered = true;
 		c.reply( "001\r\n" );
-		std::cout << "nickname is " << c.nick << "\n";
+		logger( "INFO", "client %d nickname is %s", c.fd, c.nick.c_str() );
 	}
 }
 
@@ -56,5 +57,6 @@ void handler( std::list<std::string>* args, client& c ) {
 			return;
 		}
 	}
-	std::cout << args->front() << " COMMAND DO NOT EXIST (YET?)\n";
+	logger( "WARNING", "%s COMMAND DO NOT EXIST (YET?)",
+	        args->front().c_str() );
 }

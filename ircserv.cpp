@@ -9,6 +9,7 @@
 #include "ircserv.hpp"
 #include "ostream.hpp"
 #include "parsing.hpp"
+#include "utils.hpp"
 
 #define MAX_PORT 65535
 
@@ -22,18 +23,18 @@ int         ircserv::_tcp6_socket;
 void ircserv::initialisation( char* pass, char* port ) {
 	if ( strlen( port ) > 5 ) {
 		_failed = true;
-		std::cout << "port value too high !\n";
+		logger( "ERROR", "port value too high !" );
 		return;
 	}
 	_port = atoi( port );
 	if ( _port > MAX_PORT || _port <= 0 ) {
 		_failed = true;
-		std::cout << "incorrect port value !\n";
+		logger( "ERROR", "incorrect port value !" );
 		return;
 	}
 	if ( strlen( pass ) == 0 ) {
 		_failed = true;
-		std::cout << "password cannot be empty !\n";
+		logger( "ERROR", "password cannot be empty !" );
 		return;
 	}
 	_password = pass;
@@ -117,6 +118,7 @@ void ircserv::start( void ) {
 	_pollfd           = epoll_create( 1 );
 	epoll_event event = { EPOLLIN, { .fd = _tcp6_socket } };
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
+	logger( "INFO", "server started successfuly" );
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
