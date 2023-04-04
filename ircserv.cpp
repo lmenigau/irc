@@ -49,15 +49,15 @@ void ircserv::accept_client( epoll_event& ev ) {
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
 	int fd = accept( _tcp6_socket, NULL, 0 );
-	std::cout << fd << " " << addr.sin6_port << '\n';
+	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
-		_clients[fd].fd    = fd;
+		_clients[fd].setFd( fd );
 		_clients[fd].start = 0;
 		epoll_event event  = { EPOLLIN, { .ptr = &_clients[fd] } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 		_clients[fd].buf.reserve( 512 );
 	} else
-		std::cerr << "accept error\n";
+		logger( "ERROR", "accept error" );
 }
 
 void ircserv::process_events( epoll_event& ev ) {
@@ -70,10 +70,10 @@ void ircserv::process_events( epoll_event& ev ) {
 			accept_client( ev );
 		} else {
 			c   = (client*) ev.data.ptr;
-			len = read( c->fd, buf, 512 );
+			len = read( c->getFd(), buf, 512 );
 			if ( len == 0 ) {
-				close( c->fd );
-				std::cerr << "closed : " << c->fd << '\n';
+				close( c->getFd() );
+				logger( "DEBUG", "closed : %d", c->getFd() );
 				return;
 			}
 			c->buf.append( buf, len );
@@ -89,11 +89,11 @@ void ircserv::process_events( epoll_event& ev ) {
 	} else if ( ev.events & EPOLLOUT ) {
 		c   = (client*) ev.data.ptr;
 		len = c->out.copy( buf, 512 );
-		len = write( c->fd, buf, len );
+		len = write( c->getFd(), buf, len );
 		c->out.erase( 0, len );
 		if ( c->out.empty() ) {
 			epoll_event event = { EPOLLIN, { c } };
-			epoll_ctl( _pollfd, EPOLL_CTL_MOD, c->fd, &event );
+			epoll_ctl( _pollfd, EPOLL_CTL_MOD, c->getFd(), &event );
 		}
 	} else {
 		std::cerr << ev;
@@ -122,7 +122,7 @@ void ircserv::start( void ) {
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
-		std::cerr << "nev:" << nev << "\n";
+		logger( "DEBUG", "nev: %d", nev );
 		for ( int i = 0; i < nev; i++ ) {
 			process_events( events[i] );
 		}
@@ -131,4 +131,8 @@ void ircserv::start( void ) {
 
 int ircserv::getPollfd( void ) {
 	return _pollfd;
+}
+
+std::string ircserv::getPassword( void ) {
+	return _password;
 }

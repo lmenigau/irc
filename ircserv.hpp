@@ -36,7 +36,8 @@ class ircserv {
 
 	static bool failed( void );
 
-	static int getPollfd( void );
+	static int         getPollfd( void );
+	static std::string getPassword( void );
 };
 
 #endif
