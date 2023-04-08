@@ -1,8 +1,9 @@
 $(if $(filter re as, $(MAKECMDGOALS)),\
 	$(shell $(RM) arte/*.o ft std))
 CXX=clang++
-CXXFLAGS=-std=c++98 -g -Wall -Werror -Wextra -Wno-unused-parameter
-SRC = client.cpp\
+CXXFLAGS=-std=c++98 -g -Wall -Werror -Wextra 
+SRC = channel.cpp\
+	  	client.cpp\
 	  	handler.cpp\
 		ircserv.cpp\
 		logger.cpp\

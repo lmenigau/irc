@@ -14,18 +14,21 @@
 #define IRCSERV_HPP
 
 #include <iostream>
+#include <map>
+#include "channel.hpp"
 #include "client.hpp"
 #include "sys/epoll.h"
 
 class ircserv {
    private:
 	ircserv();
-	static int         _port;
-	static bool        _failed;
-	static std::string _password;
-	static client      _clients[1024];
-	static int         _pollfd;
-	static int         _tcp6_socket;
+	static int                            _port;
+	static bool                           _failed;
+	static std::string                    _password;
+	static client                         _clients[1024];
+	static std::map<std::string, channel> _channels;
+	static int                            _pollfd;
+	static int                            _tcp6_socket;
 
 	static void accept_client( epoll_event& );
 	static void process_events( epoll_event& );
