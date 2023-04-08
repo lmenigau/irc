@@ -31,6 +31,15 @@ void user( std::list<std::string>* args, client& c ) {
 	    ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
 	    "Network, %s[!%s@foo.example.bar]\r\n",
 	    c.getUser().c_str(), c.getNick().c_str(), c.getUser().c_str() ) );
+	c.reply(
+	    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
+	            "version 0.0.1dev\r\n",
+	            c.getUser().c_str() ) );
+	c.reply( format(
+	    ":ircserv.localhost 003 %s :This server was created idk like now ?\r\n",
+	    c.getUser().c_str() ) );
+	c.reply( format( ":ircserv.localhost 004 %s :FT_IRC :0.0.1dev :ia :i\r\n",
+	                 c.getUser().c_str() ) );
 }
 
 void privmsg( std::list<std::string>* args, client& c ) {
@@ -75,7 +84,6 @@ void pong( std::list<std::string>* args, client& c ) {
 	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
 	        args->back().c_str() );
 	c.reply( format( "PONG %s\r\n", args->back().c_str() ) );
-	std::cout << *args << "\n";
 }
 
 void mode( std::list<std::string>* args, client& c ) {
