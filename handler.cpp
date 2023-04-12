@@ -23,9 +23,22 @@ void privmsg( std::list<std::string>* args, client& c ) {
 	logger( "INFO", "%s wants to send a message", c.nick.c_str() );
 }
 
+//Create the chan if it doesn't exist, otherwise, join it..
+//If the user is new, reply all message on the channel ? NO
+//Reply privmsg to all client connected
 void join( std::list<std::string>* args, client& c ) {
 	(void) args;
 	logger( "INFO", "%s wants to join", c.nick.c_str() );
+	if ( args->empty())
+		c.reply("Error \r\n");
+	else 
+	{
+		for (std::list<std::string>::iterator it = args->begin(); it != args->end(); it++)
+		{
+			std::cout << *it << std::endl;
+		}
+		c.reply("Nice\r\n");
+	}
 }
 
 void nick( std::list<std::string>* args, client& c ) {
