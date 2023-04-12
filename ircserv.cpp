@@ -13,12 +13,13 @@
 
 #define MAX_PORT 65535
 
-int         ircserv::_port   = 0;
-bool        ircserv::_failed = false;
-std::string ircserv::_password;
-client      ircserv::_clients[1024];
-int         ircserv::_pollfd;
-int         ircserv::_tcp6_socket;
+int                            ircserv::_port   = 0;
+bool                           ircserv::_failed = false;
+std::string                    ircserv::_password;
+client                         ircserv::_clients[1024];
+int                            ircserv::_pollfd;
+int                            ircserv::_tcp6_socket;
+std::map<std::string, channel> ircserv::_channels;
 
 void ircserv::initialisation( char* pass, char* port ) {
 	if ( strlen( port ) > 5 ) {
@@ -135,4 +136,21 @@ int ircserv::getPollfd( void ) {
 
 std::string ircserv::getPassword( void ) {
 	return _password;
+}
+
+std::map<std::string, channel>& ircserv::getChannels( void ) {
+	return _channels;
+}
+
+void ircserv::addChannel( std::string name ) {
+	if ( _channels.find( name ) != _channels.end() )
+		return;
+	_channels.insert( std::make_pair( name, channel( name ) ) );
+}
+
+void ircserv::removeChannel( std::string name ) {
+	std::map<std::string, channel>::iterator it = _channels.find( name );
+	if ( it == _channels.end() )
+		return;
+	_channels.erase( it );
 }

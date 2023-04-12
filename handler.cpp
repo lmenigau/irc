@@ -38,7 +38,7 @@ void user( std::list<std::string>* args, client& c ) {
 	c.reply( format(
 	    ":ircserv.localhost 003 %s :This server was created idk like now ?\r\n",
 	    c.getUser().c_str() ) );
-	c.reply( format( ":ircserv.localhost 004 %s :FT_IRC :0.0.1dev :ia :i\r\n",
+	c.reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
 	                 c.getUser().c_str() ) );
 }
 
@@ -48,8 +48,23 @@ void privmsg( std::list<std::string>* args, client& c ) {
 }
 
 void join( std::list<std::string>* args, client& c ) {
-	(void) args;
-	logger( "INFO", "%s wants to join", c.getNick().c_str() );
+	std::map<std::string, channel>           channels = ircserv::getChannels();
+	std::map<std::string, channel>::iterator it;
+	args->front().erase( args->front().length() - 1, 1 );
+	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
+	        args->front().c_str() );
+	// it = channels.find( args->front() );
+	// if ( it == channels.end() ) {
+	//	ircserv::addChannel( args->front() );
+	//	it = ircserv::getChannels().find( args->front() );
+	//}
+	// it->second.addClient( c );
+	c.reply( ":royal!foo.example.bar JOIN #test\r\n" );
+	c.reply( ":ircserv.localhost 353 royal = #test :@royal\r\n" );
+	c.reply( ":ircserv.localhost 366 royal #test :End of NAMES list\r\n" );
+	// c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
+	//                 args->front().c_str() ) );
+	// c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }
 
 void nick( std::list<std::string>* args, client& c ) {
@@ -90,7 +105,7 @@ void mode( std::list<std::string>* args, client& c ) {
 	args->back().erase( args->back().length() - 1, 1 );
 	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 	        args->back().c_str() );
-	c.reply( format( "MODE :%s %s\r\n", c.getUser().c_str(),
+	c.reply( format( ":ircserv.localhost 221 %s %s\r\n", c.getUser().c_str(),
 	                 args->back().c_str() ) );
 }
 

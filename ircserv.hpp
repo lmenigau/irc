@@ -39,8 +39,12 @@ class ircserv {
 
 	static bool failed( void );
 
-	static int         getPollfd( void );
-	static std::string getPassword( void );
+	static int                             getPollfd( void );
+	static std::string                     getPassword( void );
+	static std::map<std::string, channel>& getChannels( void );
+
+	static void addChannel( std::string );
+	static void removeChannel( std::string );
 };
 
 #endif
