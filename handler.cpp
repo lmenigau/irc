@@ -45,6 +45,12 @@ void capls( std::list<std::string>* args, client& c ) {
 	(void) args;
 }
 
+//Function Quit to close the connexion between the client and server
+
+//Funtion Privmsg send a message to client (from client) / or to a channel (many client)
+
+//
+
 void handler( std::list<std::string>* args, client& c ) {
 	std::string commands[COMMAND_COUNT] = { "PASS", "USER", "NICK", "JOIN",
 	                                        "CAPLS" };
