@@ -23,7 +23,7 @@ class ircserv {
 	static int         _port;
 	static bool        _failed;
 	static std::string _password;
-	static client      _clients[1024];
+	static Client      _clients[1024];
 	static int         _pollfd;
 	static int         _tcp6_socket;
 

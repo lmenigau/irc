@@ -16,7 +16,7 @@
 int         ircserv::_port   = 0;
 bool        ircserv::_failed = false;
 std::string ircserv::_password;
-client      ircserv::_clients[1024];
+Client      ircserv::_clients[1024];
 int         ircserv::_pollfd;
 int         ircserv::_tcp6_socket;
 
@@ -63,13 +63,13 @@ void ircserv::accept_client( epoll_event& ev ) {
 void ircserv::process_events( epoll_event& ev ) {
 	// std::cout << ev;
 	char    buf[512];
-	client* c;
+	Client	*c;
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
 			accept_client( ev );
 		} else {
-			c   = (client*) ev.data.ptr;
+			c = reinterpret_cast<Client *> (ev.data.ptr);
 			len = read( c->fd, buf, 512 );
 			if ( len == 0 ) {
 				close( c->fd );
@@ -87,7 +87,7 @@ void ircserv::process_events( epoll_event& ev ) {
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
-		c   = (client*) ev.data.ptr;
+		c = reinterpret_cast<Client *> (ev.data.ptr);
 		len = c->out.copy( buf, 512 );
 		len = write( c->fd, buf, len );
 		c->out.erase( 0, len );

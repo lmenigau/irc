@@ -3,9 +3,9 @@
 
 class  channel{
   private:
-    vector<client *> users;
+    map<name, client *> channel_users;
     client *admin;
-    const std::string name;
+    const std::string channel_name;
   public:
     channel(client *creator, const std::string &name);
     ~channel();

@@ -6,19 +6,19 @@
 
 #define COMMAND_COUNT 6
 
-void pass( std::list<std::string>* args, client& c ) {
+void pass( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	(void) c;
 	logger( "DEBUG", "PASS COMMAND" );
 }
 
-void user( std::list<std::string>* args, client& c ) {
+void user( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	(void) c;
 	logger( "DEBUG", "USER COMMAND" );
 }
 
-void privmsg( std::list<std::string>* args, client& c ) {
+void privmsg( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	logger( "INFO", "%s wants to send a message", c.nick.c_str() );
 }
@@ -26,13 +26,14 @@ void privmsg( std::list<std::string>* args, client& c ) {
 //Create the chan if it doesn't exist, otherwise, join it..
 //If the user is new, reply all message on the channel ? NO
 //Reply privmsg to all client connected
-void join( std::list<std::string>* args, client& c ) {
+void join( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	logger( "INFO", "%s wants to join", c.nick.c_str() );
 	if ( args->empty())
 		c.reply("Error \r\n");
-	else 
+	else
 	{
+		std::cout << c.fd << std::endl;
 		for (std::list<std::string>::iterator it = args->begin(); it != args->end(); it++)
 		{
 			std::cout << *it << std::endl;
@@ -41,7 +42,7 @@ void join( std::list<std::string>* args, client& c ) {
 	}
 }
 
-void nick( std::list<std::string>* args, client& c ) {
+void nick( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	if ( args->empty() ) {
 		c.reply( "431\r\n" );
@@ -53,7 +54,7 @@ void nick( std::list<std::string>* args, client& c ) {
 	}
 }
 
-void capls( std::list<std::string>* args, client& c ) {
+void capls( std::list<std::string>* args, Client& c ) {
 	(void) c;
 	(void) args;
 }
@@ -64,10 +65,12 @@ void capls( std::list<std::string>* args, client& c ) {
 
 //
 
-void handler( std::list<std::string>* args, client& c ) {
+
+//Should be a member function of IRCSERV ?
+void handler( std::list<std::string>* args, Client& c ) {
 	std::string commands[COMMAND_COUNT] = { "PASS", "USER", "NICK", "JOIN",
 	                                        "CAPLS" };
-	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, client & c ) = {
+	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
 	    &pass, &user, &nick, &join, &privmsg, &capls };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		if ( !args->front().compare( commands[i] ) ) {

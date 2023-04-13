@@ -6,6 +6,6 @@
 #include "client.hpp"
 #include "irc.hpp"
 
-void handler( std::list<std::string>* args, client& c );
+void handler( std::list<std::string>* args, Client& c );
 
 #endif
