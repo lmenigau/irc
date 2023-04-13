@@ -6,7 +6,7 @@
 /*   By: ccambium <ccambium@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 06:34:50 by ccambium          #+#    #+#             */
-/*   Updated: 2023/03/22 06:45:03 by ccambium         ###   ########.fr       */
+/*   Updated: 2023/04/13 22:45:47 by ccambium         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,21 @@
 #define IRCSERV_HPP
 
 #include <iostream>
+#include <map>
+#include "channel.hpp"
 #include "client.hpp"
 #include "sys/epoll.h"
 
 class ircserv {
    private:
 	ircserv();
-	static int         _port;
-	static bool        _failed;
-	static std::string _password;
-	static Client      _clients[1024];
-	static int         _pollfd;
-	static int         _tcp6_socket;
+	static int                            _port;
+	static bool                           _failed;
+	static std::string                    _password;
+	static Client                         _clients[1024];
+	static std::map<std::string, Channel> _channels;
+	static int                            _pollfd;
+	static int                            _tcp6_socket;
 
 	static void accept_client( epoll_event& );
 	static void process_events( epoll_event& );
@@ -36,7 +39,12 @@ class ircserv {
 
 	static bool failed( void );
 
-	static int getPollfd( void );
+	static int                             getPollfd( void );
+	static std::string                     getPassword( void );
+	static std::map<std::string, Channel>& getChannels( void );
+
+	static void addChannel( std::string &, Client &);
+	static void removeChannel( std::string );
 };
 
 #endif

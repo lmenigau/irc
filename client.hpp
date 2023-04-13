@@ -2,34 +2,57 @@
 #define CLIENT_HPP
 #include <map>
 #include <string>
-/*
-struct client {
-	bool        ispolled;
-	bool        isregistered;
-	int         fd;
+
+class Client {
+   public:
 	int         start;
 	int         end;
 	std::string buf;
-	std::string nick;
 	std::string out;
-	void        reply( std::string const str );
-};
-*/
 
-class Client {
-	public :
-		bool		ispolled;
-		bool		isregistered;
-		int			fd;
-		int			start;
-		int			end;
-		std::string	buf;
-		std::string	nick;
-		std::string	out;
+	Client( int );
+	~Client( void );
+	Client( void );
 
-		Client();
-		~Client();
-		void reply(std::string const &str);
+	// methods
+
+	void reply( std::string const &str );
+	// getters
+
+	int         getFd( void );
+	std::string getCap( void );
+	std::string getNick( void );
+	std::string getUser( void );
+
+	// setters
+
+	void setCap( std::string );
+	void setNick( std::string );
+	void setHasGivenPassword( bool );
+	void setHasGivenUser( bool );
+	void setHasGivenNick( bool );
+	void setIsPolled( bool );
+	void setFd( int );
+	void setUser( std::string );
+
+	// state accessors ?
+
+	bool isPolled( void );
+	bool hasGivenNick( void );
+	bool hasGivenUser( void );
+	bool hasGivenPassword( void );
+	bool isRegistered( void );
+
+   private:
+	int         _fd;
+	std::string _cap;
+	std::string _nick;
+	std::string _user;
+	bool        _hasGivenNick;
+	bool        _hasGivenUser;
+	bool        _hasGivenPassword;
+	bool        _isRegistered;
+	bool        _isPolled;
 };
 
 //std::map<std::string, Client> users;

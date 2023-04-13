@@ -1,56 +1,82 @@
+#include <unistd.h>
 #include <iostream>
 #include <list>
 #include "client.hpp"
 #include "irc.hpp"
+#include "ircserv.hpp"
 #include "utils.hpp"
 
-#define COMMAND_COUNT 6
+#define COMMAND_COUNT 9
 
 void pass( std::list<std::string>* args, Client& c ) {
 	(void) args;
-	(void) c;
 	logger( "DEBUG", "PASS COMMAND" );
+	args->front().erase( args->front().length() - 1, 1 );
+	if ( args->front().compare( ircserv::getPassword() ) != 0 ) {
+		logger( "ERROR", "client %d : wrong password (%s)!", c.getFd(),
+		        args->front().c_str() );
+		close( c.getFd() );
+		return;
+	}
+	c.setHasGivenPassword( true );
 }
 
 void user( std::list<std::string>* args, Client& c ) {
 	(void) args;
-	(void) c;
-	logger( "DEBUG", "USER COMMAND" );
+	logger( "INFO", "client %d has username %s", c.getFd(),
+	        args->front().c_str() );
+	c.setHasGivenUser( true );
+	c.setUser( args->front() );
+	c.reply( format(
+	    ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
+	    "Network, %s[!%s@foo.example.bar]\r\n",
+	    c.getUser().c_str(), c.getNick().c_str(), c.getUser().c_str() ) );
+	c.reply(
+	    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
+	            "version 0.0.1dev\r\n",
+	            c.getUser().c_str() ) );
+	c.reply( format(
+	    ":ircserv.localhost 003 %s :This server was created idk like now ?\r\n",
+	    c.getUser().c_str() ) );
+	c.reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
+	                 c.getUser().c_str() ) );
 }
 
 void privmsg( std::list<std::string>* args, Client& c ) {
 	(void) args;
-	logger( "INFO", "%s wants to send a message", c.nick.c_str() );
+	logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
 }
 
-//Create the chan if it doesn't exist, otherwise, join it..
-//If the user is new, reply all message on the channel ? NO
-//Reply privmsg to all client connected
 void join( std::list<std::string>* args, Client& c ) {
-	(void) args;
-	logger( "INFO", "%s wants to join", c.nick.c_str() );
-	if ( args->empty())
-		c.reply("Error \r\n");
-	else
-	{
-		std::cout << c.fd << std::endl;
-		for (std::list<std::string>::iterator it = args->begin(); it != args->end(); it++)
-		{
-			std::cout << *it << std::endl;
-		}
-		c.reply("Nice\r\n");
+	std::map<std::string, Channel>           channels = ircserv::getChannels();
+	std::map<std::string, Channel>::iterator it;
+	args->front().erase( args->front().length() - 1, 1 );
+	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
+	        args->front().c_str() );
+	it = channels.find( args->front() );
+	if ( it == channels.end() ) {
+		ircserv::addChannel( args->front(), c );
+		it = ircserv::getChannels().find( args->front() );
 	}
+	it->second.addClient( c );
+	c.reply( ":royal!foo.example.bar JOIN #test\r\n" );
+	c.reply( ":ircserv.localhost 353 royal = #test :@royal\r\n" );
+	c.reply( ":ircserv.localhost 366 royal #test :End of NAMES list\r\n" );
+	// c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
+	//                 args->front().c_str() ) );
+	// c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }
 
 void nick( std::list<std::string>* args, Client& c ) {
 	(void) args;
+	args->front().erase( args->front().length() - 1, 1 );
 	if ( args->empty() ) {
 		c.reply( "431\r\n" );
 	} else {
-		c.nick         = args->front();
-		c.isregistered = true;
-		c.reply( "001\r\n" );
-		logger( "INFO", "client %d nickname is %s", c.fd, c.nick.c_str() );
+		c.setNick( args->front() );
+		c.setHasGivenNick( true );
+		logger( "INFO", "client %d nickname is %s", c.getFd(),
+		        c.getNick().c_str() );
 	}
 }
 
@@ -59,19 +85,36 @@ void capls( std::list<std::string>* args, Client& c ) {
 	(void) args;
 }
 
-//Function Quit to close the connexion between the client and server
+std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
+	std::list<std::string>::iterator it = arg.begin();
+	while ( it != arg.end() ) {
+		os << *it;
+		it++;
+	}
+	return os;
+}
 
-//Funtion Privmsg send a message to client (from client) / or to a channel (many client)
+void pong( std::list<std::string>* args, Client& c ) {
+	args->front().erase( args->back().length() - 1, 1 );
+	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
+	        args->back().c_str() );
+	c.reply( format( "PONG %s\r\n", args->back().c_str() ) );
+}
 
-//
+void mode( std::list<std::string>* args, Client& c ) {
+	args->back().erase( args->back().length() - 1, 1 );
+	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
+	        args->back().c_str() );
+	c.reply( format( ":ircserv.localhost 221 %s %s\r\n", c.getUser().c_str(),
+	                 args->back().c_str() ) );
+}
 
-
-//Should be a member function of IRCSERV ?
 void handler( std::list<std::string>* args, Client& c ) {
-	std::string commands[COMMAND_COUNT] = { "PASS", "USER", "NICK", "JOIN",
-	                                        "CAPLS" };
+	std::string commands[COMMAND_COUNT] = { "PASS", "USER",    "NICK",
+	                                        "JOIN", "PRIVMSG", "CAPLS",
+	                                        "CAP",  "PING",    "MODE" };
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
-	    &pass, &user, &nick, &join, &privmsg, &capls };
+	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong, &mode };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
