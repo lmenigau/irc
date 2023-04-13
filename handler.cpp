@@ -58,9 +58,9 @@ void join( std::list<std::string>* args, Client& c ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
 	}
-	c.reply( ":royal!foo.example.bar JOIN #test\r\n" );
-	c.reply( ":ircserv.localhost 353 royal = #test :@royal\r\n" );
-	c.reply( ":ircserv.localhost 366 royal #test :End of NAMES list\r\n" );
+	c.reply( format(":royal!foo.example.bar JOIN %s\r\n", args->front().c_str()) );
+	c.reply( format(":ircserv.localhost 353 %s = %s :@%s\r\n", c.getUser().c_str() ,args->front().c_str(), c.getNick().c_str()) );
+	c.reply( format(":ircserv.localhost 366 %s %s :End of NAMES list\r\n", c.getUser().c_str(), args->front().c_str()) );
 	// c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
 	//                 args->front().c_str() ) );
 	// c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );

@@ -82,6 +82,7 @@ void ircserv::process_events( epoll_event& ev ) {
 				size_t pos = c->buf.find( "\n" );
 				if ( pos == std::string::npos )
 					break;
+				logger("DEBUG", "buf : %s", c->buf.c_str());
 				std::list<std::string>* args = parse( c->buf.substr( 0, pos ) );
 				handler( args, *c );
 				c->buf.erase( 0, pos + 1 );
