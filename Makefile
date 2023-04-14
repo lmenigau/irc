@@ -8,6 +8,7 @@ SRC = channel.cpp\
 		ircserv.cpp\
 		logger.cpp\
 		main.cpp\
+		nick.cpp \
 		ostream.cpp\
 		parsing.cpp\
 		utils.cpp

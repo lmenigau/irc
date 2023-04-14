@@ -1,10 +1,3 @@
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 #include "handler.hpp"
 #include "ircserv.hpp"
 #include "ostream.hpp"
@@ -14,6 +7,7 @@
 #define MAX_PORT 65535
 
 int                            ircserv::_port   = 0;
+int														 ircserv::_nb_clients = 0;
 bool                           ircserv::_failed = false;
 std::string                    ircserv::_password;
 Client                         ircserv::_clients[1024];
@@ -46,13 +40,19 @@ bool ircserv::failed( void ) {
 }
 
 void ircserv::accept_client( epoll_event& ev ) {
-	sockaddr_in6 addr = {};
+	sockaddr_in6 addr;
+	socklen_t	len;
+	memset(&addr, 0, sizeof(addr));
+	len = sizeof(addr);
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
-	int fd = accept( _tcp6_socket, NULL, 0 );
+	int fd = accept( _tcp6_socket, (sockaddr *) &addr, &len);
+	_nb_clients++;
+
 	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
 		_clients[fd].setFd( fd );
+		_clients[fd].setHostname( addr );
 		_clients[fd].start = 0;
 		epoll_event event  = { EPOLLIN, { .ptr = &_clients[fd] } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
@@ -78,6 +78,7 @@ void ircserv::process_events( epoll_event& ev ) {
 				return;
 			}
 			c->buf.append( buf, len );
+
 			for ( ;; ) {
 				size_t pos = c->buf.find( "\n" );
 				if ( pos == std::string::npos )

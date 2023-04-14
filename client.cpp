@@ -2,6 +2,7 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 #include "ircserv.hpp"
+#include <sys/socket.h>
 
 
 
@@ -64,6 +65,10 @@ std::string Client::getNick( void ) {
 std::string Client::getUser( void ) {
 	return _user;
 }
+
+std::string Client::getHostname( void ) {
+	return _hostname;
+}
 // setters
 
 void Client::setCap( std::string cap ) {
@@ -92,6 +97,19 @@ void Client::setHasGivenPassword( bool f ) {
 
 void Client::setFd( int fd ) {
 	_fd = fd;
+}
+
+void Client::setHostname( sockaddr_in6 &addr) {
+	char	str_addr[256];
+	char	hostname[256];
+
+	_hostname = "";
+	if (!inet_ntop(AF_INET6, &addr.sin6_addr, str_addr, 256))
+		return (perror("ircserv"));
+	if (getnameinfo((struct sockaddr *) &addr, sizeof(addr),
+			hostname, 256, NULL, 0, 0) != 0)
+		return (perror("ircserv"));
+	_hostname = hostname;
 }
 
 void Client::setUser( std::string user ) {

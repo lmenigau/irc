@@ -8,6 +8,8 @@
 
 #define COMMAND_COUNT 9
 
+void nick( std::list<std::string>* args, Client &c);
+
 void pass( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	logger( "DEBUG", "PASS COMMAND" );
@@ -27,19 +29,6 @@ void user( std::list<std::string>* args, Client& c ) {
 	        args->front().c_str() );
 	c.setHasGivenUser( true );
 	c.setUser( args->front() );
-	c.reply( format(
-	    ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
-	    "Network, %s[!%s@foo.example.bar]\r\n",
-	    c.getUser().c_str(), c.getNick().c_str(), c.getUser().c_str() ) );
-	c.reply(
-	    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
-	            "version 0.0.1dev\r\n",
-	            c.getUser().c_str() ) );
-	c.reply( format(
-	    ":ircserv.localhost 003 %s :This server was created idk like now ?\r\n",
-	    c.getUser().c_str() ) );
-	c.reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
-	                 c.getUser().c_str() ) );
 }
 
 void privmsg( std::list<std::string>* args, Client& c ) {
@@ -65,19 +54,6 @@ void join( std::list<std::string>* args, Client& c ) {
 	// c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
 	//                 args->front().c_str() ) );
 	// c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
-}
-
-void nick( std::list<std::string>* args, Client& c ) {
-	(void) args;
-	args->front().erase( args->front().length() - 1, 1 );
-	if ( args->empty() ) {
-		c.reply( "431\r\n" );
-	} else {
-		c.setNick( args->front() );
-		c.setHasGivenNick( true );
-		logger( "INFO", "client %d nickname is %s", c.getFd(),
-		        c.getNick().c_str() );
-	}
 }
 
 void capls( std::list<std::string>* args, Client& c ) {

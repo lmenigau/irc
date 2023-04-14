@@ -13,6 +13,14 @@
 #ifndef IRCSERV_HPP
 #define IRCSERV_HPP
 
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <map>
 #include "channel.hpp"
@@ -25,7 +33,6 @@ class ircserv {
 	static int                            _port;
 	static bool                           _failed;
 	static std::string                    _password;
-	static Client                         _clients[1024];
 	static std::map<std::string, Channel> _channels;
 	static int                            _pollfd;
 	static int                            _tcp6_socket;
@@ -40,6 +47,8 @@ class ircserv {
 	static bool failed( void );
 
 	static int                             getPollfd( void );
+  static int                            _nb_clients;
+	static Client                         _clients[1024];
 	static std::string                     getPassword( void );
 	static std::map<std::string, Channel>& getChannels( void );
 
