@@ -73,7 +73,6 @@ void ircserv::process_events( epoll_event& ev ) {
 			accept_client( ev );
 		} else {
 			c = reinterpret_cast<Client *> (ev.data.ptr);
-			std::cout << "bru" <<c->getFd() << std::endl;
 
 			len = read( c->getFd(), buf, 512 );
 			if ( len == 0 ) {
@@ -92,7 +91,6 @@ void ircserv::process_events( epoll_event& ev ) {
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
-			std::cout << "bb" << std::endl;
 		c = reinterpret_cast<Client *> (ev.data.ptr);
 		len = c->out.copy( buf, 512 );
 		len = write( c->getFd(), buf, len );
@@ -126,7 +124,6 @@ void ircserv::start( void ) {
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
 	for ( ;; ) {
-		std::cout << "test" << std::endl;
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
 		logger( "DEBUG", "nev: %d", nev );

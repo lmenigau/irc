@@ -66,6 +66,10 @@ std::string Client::getUser( void ) {
 	return _user;
 }
 
+std::string Client::getRealUser( void ) {
+	return _realuser;
+}
+
 std::string Client::getHostname( void ) {
 	return _hostname;
 }
@@ -114,6 +118,10 @@ void Client::setHostname( sockaddr_in6 &addr) {
 
 void Client::setUser( std::string user ) {
 	_user = user;
+}
+
+void Client::setRealUser( std::string realuser ) {
+	_realuser = realuser;
 }
 
 // state accessorts ?

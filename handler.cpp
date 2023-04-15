@@ -9,6 +9,7 @@
 #define COMMAND_COUNT 9
 
 void nick( std::list<std::string>* args, Client &c);
+void user( std::list<std::string>* args, Client& c );
 
 void pass( std::list<std::string>* args, Client& c ) {
 	(void) args;
@@ -21,15 +22,6 @@ void pass( std::list<std::string>* args, Client& c ) {
 		return;
 	}
 	c.setHasGivenPassword( true );
-}
-
-void user( std::list<std::string>* args, Client& c ) {
-	(void) args;
-	logger( "INFO", "client %d has username %s", c.getFd(),
-	        args->front().c_str() );
-	c.setHasGivenUser( true );
-	c.setUser( args->front() );
-	c.reply( format("~%s\r\n", c.getUser().c_str()));
 }
 
 void privmsg( std::list<std::string>* args, Client& c ) {
@@ -96,7 +88,7 @@ void handler( std::list<std::string>* args, Client& c ) {
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
 	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong, &mode };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
-		std::cout << args->front() << std::endl;
+	//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
 			handlers[i]( args, c );
