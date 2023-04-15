@@ -7,10 +7,9 @@
 #define MAX_PORT 65535
 
 int                            ircserv::_port   = 0;
-int														 ircserv::_nb_clients = 0;
 bool                           ircserv::_failed = false;
 std::string                    ircserv::_password;
-Client                         ircserv::_clients[1024];
+std::vector<Client *>            ircserv::_clients;
 int                            ircserv::_pollfd;
 int                            ircserv::_tcp6_socket;
 std::map<std::string, Channel> ircserv::_channels;
@@ -40,23 +39,25 @@ bool ircserv::failed( void ) {
 }
 
 void ircserv::accept_client( epoll_event& ev ) {
+	Client	*new_cli;
 	sockaddr_in6 addr;
 	socklen_t	len;
 	memset(&addr, 0, sizeof(addr));
 	len = sizeof(addr);
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
+	new_cli = new Client();
 	int fd = accept( _tcp6_socket, (sockaddr *) &addr, &len);
-	_nb_clients++;
-
 	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
-		_clients[fd].setFd( fd );
-		_clients[fd].setHostname( addr );
-		_clients[fd].start = 0;
-		epoll_event event  = { EPOLLIN, { .ptr = &_clients[fd] } };
+		new_cli->setFd( fd );
+		new_cli->setHostname( addr );
+		new_cli->start = 0;
+		_clients.push_back(new_cli);
+		epoll_event event  = { EPOLLIN, { .ptr = new_cli } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
-		_clients[fd].buf.reserve( 512 );
+		new_cli->buf.reserve( 512 );
+		logger( "INFO", "accept error" );
 	} else
 		logger( "ERROR", "accept error" );
 }
@@ -68,9 +69,12 @@ void ircserv::process_events( epoll_event& ev ) {
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
+			std::cout << "aa" << std::endl;
 			accept_client( ev );
 		} else {
 			c = reinterpret_cast<Client *> (ev.data.ptr);
+			std::cout << "bru" <<c->getFd() << std::endl;
+
 			len = read( c->getFd(), buf, 512 );
 			if ( len == 0 ) {
 				close( c->getFd() );
@@ -78,7 +82,6 @@ void ircserv::process_events( epoll_event& ev ) {
 				return;
 			}
 			c->buf.append( buf, len );
-
 			for ( ;; ) {
 				size_t pos = c->buf.find( "\n" );
 				if ( pos == std::string::npos )
@@ -89,6 +92,7 @@ void ircserv::process_events( epoll_event& ev ) {
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
+			std::cout << "bb" << std::endl;
 		c = reinterpret_cast<Client *> (ev.data.ptr);
 		len = c->out.copy( buf, 512 );
 		len = write( c->getFd(), buf, len );
@@ -122,6 +126,7 @@ void ircserv::start( void ) {
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
 	for ( ;; ) {
+		std::cout << "test" << std::endl;
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
 		logger( "DEBUG", "nev: %d", nev );

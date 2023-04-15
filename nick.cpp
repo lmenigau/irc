@@ -14,10 +14,9 @@
 
 static bool  authorize_setting_name(const std::string &name)
 {
-  for (int i = 0; i < ircserv::_nb_clients; i++)
+  for (std::vector<Client *>::iterator it = ircserv::_clients.begin(); it != ircserv::_clients.end(); it++)
   {
-    std::cout << "i :" << i << " " << ircserv::_clients[i].getNick() << std::endl;
-    if (ircserv::_clients[i].getNick() == name)
+    if ((*it)->getNick() == name)
       return (false);
   }
   return (true);
@@ -58,11 +57,4 @@ void nick( std::list<std::string> *args, Client &c)
 		logger( "INFO", "New user %s nickname %s set, Connexion etablished !",
         c.getUser().c_str(), c.getNick().c_str());
   }
-
-  //Check if we have a nick seted
-    //Change the nick
-  //Else if, check the user is set
-    //Set the nick of the user and say hi
-  //Else, return error
-  //
 }

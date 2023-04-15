@@ -29,6 +29,7 @@ void user( std::list<std::string>* args, Client& c ) {
 	        args->front().c_str() );
 	c.setHasGivenUser( true );
 	c.setUser( args->front() );
+	c.reply( format("~%s\r\n", c.getUser().c_str()));
 }
 
 void privmsg( std::list<std::string>* args, Client& c ) {
@@ -71,13 +72,16 @@ std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
 }
 
 void pong( std::list<std::string>* args, Client& c ) {
-	args->front().erase( args->back().length() - 1, 1 );
-	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
-	        args->back().c_str() );
-	c.reply( format( "PONG %s\r\n", args->back().c_str() ) );
+	(void) args;
+	//args->front().erase( args->back().length() - 1, 1 );
+	//logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
+	     //   args->back().c_str()m );
+	c.reply( format( "PONG\r\n") );
 }
 
 void mode( std::list<std::string>* args, Client& c ) {
+	if (args->empty())
+		return ;
 	args->back().erase( args->back().length() - 1, 1 );
 	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 	        args->back().c_str() );
@@ -92,6 +96,7 @@ void handler( std::list<std::string>* args, Client& c ) {
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
 	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong, &mode };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
+		std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
 			handlers[i]( args, c );

@@ -47,8 +47,7 @@ class ircserv {
 	static bool failed( void );
 
 	static int                             getPollfd( void );
-  static int                            _nb_clients;
-	static Client                         _clients[1024];
+	static std::vector<Client *>                  _clients;
 	static std::string                     getPassword( void );
 	static std::map<std::string, Channel>& getChannels( void );
 
