@@ -16,13 +16,14 @@ class Client {
 
 	// methods
 
-	void reply( std::string const &str );
+	void reply( std::string const& str );
 	// getters
 
 	int         getFd( void );
 	std::string getCap( void );
 	std::string getNick( void );
 	std::string getUser( void );
+	std::string getModes( void );
 
 	// setters
 
@@ -34,6 +35,7 @@ class Client {
 	void setIsPolled( bool );
 	void setFd( int );
 	void setUser( std::string );
+	void setModes( std::string );
 
 	// state accessors ?
 
@@ -45,6 +47,7 @@ class Client {
 
    private:
 	int         _fd;
+	std::string _modes;
 	std::string _cap;
 	std::string _nick;
 	std::string _user;
@@ -55,6 +58,6 @@ class Client {
 	bool        _isPolled;
 };
 
-//std::map<std::string, Client> users;
+// std::map<std::string, Client> users;
 
 #endif

@@ -40,3 +40,11 @@ void Channel::changeModes( int n_mode ) {
 std::map<std::string, Client>& Channel::getClients( void ) {
 	return _clients;
 }
+
+void Channel::setModes( std::string modes ) {
+	_modes = modes;
+}
+
+std::string Channel::getModes( void ) {
+	return _modes;
+}

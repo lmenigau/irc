@@ -58,12 +58,16 @@ void join( std::list<std::string>* args, Client& c ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
 	}
-	c.reply( format(":royal!foo.example.bar JOIN %s\r\n", args->front().c_str()) );
-	c.reply( format(":ircserv.localhost 353 %s = %s :@%s\r\n", c.getUser().c_str() ,args->front().c_str(), c.getNick().c_str()) );
-	c.reply( format(":ircserv.localhost 366 %s %s :End of NAMES list\r\n", c.getUser().c_str(), args->front().c_str()) );
-	// c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
-	//                 args->front().c_str() ) );
-	// c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
+	c.reply(
+	    format( ":royal!foo.example.bar JOIN %s\r\n", args->front().c_str() ) );
+	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
+	                 c.getUser().c_str(), args->front().c_str(),
+	                 c.getNick().c_str() ) );
+	c.reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
+	                 c.getUser().c_str(), args->front().c_str() ) );
+	c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
+	                 args->front().c_str() ) );
+	c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }
 
 void nick( std::list<std::string>* args, Client& c ) {
@@ -100,12 +104,59 @@ void pong( std::list<std::string>* args, Client& c ) {
 	c.reply( format( "PONG %s\r\n", args->back().c_str() ) );
 }
 
+/*IRC MODS:
+ *
+ * +ioRZBT
+ *
+ * go see documentation on notion !
+ *
+ */
+
+static bool is_valid_user_mode( char mode ) {
+	return ( mode == 'i' || mode == 'o' || mode == 'R' || mode == 'Z' ||
+	         mode == 'B' || mode == 'T' );
+}
+
+static std::string check_user_modes( std::string modes ) {
+	std::string ret;
+	for ( size_t i = 0; i < modes.length(); i++ ) {
+		if ( is_valid_user_mode( modes[i] ) ) {
+			ret += modes[i];
+		}
+	}
+	return ret;
+}
+
 void mode( std::list<std::string>* args, Client& c ) {
 	args->back().erase( args->back().length() - 1, 1 );
-	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
-	        args->back().c_str() );
-	c.reply( format( ":ircserv.localhost 221 %s %s\r\n", c.getUser().c_str(),
-	                 args->back().c_str() ) );
+	std::string modes = check_user_modes( args->back() );
+
+	std::string target = args->front();
+	logger( "DEBUG", "target = %s", target.c_str() );
+	if ( isUser( target ) && target != c.getNick() )
+		return;
+	if ( isUser( target ) && target == c.getNick() ) {
+		if ( modes.empty() ) {
+			c.reply( format( ":ircserv.localhost 501 %s :Unknown MODE flag\r\n",
+			                 c.getUser().c_str() ) );
+			return;
+		}
+		logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
+		        modes.c_str() );
+		c.reply( format( ":ircserv.localhost 221 %s %s\r\n",
+		                 c.getUser().c_str(), modes.c_str() ) );
+	}
+	if ( isChannel( target ) ) {
+		if ( modes.empty() ) {
+			c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
+			                 c.getUser().c_str(), target.c_str() ) );
+			return;
+		}
+		logger( "DEBUG", "channel %s has now mode %s", target.c_str(),
+		        modes.c_str() );
+		c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
+		                 c.getUser().c_str(), target.c_str(), modes.c_str() ) );
+	}
 }
 
 void handler( std::list<std::string>* args, Client& c ) {

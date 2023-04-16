@@ -1,6 +1,8 @@
 #include <cstdarg>
 #include <sstream>
 #include <string>
+#include "client.hpp"
+#include "channel.hpp"
 
 std::string format( std::string format, ... ) {
 	va_list va_args;
@@ -45,4 +47,23 @@ std::string format( std::string format, va_list va_args ) {
 			break;
 	}
 	return ( s );
+}
+
+bool isUser( std::string str ) {
+	return ( str.find( '!' ) != std::string::npos ||
+	         str.find( '@' ) != std::string::npos || std::isalpha( str[0] ) );
+}
+
+bool isChannel( std::string str ) {
+	if ( str[0] == '#' )
+		return ( true );
+	return ( false );
+}
+
+bool hasMode( Client& user, char mode ) {
+	return ( user.getModes().find( mode ) != std::string::npos );
+}
+
+bool hasMode( Channel& user, char mode ) {
+	return ( user.getModes().find( mode ) != std::string::npos );
 }

@@ -2,7 +2,7 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 #include "ircserv.hpp"
-
+#include "utils.hpp"
 
 
 Client::Client() {
@@ -43,9 +43,7 @@ Client::Client( int fd ) {
 	_isPolled         = false;
 }
 
-Client::~Client( void ) {
-	close( _fd );
-}
+Client::~Client( void ) {}
 
 // getters
 
@@ -63,6 +61,10 @@ std::string Client::getNick( void ) {
 
 std::string Client::getUser( void ) {
 	return _user;
+}
+
+std::string Client::getModes( void ) {
+	return _modes;
 }
 // setters
 
@@ -96,6 +98,10 @@ void Client::setFd( int fd ) {
 
 void Client::setUser( std::string user ) {
 	_user = user;
+}
+
+void Client::setModes( std::string modes ) {
+	_modes = modes;
 }
 
 // state accessorts ?
