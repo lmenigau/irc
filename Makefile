@@ -12,7 +12,8 @@ SRC = channel.cpp\
 		ostream.cpp\
 		parsing.cpp\
 		user.cpp \
-		utils.cpp
+		utils.cpp \
+		whois.cpp
 OBJ = $(addprefix arte/, $(SRC:.cpp=.o))
 NAME = ircserv
 

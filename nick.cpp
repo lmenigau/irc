@@ -25,36 +25,30 @@ static bool  authorize_setting_name(const std::string &name)
 void nick( std::list<std::string> *args, Client &c)
 {
   std::string  buff;
-
-	if ( args->empty() || args->front() == "") {
+  
+  for (std::list <std::string>::iterator it = args->begin(); it != args->end(); it++)
+  {
+    std::cout << "sent :" << *it << std::endl;
+  }
+  if ( args->empty() || args->front() == "") {
 		c.reply( format( ":ircserv.localhost 431 *  NICK: Not enough parameters\r\n" ));
-	} 
+  } 
   else if (!authorize_setting_name(args->front())) {
     c.reply( format( ":ircserv.localhost 433 * %s: Nickname is already in use\r\n",
       args->front().c_str()));
   }
-  else if (c.hasGivenNick()){
+  else if (c.hasGivenNick()) {
     buff = c.getNick();
     c.setNick(args->front());
     c.reply(format ("%s!~%s@%s NICK %s\r\n", buff.c_str(),
       c.getUser().c_str(), c.getHostname().c_str(), c.getNick().c_str()));
 		logger( "INFO", "User %s nickname change to %s.",
         c.getUser().c_str(), c.getNick().c_str());
-
   }
-  else if (c.hasGivenUser()){
-    c.setNick(args->front());
-    c.setHasGivenNick(true);
-    c.reply(
-	  format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
-	          "version 0.0.1dev\r\n",
-	          c.getNick().c_str() ) );
-	  c.reply( format(
-	      ":ircserv.localhost 003 %s :This server was created idk like now ?\r\n",
-	      c.getNick().c_str() ) );
-	  c.reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
-	                   c.getNick().c_str() ) );
-		logger( "INFO", "New user %s nickname %s set, Connexion etablished !",
-        c.getUser().c_str(), c.getNick().c_str());
-  }
+  
+  c.setNick(args->front());
+  c.setHasGivenNick(true);
+  c.reply (format (":ircserv.localhost 001 %s : Welcome to ft_irc %s\r\n", c.getNick().c_str(), c.getNick().c_str()));
+      logger( "INFO", "New user %s nickname %s set, Connexion etablished !",
+  c.getUser().c_str(), c.getNick().c_str());
 }
