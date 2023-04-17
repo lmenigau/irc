@@ -57,7 +57,6 @@ void ircserv::accept_client( epoll_event& ev ) {
 		epoll_event event  = { EPOLLIN, { .ptr = new_cli } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 		new_cli->buf.reserve( 512 );
-		logger( "INFO", "accept error" );
 	} else
 		logger( "ERROR", "accept error" );
 }

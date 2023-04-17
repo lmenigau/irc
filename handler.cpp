@@ -6,10 +6,11 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-#define COMMAND_COUNT 9
+#define COMMAND_COUNT 10
 
 void nick( std::list<std::string>* args, Client &c);
 void user( std::list<std::string>* args, Client& c );
+void whois( std::list <std::string> *args, Client &c);
 
 void pass( std::list<std::string>* args, Client& c ) {
 	(void) args;
@@ -65,9 +66,9 @@ std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
 
 void pong( std::list<std::string>* args, Client& c ) {
 	(void) args;
-	//args->front().erase( args->back().length() - 1, 1 );
-	//logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
-	     //   args->back().c_str()m );
+	args->front().erase( args->back().length() - 1, 1 );
+	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
+	        args->back().c_str());
 	c.reply( format( "PONG\r\n") );
 }
 
@@ -82,11 +83,15 @@ void mode( std::list<std::string>* args, Client& c ) {
 }
 
 void handler( std::list<std::string>* args, Client& c ) {
+	
+	std::cout << "Command sent :: " << args->front() << std::endl;
 	std::string commands[COMMAND_COUNT] = { "PASS", "USER",    "NICK",
 	                                        "JOIN", "PRIVMSG", "CAPLS",
-	                                        "CAP",  "PING",    "MODE" };
+	                                        "CAP",  "PING",    "MODE",
+	                                        "WHOIS" };
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
-	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong, &mode };
+	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong,
+	    &mode, &whois };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 	//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {

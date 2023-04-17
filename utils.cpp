@@ -1,6 +1,16 @@
 #include <cstdarg>
 #include <sstream>
 #include <string>
+#include "utils.hpp"
+
+std::string trim(const std::string &s)
+{
+	std::string	res;
+
+	res = s;
+	std::remove(res.begin(), res.end(), ' ');
+	return (res);
+}
 
 std::string format( std::string format, ... ) {
 	va_list va_args;
