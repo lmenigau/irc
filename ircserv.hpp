@@ -6,7 +6,7 @@
 /*   By: ccambium <ccambium@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 06:34:50 by ccambium          #+#    #+#             */
-/*   Updated: 2023/04/13 22:45:47 by ccambium         ###   ########.fr       */
+/*   Updated: 2023/04/17 11:07:00 by ccambium         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class ircserv {
 	static int                            _port;
 	static bool                           _failed;
 	static std::string                    _password;
-	static Client                         _clients[1024];
+	static std::vector<Client>            _clients;
 	static std::map<std::string, Channel> _channels;
 	static int                            _pollfd;
 	static int                            _tcp6_socket;

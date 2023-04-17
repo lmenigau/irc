@@ -13,12 +13,12 @@
 
 #define MAX_PORT 65535
 
-int                            ircserv::_port   = 0;
-bool                           ircserv::_failed = false;
-std::string                    ircserv::_password;
-Client                         ircserv::_clients[1024];
-int                            ircserv::_pollfd;
-int                            ircserv::_tcp6_socket;
+int                 ircserv::_port   = 0;
+bool                ircserv::_failed = false;
+std::string         ircserv::_password;
+std::vector<Client> ircserv::_clients = std::vector<Client>( 1024 );
+int                 ircserv::_pollfd;
+int                 ircserv::_tcp6_socket;
 std::map<std::string, Channel> ircserv::_channels;
 
 void ircserv::initialisation( char* pass, char* port ) {
@@ -64,13 +64,13 @@ void ircserv::accept_client( epoll_event& ev ) {
 void ircserv::process_events( epoll_event& ev ) {
 	// std::cout << ev;
 	char    buf[512];
-	Client	*c;
+	Client* c;
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
 			accept_client( ev );
 		} else {
-			c = reinterpret_cast<Client *> (ev.data.ptr);
+			c   = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
 			if ( len == 0 ) {
 				close( c->getFd() );
@@ -82,14 +82,14 @@ void ircserv::process_events( epoll_event& ev ) {
 				size_t pos = c->buf.find( "\n" );
 				if ( pos == std::string::npos )
 					break;
-				logger("DEBUG", "buf : %s", c->buf.c_str());
+				logger( "DEBUG", "buf : %s", c->buf.c_str() );
 				std::list<std::string>* args = parse( c->buf.substr( 0, pos ) );
 				handler( args, *c );
 				c->buf.erase( 0, pos + 1 );
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
-		c = reinterpret_cast<Client *> (ev.data.ptr);
+		c   = reinterpret_cast<Client*>( ev.data.ptr );
 		len = c->out.copy( buf, 512 );
 		len = write( c->getFd(), buf, len );
 		c->out.erase( 0, len );
@@ -143,7 +143,7 @@ std::map<std::string, Channel>& ircserv::getChannels( void ) {
 	return _channels;
 }
 
-void ircserv::addChannel( std::string &name, Client &client ) {
+void ircserv::addChannel( std::string& name, Client& client ) {
 	if ( _channels.find( name ) != _channels.end() )
 		return;
 	_channels.insert( std::make_pair( name, Channel( client, name ) ) );
