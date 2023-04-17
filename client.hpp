@@ -56,7 +56,6 @@ class Client {
 	bool        _hasGivenNick;
 	bool        _hasGivenUser;
 	bool        _hasGivenPassword;
-	bool        _isRegistered;
 	bool        _isPolled;
 };
 
