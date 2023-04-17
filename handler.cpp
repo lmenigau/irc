@@ -126,7 +126,7 @@ static std::string check_user_modes( std::string modes ) {
 		ret += '-';
 	else
 		return ( ret );
-	for ( size_t i = 0; i < modes.length(); i++ ) {
+	for ( size_t i = 1; i < modes.length(); i++ ) {
 		if ( is_valid_user_mode( modes[i] ) ) {
 			ret += modes[i];
 		}
@@ -177,7 +177,7 @@ void mode( std::list<std::string>* args, Client& c ) {
 	args->back().erase( args->back().length() - 1, 1 );
 	std::string modes     = check_user_modes( args->back() );
 	char        operation = modes[0];
-	modes.erase( 0 );
+	modes.erase( 0, 1 );
 	std::string target = args->front();
 	logger( "DEBUG", "target = %s", target.c_str() );
 	if ( isUser( target ) && target != c.getNick() )
