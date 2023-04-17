@@ -134,6 +134,45 @@ static std::string check_user_modes( std::string modes ) {
 	return ret;
 }
 
+void user_mode( std::list<std::string>* args,
+                Client&                 c,
+                std::string             target,
+                std::string             modes,
+                char                    operation ) {
+	if ( modes.empty() ) {
+		c.reply( format( ":ircserv.localhost 501 %s :Unknown MODE flag\r\n",
+		                 c.getNick().c_str() ) );
+		return;
+	}
+	if ( target != c.getNick() ) {
+		c.reply( ":ircserv.localhost 502 :Cant change mode for other users" );
+		return;
+	}
+	if ( operation == '+' )
+		modes = c.addModes( modes );
+	else if ( operation == '-' )
+		modes = c.removeModes( modes );
+	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
+	        modes.c_str() );
+	c.reply( format( ":ircserv.localhost 221 %s %s\r\n", c.getUser().c_str(),
+	                 modes.c_str() ) );
+}
+
+void channel_mode( std::list<std::string>* args,
+                   Client                  c,
+                   std::string             target,
+                   std::string             modes,
+                   char                    operation ) {
+	if ( modes.empty() ) {
+		c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
+		                 c.getUser().c_str(), target.c_str() ) );
+		return;
+	}
+	logger( "DEBUG", "channel %s has now mode %s", target.c_str(),
+	        modes.c_str() );
+	c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
+	                 c.getUser().c_str(), target.c_str(), modes.c_str() ) );
+}
 void mode( std::list<std::string>* args, Client& c ) {
 	args->back().erase( args->back().length() - 1, 1 );
 	std::string modes     = check_user_modes( args->back() );
@@ -144,30 +183,10 @@ void mode( std::list<std::string>* args, Client& c ) {
 	if ( isUser( target ) && target != c.getNick() )
 		return;
 	if ( isUser( target ) && target == c.getNick() ) {
-		if ( modes.empty() ) {
-			c.reply( format( ":ircserv.localhost 501 %s :Unknown MODE flag\r\n",
-			                 c.getNick().c_str() ) );
-			return;
-		}
-		if ( operation == '+' )
-			modes = c.addModes( modes );
-		else if ( operation == '-' )
-			modes = c.removeModes( modes );
-		logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
-		        modes.c_str() );
-		c.reply( format( ":ircserv.localhost 221 %s %s\r\n",
-		                 c.getUser().c_str(), modes.c_str() ) );
+		user_mode( args, c, target, modes, operation );
 	}
 	if ( isChannel( target ) ) {
-		if ( modes.empty() ) {
-			c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
-			                 c.getUser().c_str(), target.c_str() ) );
-			return;
-		}
-		logger( "DEBUG", "channel %s has now mode %s", target.c_str(),
-		        modes.c_str() );
-		c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
-		                 c.getUser().c_str(), target.c_str(), modes.c_str() ) );
+		channel_mode( args, c, target, modes, operation );
 	}
 }
 
