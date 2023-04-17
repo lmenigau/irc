@@ -127,7 +127,7 @@ std::string Client::addModes( std::string modes ) {
 	for ( size_t i = 0; i < modes.size(); i++ ) {
 		if ( _modes.find( modes[i] ) != std::string::npos )
 			continue;
-		_modes.insert( modes.end(), modes[i] );
+		_modes.append( 1, modes[i] );
 	}
 	return ( _modes );
 }
