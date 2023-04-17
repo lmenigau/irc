@@ -45,6 +45,7 @@ Client::Client( int fd ) {
 }
 
 Client::~Client( void ) {
+	std::cout << "destructor called" << std::endl;
 	close( _fd );
 }
 

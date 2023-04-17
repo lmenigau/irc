@@ -32,7 +32,7 @@ void privmsg( std::list<std::string>* args, Client& c ) {
 void join( std::list<std::string>* args, Client& c ) {
 	std::map<std::string, Channel>           channels = ircserv::getChannels();
 	std::map<std::string, Channel>::iterator it;
-	args->front().erase( args->front().length() - 1, 1 );
+	///args->front().erase( args->front().length() - 1, 1 );
 	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
