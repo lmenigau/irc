@@ -27,15 +27,17 @@ class Client {
 
 	// setters
 
-	void setCap( std::string );
-	void setNick( std::string );
-	void setHasGivenPassword( bool );
-	void setHasGivenUser( bool );
-	void setHasGivenNick( bool );
-	void setIsPolled( bool );
-	void setFd( int );
-	void setUser( std::string );
-	void setModes( std::string );
+	void        setCap( std::string );
+	void        setNick( std::string );
+	void        setHasGivenPassword( bool );
+	void        setHasGivenUser( bool );
+	void        setHasGivenNick( bool );
+	void        setIsPolled( bool );
+	void        setFd( int );
+	void        setUser( std::string );
+	void        setModes( std::string );
+	std::string addModes( std::string );
+	std::string removeModes( std::string );
 
 	// state accessors ?
 

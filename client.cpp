@@ -4,7 +4,6 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-
 Client::Client() {
 	_fd               = -1;
 	start             = 0;
@@ -16,11 +15,10 @@ Client::Client() {
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
-	_isRegistered     = false;
 	_isPolled         = false;
 }
 
-void Client::reply( std::string const &str ) {
+void Client::reply( std::string const& str ) {
 	if ( !_isPolled ) {
 		epoll_event event = { EPOLLOUT | EPOLLIN, { .ptr = this } };
 		epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_MOD, _fd, &event );
@@ -39,7 +37,6 @@ Client::Client( int fd ) {
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
-	_isRegistered     = false;
 	_isPolled         = false;
 }
 
@@ -124,4 +121,24 @@ bool Client::hasGivenPassword( void ) {
 
 bool Client::isRegistered( void ) {
 	return ( _hasGivenNick && _hasGivenUser && _hasGivenPassword );
+}
+
+std::string Client::addModes( std::string modes ) {
+	for ( size_t i = 0; i < modes.size(); i++ ) {
+		if ( _modes.find( modes[i] ) != std::string::npos )
+			continue;
+		_modes.insert( modes.end(), modes[i] );
+	}
+	return ( _modes );
+}
+
+std::string Client::removeModes( std::string modes ) {
+	size_t it;
+
+	for ( size_t i = 0; i < modes.size(); i++ ) {
+		if ( ( it = _modes.find( modes[i] ) ) == std::string::npos )
+			continue;
+		_modes.erase( it );
+	}
+	return ( _modes );
 }

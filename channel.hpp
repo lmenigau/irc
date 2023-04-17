@@ -23,6 +23,9 @@ class Channel {
 	void removeClient( Client );
 	void changeModes( int );
 
+	std::string addModes( std::string );
+	std::string removeModes( std::string );
+
 	std::string getModes( void );
 
 	void                           setModes( std::string );
