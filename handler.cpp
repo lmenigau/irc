@@ -9,7 +9,6 @@
 #define COMMAND_COUNT 9
 
 void pass( std::list<std::string>* args, Client& c ) {
-	(void) args;
 	logger( "DEBUG", "PASS COMMAND" );
 	args->front().erase( args->front().length() - 1, 1 );
 	if ( args->front().compare( ircserv::getPassword() ) != 0 ) {
@@ -22,7 +21,12 @@ void pass( std::list<std::string>* args, Client& c ) {
 }
 
 void user( std::list<std::string>* args, Client& c ) {
-	(void) args;
+	if ( !c.hasGivenPassword() ) {
+		c.reply( ":ircserv.localhost 464 :Password Incorrect" );
+		logger( "WARNING", "client %d did not give password !", c.getFd() );
+		close( c.getFd() );
+		return;
+	}
 	logger( "INFO", "client %d has username %s", c.getFd(),
 	        args->front().c_str() );
 	c.setHasGivenUser( true );
@@ -71,7 +75,12 @@ void join( std::list<std::string>* args, Client& c ) {
 }
 
 void nick( std::list<std::string>* args, Client& c ) {
-	(void) args;
+	if ( !c.hasGivenPassword() ) {
+		c.reply( ":ircserv.localhost 464 :Password Incorrect" );
+		logger( "WARNING", "client %d did not give password !", c.getFd() );
+		close( c.getFd() );
+		return;
+	}
 	args->front().erase( args->front().length() - 1, 1 );
 	if ( args->empty() ) {
 		c.reply( "431\r\n" );
