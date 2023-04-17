@@ -9,19 +9,19 @@ Channel::~Channel( void ) {}
 
 Channel::Channel( std::string name ) : _name( name ) {}
 
-Channel::Channel( Client& creator, const std::string& name )
-    : _name( name ), _admin( creator ) {
-	_clients.insert( std::make_pair( creator.getUser(), creator ) );
+Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
+	_ops.push_back( &creator );
+	_clients.insert( std::make_pair( creator.getUser(), &creator ) );
 }
 
-void Channel::addClient( Client client ) {
-	_clients.insert( std::make_pair( client.getUser(), client ) );
+void Channel::addClient( Client& client ) {
+	_clients.insert( std::make_pair( client.getUser(), &client ) );
 }
 
-void Channel::removeClient( Client rclient ) {
-	std::map<std::string, Client>::iterator it = _clients.begin();
+void Channel::removeClient( Client& rclient ) {
+	std::map<std::string, Client*>::iterator it = _clients.begin();
 	while ( it != _clients.end() ) {
-		if ( !it->second.getUser().compare( rclient.getUser() ) ) {
+		if ( !it->second->getUser().compare( rclient.getUser() ) ) {
 			_clients.erase( it );
 			return;
 		}
@@ -37,7 +37,7 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
-std::map<std::string, Client>& Channel::getClients( void ) {
+std::map<std::string, Client*>& Channel::getClients( void ) {
 	return _clients;
 }
 
