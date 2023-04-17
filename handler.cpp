@@ -172,6 +172,11 @@ void mode( std::list<std::string>* args, Client& c ) {
 }
 
 void handler( std::list<std::string>* args, Client& c ) {
+	if ( args->size() == 1 ) {
+		c.reply( format( ":ircserv.localhost 461 %s :Not enough parameters",
+		                 args->front().c_str() ) );
+		return;
+	}
 	std::string commands[COMMAND_COUNT] = { "PASS", "USER",    "NICK",
 	                                        "JOIN", "PRIVMSG", "CAPLS",
 	                                        "CAP",  "PING",    "MODE" };
