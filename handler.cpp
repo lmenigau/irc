@@ -119,6 +119,13 @@ static bool is_valid_user_mode( char mode ) {
 
 static std::string check_user_modes( std::string modes ) {
 	std::string ret;
+
+	if ( modes[0] == '+' )
+		ret += '+';
+	else if ( modes[0] == '-' )
+		ret += '-';
+	else
+		return ( ret );
 	for ( size_t i = 0; i < modes.length(); i++ ) {
 		if ( is_valid_user_mode( modes[i] ) ) {
 			ret += modes[i];
@@ -129,8 +136,9 @@ static std::string check_user_modes( std::string modes ) {
 
 void mode( std::list<std::string>* args, Client& c ) {
 	args->back().erase( args->back().length() - 1, 1 );
-	std::string modes = check_user_modes( args->back() );
-
+	std::string modes     = check_user_modes( args->back() );
+	char        operation = modes[0];
+	modes.erase( 0 );
 	std::string target = args->front();
 	logger( "DEBUG", "target = %s", target.c_str() );
 	if ( isUser( target ) && target != c.getNick() )
@@ -138,9 +146,13 @@ void mode( std::list<std::string>* args, Client& c ) {
 	if ( isUser( target ) && target == c.getNick() ) {
 		if ( modes.empty() ) {
 			c.reply( format( ":ircserv.localhost 501 %s :Unknown MODE flag\r\n",
-			                 c.getUser().c_str() ) );
+			                 c.getNick().c_str() ) );
 			return;
 		}
+		if ( operation == '+' )
+			modes = c.addModes( modes );
+		else if ( operation == '-' )
+			modes = c.removeModes( modes );
 		logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 		        modes.c_str() );
 		c.reply( format( ":ircserv.localhost 221 %s %s\r\n",
@@ -163,7 +175,7 @@ void handler( std::list<std::string>* args, Client& c ) {
 	std::string commands[COMMAND_COUNT] = { "PASS", "USER",    "NICK",
 	                                        "JOIN", "PRIVMSG", "CAPLS",
 	                                        "CAP",  "PING",    "MODE" };
-	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
+	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client& c ) = {
 	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong, &mode };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		if ( !args->front().compare( commands[i] ) ) {
