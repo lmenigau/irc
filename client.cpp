@@ -14,6 +14,8 @@ Client::Client() {
 	out               = "";
 	_cap              = "";
 	_nick             = "";
+	_hostname		  = "";
+	_realuser		  = "";
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
@@ -37,6 +39,8 @@ Client::Client( int fd ) {
 	out               = "";
 	_cap              = "";
 	_nick             = "";
+	_hostname		  = "";
+	_realuser		  = "";
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
