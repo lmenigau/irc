@@ -1,7 +1,15 @@
 #include <cstdarg>
 #include <sstream>
 #include <string>
+#include <iostream>
 #include "utils.hpp"
+
+void remove_backslash_r(std::string &c)
+{
+	int idx= c.find("\r");
+	if (idx != (int) std::string::npos)
+		c.erase(c.begin() + idx);
+}
 
 std::string trim(const std::string &s)
 {

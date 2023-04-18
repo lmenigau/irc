@@ -35,7 +35,7 @@ void ircserv::initialisation( char* pass, char* port ) {
 }
 
 bool ircserv::failed( void ) {
-	return _failed;
+	return _failed;     
 }
 
 void ircserv::accept_client( epoll_event& ev ) {

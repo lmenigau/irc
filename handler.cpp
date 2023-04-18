@@ -8,6 +8,7 @@
 
 #define COMMAND_COUNT 10
 
+void privmsg( std::list<std::string>* args, Client &c);
 void nick( std::list<std::string>* args, Client &c);
 void user( std::list<std::string>* args, Client& c );
 void whois( std::list <std::string> *args, Client &c);
@@ -23,11 +24,6 @@ void pass( std::list<std::string>* args, Client& c ) {
 		return;
 	}
 	c.setHasGivenPassword( true );
-}
-
-void privmsg( std::list<std::string>* args, Client& c ) {
-	(void) args;
-	logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
 }
 
 void join( std::list<std::string>* args, Client& c ) {
@@ -96,6 +92,7 @@ void handler( std::list<std::string>* args, Client& c ) {
 	//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
+			remove_backslash_r(args->back());
 			handlers[i]( args, c );
 			return;
 		}

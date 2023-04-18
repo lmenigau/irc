@@ -11,6 +11,7 @@ SRC = channel.cpp\
 		nick.cpp \
 		ostream.cpp\
 		parsing.cpp\
+		privmsg.cpp \
 		user.cpp \
 		utils.cpp \
 		whois.cpp

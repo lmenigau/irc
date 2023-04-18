@@ -45,7 +45,6 @@ void nick( std::list<std::string> *args, Client &c)
 		logger( "INFO", "User %s nickname change to %s.",
         c.getUser().c_str(), c.getNick().c_str());
   }
-  
   c.setNick(args->front());
   c.setHasGivenNick(true);
   c.reply (format (":ircserv.localhost 001 %s : Welcome to ft_irc %s\r\n", c.getNick().c_str(), c.getNick().c_str()));
