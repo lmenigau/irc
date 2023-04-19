@@ -63,7 +63,8 @@ void join( std::list<std::string>* args, Client& c ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
 	}
-	it->second.addClient( c );
+	else 
+		it->second.addClient( c );
 	c.reply( format( ":%s!foo.example.bar JOIN %s\r\n", c.getNick().c_str(),
 	                 args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
