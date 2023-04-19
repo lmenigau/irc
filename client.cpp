@@ -1,5 +1,6 @@
 #include "client.hpp"
 #include <sys/epoll.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include "ircserv.hpp"
 #include "utils.hpp"
@@ -12,6 +13,8 @@ Client::Client() {
 	out               = "";
 	_cap              = "";
 	_nick             = "";
+	_hostname         = "";
+	_realuser         = "";
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
@@ -34,13 +37,34 @@ Client::Client( int fd ) {
 	out               = "";
 	_cap              = "";
 	_nick             = "";
+	_hostname         = "";
+	_realuser         = "";
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
 	_isPolled         = false;
 }
 
-Client::~Client( void ) {}
+Client::Client( int fd, sockaddr_in6 &addr){
+	setHostname(addr);
+	_fd               = fd;
+	start             = 0;
+	end               = 0;
+	buf               = "";
+	out               = "";
+	_cap              = "";
+	_nick             = "";
+	_realuser         = "";
+	_hasGivenNick     = false;
+	_hasGivenUser     = false;
+	_hasGivenPassword = false;
+	_isPolled         = false;
+}
+
+Client::~Client( void ) {
+	std::cout << "destructor client called" << std::endl;
+	close( _fd );
+}
 
 // getters
 
@@ -62,6 +86,14 @@ std::string Client::getUser( void ) {
 
 std::string Client::getModes( void ) {
 	return _modes;
+}
+
+std::string Client::getRealUser( void ) {
+	return _realuser;
+}
+
+std::string Client::getHostname( void ) {
+	return _hostname;
 }
 // setters
 
@@ -93,12 +125,29 @@ void Client::setFd( int fd ) {
 	_fd = fd;
 }
 
+void Client::setHostname( sockaddr_in6& addr ) {
+	char str_addr[256];
+	char hostname[256];
+
+	_hostname = "";
+	if ( !inet_ntop( AF_INET6, &addr.sin6_addr, str_addr, 256 ) )
+		return ( perror( "ircserv" ) );
+	if ( getnameinfo( (struct sockaddr*) &addr, sizeof( addr ), hostname, 256,
+	                  NULL, 0, 0 ) != 0 )
+		return ( perror( "ircserv" ) );
+	_hostname = hostname;
+}
+
 void Client::setUser( std::string user ) {
 	_user = user;
 }
 
 void Client::setModes( std::string modes ) {
 	_modes = modes;
+}
+
+void Client::setRealUser( std::string realuser ) {
+	_realuser = realuser;
 }
 
 // state accessorts ?

@@ -2,6 +2,8 @@
 #define CLIENT_HPP
 #include <map>
 #include <string>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 class Client {
    public:
@@ -11,6 +13,7 @@ class Client {
 	std::string out;
 
 	Client( int );
+	Client( int fd, sockaddr_in6 &addr);
 	~Client( void );
 	Client( void );
 
@@ -23,6 +26,8 @@ class Client {
 	std::string getCap( void );
 	std::string getNick( void );
 	std::string getUser( void );
+	std::string getRealUser( void );
+	std::string getHostname( void );
 	std::string getModes( void );
 
 	// setters
@@ -36,8 +41,13 @@ class Client {
 	void        setFd( int );
 	void        setUser( std::string );
 	void        setModes( std::string );
+	void 		setRealUser( std::string );
+	void 		setHostname( struct sockaddr_in6& addr );
+	
 	std::string addModes( std::string );
 	std::string removeModes( std::string );
+
+	// setters
 
 	// state accessors ?
 
@@ -53,6 +63,8 @@ class Client {
 	std::string _cap;
 	std::string _nick;
 	std::string _user;
+	std::string _realuser;
+	std::string _hostname;
 	bool        _hasGivenNick;
 	bool        _hasGivenUser;
 	bool        _hasGivenPassword;
