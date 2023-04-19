@@ -13,10 +13,10 @@
 #ifndef IRCSERV_HPP
 #define IRCSERV_HPP
 
+#include <arpa/inet.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>
 #include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
@@ -47,11 +47,11 @@ class ircserv {
 	static bool failed( void );
 
 	static int                             getPollfd( void );
-	static std::vector<Client *>                  _clients;
+	static std::vector<Client*>            _clients;
 	static std::string                     getPassword( void );
 	static std::map<std::string, Channel>& getChannels( void );
 
-	static void addChannel( std::string &, Client &);
+	static void addChannel( std::string&, Client& );
 	static void removeChannel( std::string );
 };
 

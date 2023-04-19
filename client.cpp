@@ -1,10 +1,8 @@
 #include "client.hpp"
 #include <sys/epoll.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include "ircserv.hpp"
-#include <sys/socket.h>
-
-
 
 Client::Client() {
 	_fd               = -1;
@@ -14,8 +12,8 @@ Client::Client() {
 	out               = "";
 	_cap              = "";
 	_nick             = "";
-	_hostname		  = "";
-	_realuser		  = "";
+	_hostname         = "";
+	_realuser         = "";
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
@@ -23,7 +21,7 @@ Client::Client() {
 	_isPolled         = false;
 }
 
-void Client::reply( std::string const &str ) {
+void Client::reply( std::string const& str ) {
 	if ( !_isPolled ) {
 		epoll_event event = { EPOLLOUT | EPOLLIN, { .ptr = this } };
 		epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_MOD, _fd, &event );
@@ -39,8 +37,8 @@ Client::Client( int fd ) {
 	out               = "";
 	_cap              = "";
 	_nick             = "";
-	_hostname		  = "";
-	_realuser		  = "";
+	_hostname         = "";
+	_realuser         = "";
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
@@ -108,16 +106,16 @@ void Client::setFd( int fd ) {
 	_fd = fd;
 }
 
-void Client::setHostname( sockaddr_in6 &addr) {
-	char	str_addr[256];
-	char	hostname[256];
+void Client::setHostname( sockaddr_in6& addr ) {
+	char str_addr[256];
+	char hostname[256];
 
 	_hostname = "";
-	if (!inet_ntop(AF_INET6, &addr.sin6_addr, str_addr, 256))
-		return (perror("ircserv"));
-	if (getnameinfo((struct sockaddr *) &addr, sizeof(addr),
-			hostname, 256, NULL, 0, 0) != 0)
-		return (perror("ircserv"));
+	if ( !inet_ntop( AF_INET6, &addr.sin6_addr, str_addr, 256 ) )
+		return ( perror( "ircserv" ) );
+	if ( getnameinfo( (struct sockaddr*) &addr, sizeof( addr ), hostname, 256,
+	                  NULL, 0, 0 ) != 0 )
+		return ( perror( "ircserv" ) );
 	_hostname = hostname;
 }
 

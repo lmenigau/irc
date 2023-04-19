@@ -8,11 +8,11 @@
 
 #define COMMAND_COUNT 11
 
-void privmsg( std::list<std::string>* args, Client &c);
-void nick( std::list<std::string>* args, Client &c);
+void privmsg( std::list<std::string>* args, Client& c );
+void nick( std::list<std::string>* args, Client& c );
 void user( std::list<std::string>* args, Client& c );
-void whois( std::list <std::string> *args, Client &c);
-void quit(std::list<std::string> * args, Client &c);
+void whois( std::list<std::string>* args, Client& c );
+void quit( std::list<std::string>* args, Client& c );
 
 void pass( std::list<std::string>* args, Client& c ) {
 	(void) args;
@@ -30,7 +30,7 @@ void pass( std::list<std::string>* args, Client& c ) {
 void join( std::list<std::string>* args, Client& c ) {
 	std::map<std::string, Channel>           channels = ircserv::getChannels();
 	std::map<std::string, Channel>::iterator it;
-	///args->front().erase( args->front().length() - 1, 1 );
+	/// args->front().erase( args->front().length() - 1, 1 );
 	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
@@ -65,13 +65,13 @@ void pong( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	args->front().erase( args->back().length() - 1, 1 );
 	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
-	        args->back().c_str());
-	c.reply( format( "PONG\r\n") );
+	        args->back().c_str() );
+	c.reply( format( "PONG\r\n" ) );
 }
 
 void mode( std::list<std::string>* args, Client& c ) {
-	if (args->empty())
-		return ;
+	if ( args->empty() )
+		return;
 	args->back().erase( args->back().length() - 1, 1 );
 	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 	        args->back().c_str() );
@@ -80,20 +80,18 @@ void mode( std::list<std::string>* args, Client& c ) {
 }
 
 void handler( std::list<std::string>* args, Client& c ) {
-	
 	std::cout << "Command sent :: " << args->front() << std::endl;
-	std::string commands[COMMAND_COUNT] = { "PASS", "USER",    "NICK",
-	                                        "JOIN", "PRIVMSG", "CAPLS",
-	                                        "CAP",  "PING",    "MODE",
-	                                        "WHOIS", "QUIT" };
+	std::string commands[COMMAND_COUNT] = { "PASS",    "USER",  "NICK", "JOIN",
+	                                        "PRIVMSG", "CAPLS", "CAP",  "PING",
+	                                        "MODE",    "WHOIS", "QUIT" };
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
-	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong,
-	    &mode, &whois, &quit };
+	    &pass,  &user, &nick, &join,  &privmsg, &capls,
+	    &capls, &pong, &mode, &whois, &quit };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
-	//	std::cout << args->front() << std::endl;
+		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
-			remove_backslash_r(args->back());
+			remove_backslash_r( args->back() );
 			handlers[i]( args, c );
 			return;
 		}

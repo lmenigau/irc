@@ -1,23 +1,21 @@
+#include "utils.hpp"
 #include <cstdarg>
+#include <iostream>
 #include <sstream>
 #include <string>
-#include <iostream>
-#include "utils.hpp"
 
-void remove_backslash_r(std::string &c)
-{
-	int idx= c.find("\r");
-	if (idx != (int) std::string::npos)
-		c.erase(c.begin() + idx);
+void remove_backslash_r( std::string& c ) {
+	int idx = c.find( "\r" );
+	if ( idx != (int) std::string::npos )
+		c.erase( c.begin() + idx );
 }
 
-std::string trim(const std::string &s)
-{
-	std::string	res;
+std::string trim( const std::string& s ) {
+	std::string res;
 
 	res = s;
-	std::remove(res.begin(), res.end(), ' ');
-	return (res);
+	std::remove( res.begin(), res.end(), ' ' );
+	return ( res );
 }
 
 std::string format( std::string format, ... ) {

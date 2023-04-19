@@ -1,21 +1,21 @@
 #include "channel.hpp"
-#include "utils.hpp"
 #include "client.hpp"
+#include "utils.hpp"
 
 std::map<std::string, Client> _clients;
 
-Channel::Channel( void ){}
-Channel::~Channel( void ){}
+Channel::Channel( void ) {}
+Channel::~Channel( void ) {}
 
-Channel::Channel( std::string name ) : _name( name ){}
+Channel::Channel( std::string name ) : _name( name ) {}
 
-Channel::Channel(Client &creator, const std::string &name) : _name(name), _admin(creator)
-{
-	_clients.insert(std::make_pair(creator.getUser(), creator));
+Channel::Channel( Client& creator, const std::string& name )
+    : _name( name ), _admin( creator ) {
+	_clients.insert( std::make_pair( creator.getUser(), creator ) );
 }
 
 void Channel::addClient( Client client ) {
-	_clients.insert( std::make_pair(client.getUser(), client ));
+	_clients.insert( std::make_pair( client.getUser(), client ) );
 }
 
 void Channel::removeClient( Client rclient ) {

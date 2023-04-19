@@ -16,15 +16,15 @@ class Client {
 
 	// methods
 
-	void reply( std::string const &str );
+	void reply( std::string const& str );
 	// getters
 
 	int         getFd( void );
 	std::string getCap( void );
 	std::string getNick( void );
 	std::string getUser( void );
-	std::string getRealUser(void);
-  	std::string getHostname( void );
+	std::string getRealUser( void );
+	std::string getHostname( void );
 
 	// setters
 
@@ -37,7 +37,7 @@ class Client {
 	void setFd( int );
 	void setUser( std::string );
 	void setRealUser( std::string );
-  void setHostname( struct sockaddr_in6 &addr );
+	void setHostname( struct sockaddr_in6& addr );
 
 	// state accessors ?
 
@@ -53,7 +53,7 @@ class Client {
 	std::string _nick;
 	std::string _user;
 	std::string _realuser;
-  std::string _hostname;
+	std::string _hostname;
 	bool        _hasGivenNick;
 	bool        _hasGivenUser;
 	bool        _hasGivenPassword;
@@ -61,6 +61,6 @@ class Client {
 	bool        _isPolled;
 };
 
-//std::map<std::string, Client> users;
+// std::map<std::string, Client> users;
 
 #endif

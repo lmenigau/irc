@@ -1,5 +1,5 @@
-#include "handler.hpp"
 #include "ircserv.hpp"
+#include "handler.hpp"
 #include "ostream.hpp"
 #include "parsing.hpp"
 #include "utils.hpp"
@@ -9,7 +9,7 @@
 int                            ircserv::_port   = 0;
 bool                           ircserv::_failed = false;
 std::string                    ircserv::_password;
-std::vector<Client *>            ircserv::_clients;
+std::vector<Client*>           ircserv::_clients;
 int                            ircserv::_pollfd;
 int                            ircserv::_tcp6_socket;
 std::map<std::string, Channel> ircserv::_channels;
@@ -35,26 +35,26 @@ void ircserv::initialisation( char* pass, char* port ) {
 }
 
 bool ircserv::failed( void ) {
-	return _failed;     
+	return _failed;
 }
 
 void ircserv::accept_client( epoll_event& ev ) {
-	Client	*new_cli;
+	Client*      new_cli;
 	sockaddr_in6 addr;
-	socklen_t	len;
-	memset(&addr, 0, sizeof(addr));
-	len = sizeof(addr);
+	socklen_t    len;
+	memset( &addr, 0, sizeof( addr ) );
+	len = sizeof( addr );
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
 	new_cli = new Client();
-	int fd = accept( _tcp6_socket, (sockaddr *) &addr, &len);
+	int fd  = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
 		new_cli->setFd( fd );
 		new_cli->setHostname( addr );
 		new_cli->start = 0;
-		_clients.push_back(new_cli);
-		epoll_event event  = { EPOLLIN, { .ptr = new_cli } };
+		_clients.push_back( new_cli );
+		epoll_event event = { EPOLLIN, { .ptr = new_cli } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 		new_cli->buf.reserve( 512 );
 	} else
@@ -64,14 +64,14 @@ void ircserv::accept_client( epoll_event& ev ) {
 void ircserv::process_events( epoll_event& ev ) {
 	// std::cout << ev;
 	char    buf[512];
-	Client	*c;
+	Client* c;
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
 			std::cout << "aa" << std::endl;
 			accept_client( ev );
 		} else {
-			c = reinterpret_cast<Client *> (ev.data.ptr);
+			c = reinterpret_cast<Client*>( ev.data.ptr );
 
 			len = read( c->getFd(), buf, 512 );
 			if ( len == 0 ) {
@@ -90,7 +90,7 @@ void ircserv::process_events( epoll_event& ev ) {
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
-		c = reinterpret_cast<Client *> (ev.data.ptr);
+		c   = reinterpret_cast<Client*>( ev.data.ptr );
 		len = c->out.copy( buf, 512 );
 		len = write( c->getFd(), buf, len );
 		c->out.erase( 0, len );
@@ -144,7 +144,7 @@ std::map<std::string, Channel>& ircserv::getChannels( void ) {
 	return _channels;
 }
 
-void ircserv::addChannel( std::string &name, Client &client ) {
+void ircserv::addChannel( std::string& name, Client& client ) {
 	if ( _channels.find( name ) != _channels.end() )
 		return;
 	_channels.insert( std::make_pair( name, Channel( client, name ) ) );
