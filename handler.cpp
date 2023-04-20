@@ -8,50 +8,51 @@
 
 #define COMMAND_COUNT 11
 
-void privmsg( std::list<std::string>* args, Client& c );
-void nick( std::list<std::string>* args, Client& c );
-void user( std::list<std::string>* args, Client& c );
-void whois( std::list<std::string>* args, Client& c );
-void quit( std::list<std::string>* args, Client& c );
+void privmsg( std::list<std::string>* args, Client *c );
+void nick( std::list<std::string>* args, Client *c );
+void user( std::list<std::string>* args, Client *c );
+void whois( std::list<std::string>* args, Client *c );
+void quit( std::list<std::string>* args, Client *c );
 
-void pass( std::list<std::string>* args, Client& c ) {
+void pass( std::list<std::string>* args, Client *c ) {
 	logger( "DEBUG", "PASS COMMAND" );
 	args->front().erase( args->front().length() - 1, 1 );
 	if ( args->front().compare( ircserv::getPassword() ) != 0 ) {
-		logger( "ERROR", "client %d : wrong password (%s)!", c.getFd(),
+		logger( "ERROR", "client %d : wrong password (%s)!", c->getFd(),
 		        args->front().c_str() );
-		close( c.getFd() );
+		close( c->getFd() );
 		return;
 	}
-	c.setHasGivenPassword( true );
+	c->setHasGivenPassword( true );
 }
 
-void join( std::list<std::string>* args, Client& c ) {
+void join( std::list<std::string>* args, Client *c)
+{
 	std::map<std::string, Channel>           channels = ircserv::getChannels();
 	std::map<std::string, Channel>::iterator it;
 	/// args->front().erase( args->front().length() - 1, 1 );
-	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
+	logger( "INFO", "%s joined channel %s", c->getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
 	if ( it == channels.end() ) {
-		ircserv::addChannel( args->front(), c );
+		ircserv::addChannel( args->front(), *c);
 		it = ircserv::getChannels().find( args->front() );
 	}
 	else 
-		it->second.addClient( c );
-	c.reply( format( ":%s!foo.example.bar JOIN %s\r\n", c.getNick().c_str(),
+		it->second.addClient( *c );
+	c->reply( format( ":%s!foo.example.bar JOIN %s\r\n", c->getNick().c_str(),
 	                 args->front().c_str() ) );
-	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
-	                 c.getUser().c_str(), args->front().c_str(),
-	                 c.getNick().c_str() ) );
-	c.reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
-	                 c.getUser().c_str(), args->front().c_str() ) );
-	c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
+	c->reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
+	                 c->getUser().c_str(), args->front().c_str(),
+	                 c->getNick().c_str() ) );
+	c->reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
+	                 c->getUser().c_str(), args->front().c_str() ) );
+	c->reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
 	                 args->front().c_str() ) );
-	c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
+	c->reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }
 
-void capls( std::list<std::string>* args, Client& c ) {
+void capls( std::list<std::string>* args, Client *c) {
 	(void) c;
 	(void) args;
 }
@@ -65,12 +66,12 @@ std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
 	return os;
 }
 
-void pong( std::list<std::string>* args, Client& c ) {
+void pong( std::list<std::string>* args, Client *c) {
 	(void) args;
 	args->front().erase( args->back().length() - 1, 1 );
-	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
+	logger( "DEBUG", "PING from %s, token = %s", c->getNick().c_str(),
 	        args->back().c_str() );
-	c.reply( format( "PONG\r\n" ) );
+	c->reply( format( "PONG\r\n" ) );
 }
 
 /*IRC MODS:
@@ -129,52 +130,52 @@ static std::string check_channel_modes( std::string modes ) {
 	return ret;
 }
 
-void user_mode( Client&     c,
+void user_mode( Client     *c,
                 std::string target,
                 std::string modes,
                 char        operation ) {
 	if ( modes.empty() ) {
-		c.reply( format( ":ircserv.localhost 501 %s :Unknown MODE flag\r\n",
-		                 c.getNick().c_str() ) );
+		c->reply( format( ":ircserv.localhost 501 %s :Unknown MODE flag\r\n",
+		                 c->getNick().c_str() ) );
 		return;
 	}
-	if ( target != c.getNick() ) {
-		c.reply( ":ircserv.localhost 502 :Cant change mode for other users" );
+	if ( target != c->getNick() ) {
+		c->reply( ":ircserv.localhost 502 :Cant change mode for other users" );
 		return;
 	}
 	if ( operation == '+' )
-		modes = c.addModes( modes );
+		modes = c->addModes( modes );
 	else if ( operation == '-' )
-		modes = c.removeModes( modes );
-	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
+		modes = c->removeModes( modes );
+	logger( "DEBUG", "user %s has now mode %s", c->getUser().c_str(),
 	        modes.c_str() );
-	c.reply( format( ":ircserv.localhost 221 %s %s\r\n", c.getUser().c_str(),
+	c->reply( format( ":ircserv.localhost 221 %s %s\r\n", c->getUser().c_str(),
 	                 modes.c_str() ) );
 }
 
-void channel_mode( Client&     c,
+void channel_mode( Client     *c,
                    std::string target,
                    std::string modes,
                    char        operation ) {
 	if ( modes.empty() ) {
-		c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
-		                 c.getUser().c_str(), target.c_str() ) );
+		c->reply( format( ":ircserv.localhost 324 %s %s +\r\n",
+		                 c->getUser().c_str(), target.c_str() ) );
 		return;
 	}
 	try {
 		ircserv::getChannels().at( target );
 	} catch ( std::exception& e ) {
-		c.reply( format( ":ircserv.localhost 403 %s :No such channel",
+		c->reply( format( ":ircserv.localhost 403 %s :No such channel",
 		                 target.c_str() ) );
 	}
 	logger( "DEBUG", "channel %s has now mode %s", target.c_str(),
 	        modes.c_str() );
-	c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
-	                 c.getUser().c_str(), target.c_str(), modes.c_str() ) );
+	c->reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
+	                 c->getUser().c_str(), target.c_str(), modes.c_str() ) );
 	(void) operation;
 }
 
-void mode( std::list<std::string>* args, Client& c ) {
+void mode( std::list<std::string>* args, Client *c) {
 	if ( args->empty() )
 		return;
 	args->back().erase( args->back().length() - 1, 1 );
@@ -193,16 +194,16 @@ void mode( std::list<std::string>* args, Client& c ) {
 	}
 }
 
-void handler( std::list<std::string>* args, Client& c ) {
+void handler( std::list<std::string>* args, Client *c ) {
 	if ( args->size() == 1 ) {
-		c.reply( format( ":ircserv.localhost 461 %s :Not enough parameters",
+		c->reply( format( ":ircserv.localhost 461 %s :Not enough parameters",
 		                 args->front().c_str() ) );
 		return;
 	}
 	std::string commands[COMMAND_COUNT] = { "PASS",    "USER",  "NICK", "JOIN",
 	                                        "PRIVMSG", "CAPLS", "CAP",  "PING",
 	                                        "MODE",    "WHOIS", "QUIT" };
-	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
+	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client *c ) = {
 	    &pass,  &user, &nick, &join,  &privmsg, &capls,
 	    &capls, &pong, &mode, &whois, &quit };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "ircserv.hpp"
 #include "utils.hpp"
+#include "channel.hpp"
 
 Client::Client() {
 	_fd               = -1;
@@ -62,6 +63,15 @@ Client::Client( int fd, sockaddr_in6 &addr){
 }
 
 Client::~Client( void ) {
+	std::map<std::string, Channel> channel_map = ircserv::getChannels();
+
+	for (std::map<std::string, Channel>::iterator it = channel_map.begin(); it != channel_map.end(); it ++)
+	{
+		std::map<std::string, Client *>::iterator it_chan = it->second.getClients().find(this->_nick);
+		if (it_chan != it->second.getClients().end())
+			it->second.getClients().erase(this->_nick);
+	}
+	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), this));
 	std::cout << "destructor client called" << std::endl;
 	close( _fd );
 }

@@ -53,7 +53,7 @@ class ircserv {
 	static std::string                     getPassword( void );
 	static std::map<std::string, Channel>& getChannels( void );
 
-	static void addChannel( std::string&, Client& );
+	static void addChannel( std::string&, Client & );
 	static void removeChannel( std::string );
 };
 

@@ -7,7 +7,7 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-void privmsg( std::list<std::string>* args, Client& c ) {
+void privmsg( std::list<std::string>* args, Client *c) {
 	if ( args->empty() )
 		return;
 	// void *buf = (const_cast<char *>(args->back().c_str()));
@@ -20,10 +20,10 @@ void privmsg( std::list<std::string>* args, Client& c ) {
 			// std::cout << send((*it)->getFd(), buf, args->back().length(), 0)
 			// << std::endl;
 			( *it )->reply(
-			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c.getNick().c_str(),
-			            ( c.getUser() + "@" + c.getHostname() ).c_str(),
+			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c->getNick().c_str(),
+			            ( c->getUser() + "@" + c->getHostname() ).c_str(),
 			            target.c_str(), args->back().c_str() ) );
 		}
 	}
-	logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
+	logger( "INFO", "%s wants to send a message", c->getNick().c_str() );
 }
