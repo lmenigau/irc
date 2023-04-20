@@ -12,6 +12,6 @@ void quit( std::list<std::string>* args, Client *c ) {
 		c->reply( format( "%s!%s@%s QUIT : %s is gone.\r\n", c->getNick().c_str(),
 		                 c->getUser().c_str(), c->getHostname().c_str(),
 		                 c->getNick().c_str() ) );
-	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), c));
+	//Checker les channels dans lesquelles il y a ce client pour le remove de la liste
 	delete c;
 }

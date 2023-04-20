@@ -76,7 +76,6 @@ void ircserv::process_events( epoll_event& ev ) {
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
-			std::cout << "aa" << std::endl;
 			accept_client( ev );
 			//std::cout << ircserv::_clients.front().getFd() << std::endl;
 		} else {
@@ -94,13 +93,22 @@ void ircserv::process_events( epoll_event& ev ) {
 					break;
 				logger( "DEBUG", "buf : %s", c->buf.c_str() );
 				std::list<std::string>* args = parse( c->buf.substr( 0, pos ) );
+				bool	a;
+				a = false;
+				if (args->front() == "QUIT")
+					a = true;
 				handler( args, c );
-				c->buf.erase( 0, pos + 1 );
+				if (!a)
+					c->buf.erase( 0, pos + 1 );
+				else
+					break ;
+				//logger( "DEBUG", "buf after mdr : %s", c->buf.c_str() );
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
 		c   = reinterpret_cast<Client*>( ev.data.ptr );
 		len = c->out.copy( buf, 512 );
+		logger( "DEBUG", "bruuh buf : %s", c->buf.c_str() );
 		len = write( c->getFd(), buf, len );
 		c->out.erase( 0, len );
 		if ( c->out.empty() ) {

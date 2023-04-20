@@ -16,7 +16,6 @@ void quit( std::list<std::string>* args, Client *c );
 
 void pass( std::list<std::string>* args, Client *c ) {
 	logger( "DEBUG", "PASS COMMAND" );
-	args->front().erase( args->front().length() - 1, 1 );
 	if ( args->front().compare( ircserv::getPassword() ) != 0 ) {
 		logger( "ERROR", "client %d : wrong password (%s)!", c->getFd(),
 		        args->front().c_str() );
@@ -53,6 +52,7 @@ void join( std::list<std::string>* args, Client *c)
 }
 
 void capls( std::list<std::string>* args, Client *c) {
+	std::cout << args->front() << " " << args->back() << std::endl;
 	(void) c;
 	(void) args;
 }
