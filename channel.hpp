@@ -7,7 +7,7 @@
 
 class Channel {
    private:
-	std::map<std::string, Client*> _clients;
+	std::vector<Client*> 			_clients;
 	std::string                    _modes;
 	std::string                    _name;
 	std::string                    _topic;
@@ -26,7 +26,7 @@ class Channel {
 	Channel( std::string );
 	Channel( Client& creator, const std::string& name );
 	~Channel();
-	void addClient( Client& );
+	void addClient( Client* );
 	void removeClient( Client& );
 	void changeModes( int );
 
@@ -36,7 +36,7 @@ class Channel {
 	std::string getModes( void );
 
 	void                            setModes( std::string );
-	std::map<std::string, Client*>& getClients( void );
+	std::vector<Client*>& getClients( void );
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "channel.hpp"
 #include "client.hpp"
 #include "utils.hpp"
+#include <iostream>
 
 std::map<std::string, Client> _clients;
 
@@ -11,17 +12,17 @@ Channel::Channel( std::string name ) : _name( name ) {}
 
 Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 	_ops.push_back( &creator );
-	_clients.insert( std::make_pair( creator.getUser(), &creator ) );
+	_clients.push_back( &creator );
 }
 
-void Channel::addClient( Client& client ) {
-	_clients.insert( std::make_pair( client.getUser(), &client ) );
+void Channel::addClient( Client *client ) {
+	_clients.push_back ( client );
 }
 
 void Channel::removeClient( Client& rclient ) {
-	std::map<std::string, Client*>::iterator it = _clients.begin();
+	std::vector<Client*>::iterator it = _clients.begin();
 	while ( it != _clients.end() ) {
-		if ( !it->second->getUser().compare( rclient.getUser() ) ) {
+		if ( !( *it )->getUser().compare( rclient.getUser() ) ) {
 			_clients.erase( it );
 			return;
 		}
@@ -37,7 +38,7 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
-std::map<std::string, Client*>& Channel::getClients( void ) {
+std::vector<Client *>& Channel::getClients( void ) {
 	return _clients;
 }
 
@@ -52,7 +53,7 @@ std::string Channel::getModes( void ) {
 std::string Channel::addModes( std::string modes ) {
 	for ( size_t i = 0; i < modes.size(); i++ ) {
 		if ( _modes.find( modes[i] ) != std::string::npos )
-			continue;
+			continue ;
 		_modes.insert( modes.end(), modes[i] );
 	}
 	return ( _modes );

@@ -67,9 +67,9 @@ Client::~Client( void ) {
 
 	for (std::map<std::string, Channel>::iterator it = channel_map.begin(); it != channel_map.end(); it ++)
 	{
-		std::map<std::string, Client *>::iterator it_chan = it->second.getClients().find(this->_nick);
+		std::vector<Client *>::iterator it_chan = std::find(it->second.getClients().begin(), it->second.getClients().end(), this);;
 		if (it_chan != it->second.getClients().end())
-			it->second.getClients().erase(this->_nick);
+			it->second.getClients().erase(it_chan);
 	}
 	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), this));
 	std::cout << "destructor client called" << std::endl;

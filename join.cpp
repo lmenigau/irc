@@ -13,12 +13,11 @@ static void reply_to_join(const std::string &channel_name, Client *c,
 
     reply = format(":ircserv.localhost 353 %s = %s :@", c->getNick().c_str(),
                                                         channel_name.c_str());
-    for (std::map<std::string, Client *>::iterator it_member = it->second.getClients().begin();
+    for (std::vector<Client *>::iterator it_member = it->second.getClients().begin();
                                                             it_member != it->second.getClients().end();
                                                             it_member++) {
-            reply.append(it_member->second->getNick() + " ");
+            reply.append(( *it_member)->getNick() + " ");
     }
-    std::cout << "reply : " << reply << std::endl;
     reply.append("\r\n");
     c->reply(reply);
 }
@@ -36,7 +35,10 @@ void join( std::list<std::string>* args, Client *c)
 		it = ircserv::getChannels().find( args->front() );
 	}
 	else 
-		it->second.addClient( *c );
+		{
+            std::cout << it->first << std::endl;		    
+		  it->second.addClient( c );
+		}
 	c->reply( format( ":%s!foo.example.bar JOIN %s\r\n", c->getNick().c_str(),
 	                 args->front().c_str() ) );
     reply_to_join(args->front(), c, it);
