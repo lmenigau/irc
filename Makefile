@@ -6,6 +6,7 @@ SRC = channel.cpp\
 	  	client.cpp\
 	  	handler.cpp\
 		ircserv.cpp\
+		join.cpp \
 		logger.cpp\
 		main.cpp\
 		nick.cpp \
