@@ -50,6 +50,7 @@ std::string Channel::getModes( void ) {
 }
 
 std::string Channel::addModes( std::string modes ) {
+	(void) _limit;
 	for ( size_t i = 0; i < modes.size(); i++ ) {
 		if ( _modes.find( modes[i] ) != std::string::npos )
 			continue;
