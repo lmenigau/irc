@@ -18,10 +18,11 @@ class Channel {
 	std::vector<Client*>           _founder;
 	std::vector<std::string>       _banned;
 	std::string                    _key;
-	int                            _limit;
-	Channel();
+//	int                            _limit;
 
-   public:
+
+  public :
+  Channel();
 	Channel( std::string );
 	Channel( Client& creator, const std::string& name );
 	~Channel();

@@ -6,7 +6,13 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-#define COMMAND_COUNT 9
+#define COMMAND_COUNT 11
+
+void privmsg( std::list<std::string>* args, Client& c );
+void nick( std::list<std::string>* args, Client& c );
+void user( std::list<std::string>* args, Client& c );
+void whois( std::list<std::string>* args, Client& c );
+void quit( std::list<std::string>* args, Client& c );
 
 void pass( std::list<std::string>* args, Client& c ) {
 	logger( "DEBUG", "PASS COMMAND" );
@@ -20,42 +26,10 @@ void pass( std::list<std::string>* args, Client& c ) {
 	c.setHasGivenPassword( true );
 }
 
-void user( std::list<std::string>* args, Client& c ) {
-	if ( !c.hasGivenPassword() ) {
-		c.reply( ":ircserv.localhost 464 :Password Incorrect" );
-		logger( "WARNING", "client %d did not give password !", c.getFd() );
-		close( c.getFd() );
-		return;
-	}
-
-	logger( "INFO", "client %d has username %s", c.getFd(),
-	        args->front().c_str() );
-	c.setHasGivenUser( true );
-	c.setUser( args->front() );
-	c.reply( format(
-	    ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
-	    "Network, %s[!%s@foo.example.bar]\r\n",
-	    c.getUser().c_str(), c.getNick().c_str(), c.getUser().c_str() ) );
-	c.reply(
-	    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
-	            "version 0.0.1dev\r\n",
-	            c.getUser().c_str() ) );
-	c.reply( format(
-	    ":ircserv.localhost 003 %s :This server was created idk like now ?\r\n",
-	    c.getUser().c_str() ) );
-	c.reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
-	                 c.getUser().c_str() ) );
-}
-
-void privmsg( std::list<std::string>* args, Client& c ) {
-	(void) args;
-	logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
-}
-
 void join( std::list<std::string>* args, Client& c ) {
 	std::map<std::string, Channel>           channels = ircserv::getChannels();
 	std::map<std::string, Channel>::iterator it;
-	args->front().erase( args->front().length() - 1, 1 );
+	/// args->front().erase( args->front().length() - 1, 1 );
 	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
@@ -77,24 +51,6 @@ void join( std::list<std::string>* args, Client& c ) {
 	c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }
 
-void nick( std::list<std::string>* args, Client& c ) {
-	if ( !c.hasGivenPassword() ) {
-		c.reply( ":ircserv.localhost 464 :Password Incorrect" );
-		logger( "WARNING", "client %d did not give password !", c.getFd() );
-		close( c.getFd() );
-		return;
-	}
-	args->front().erase( args->front().length() - 1, 1 );
-	if ( args->empty() ) {
-		c.reply( "431\r\n" );
-	} else {
-		c.setNick( args->front() );
-		c.setHasGivenNick( true );
-		logger( "INFO", "client %d nickname is %s", c.getFd(),
-		        c.getNick().c_str() );
-	}
-}
-
 void capls( std::list<std::string>* args, Client& c ) {
 	(void) c;
 	(void) args;
@@ -110,10 +66,11 @@ std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
 }
 
 void pong( std::list<std::string>* args, Client& c ) {
+	(void) args;
 	args->front().erase( args->back().length() - 1, 1 );
 	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
 	        args->back().c_str() );
-	c.reply( format( "PONG %s\r\n", args->back().c_str() ) );
+	c.reply( format( "PONG\r\n" ) );
 }
 
 /*IRC MODS:
@@ -218,6 +175,8 @@ void channel_mode( Client&     c,
 }
 
 void mode( std::list<std::string>* args, Client& c ) {
+	if ( args->empty() )
+		return;
 	args->back().erase( args->back().length() - 1, 1 );
 	std::string modes;
 	char        operation = modes[0];
@@ -240,14 +199,17 @@ void handler( std::list<std::string>* args, Client& c ) {
 		                 args->front().c_str() ) );
 		return;
 	}
-	std::string commands[COMMAND_COUNT] = { "PASS", "USER",    "NICK",
-	                                        "JOIN", "PRIVMSG", "CAPLS",
-	                                        "CAP",  "PING",    "MODE" };
-	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client& c ) = {
-	    &pass, &user, &nick, &join, &privmsg, &capls, &capls, &pong, &mode };
+	std::string commands[COMMAND_COUNT] = { "PASS",    "USER",  "NICK", "JOIN",
+	                                        "PRIVMSG", "CAPLS", "CAP",  "PING",
+	                                        "MODE",    "WHOIS", "QUIT" };
+	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
+	    &pass,  &user, &nick, &join,  &privmsg, &capls,
+	    &capls, &pong, &mode, &whois, &quit };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
+		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
+			remove_backslash_r( args->back() );
 			handlers[i]( args, c );
 			return;
 		}

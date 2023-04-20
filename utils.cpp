@@ -1,8 +1,24 @@
+#include "utils.hpp"
 #include <cstdarg>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include "client.hpp"
 #include "channel.hpp"
+
+void remove_backslash_r( std::string& c ) {
+	int idx = c.find( "\r" );
+	if ( idx != (int) std::string::npos )
+		c.erase( c.begin() + idx );
+}
+
+std::string trim( const std::string& s ) {
+	std::string res;
+
+	res = s;
+	std::remove( res.begin(), res.end(), ' ' );
+	return ( res );
+}
 
 std::string format( std::string format, ... ) {
 	va_list va_args;

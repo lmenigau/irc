@@ -13,6 +13,14 @@
 #ifndef IRCSERV_HPP
 #define IRCSERV_HPP
 
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <map>
 #include "channel.hpp"
@@ -20,12 +28,13 @@
 #include "sys/epoll.h"
 
 class ircserv {
+	public:
+	static std::vector<Client *>            _clients;
    private:
 	ircserv();
 	static int                            _port;
 	static bool                           _failed;
 	static std::string                    _password;
-	static std::vector<Client>            _clients;
 	static std::map<std::string, Channel> _channels;
 	static int                            _pollfd;
 	static int                            _tcp6_socket;
@@ -36,6 +45,7 @@ class ircserv {
    public:
 	static void initialisation( char* pass, char* port );
 	static void start( void );
+  static std::vector<Client>::iterator getClientFromVector(int fd);
 
 	static bool failed( void );
 
@@ -43,7 +53,7 @@ class ircserv {
 	static std::string                     getPassword( void );
 	static std::map<std::string, Channel>& getChannels( void );
 
-	static void addChannel( std::string &, Client &);
+	static void addChannel( std::string&, Client& );
 	static void removeChannel( std::string );
 };
 

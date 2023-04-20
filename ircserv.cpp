@@ -1,12 +1,5 @@
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-#include "handler.hpp"
 #include "ircserv.hpp"
+#include "handler.hpp"
 #include "ostream.hpp"
 #include "parsing.hpp"
 #include "utils.hpp"
@@ -16,7 +9,7 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-std::vector<Client> ircserv::_clients = std::vector<Client>( 1024 );
+std::vector<Client *> ircserv::_clients;
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
 std::map<std::string, Channel> ircserv::_channels;
@@ -44,19 +37,34 @@ void ircserv::initialisation( char* pass, char* port ) {
 bool ircserv::failed( void ) {
 	return _failed;
 }
+/*
+std::vector<Client>::iterator ircserv::getClientFromVector(int fd)
+{
+
+	std::vector<Client>::iterator it = ircserv::_clients.begin();
+	for (; it != _clients.end(); it++)
+	{
+		if (it->getFd() == fd)
+			return (it);
+	}
+	return (it);
+} */
 
 void ircserv::accept_client( epoll_event& ev ) {
-	sockaddr_in6 addr = {};
+	sockaddr_in6 addr;
+	socklen_t    len;
+	memset( &addr, 0, sizeof( addr ) );
+	len = sizeof( addr );
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
-	int fd = accept( _tcp6_socket, NULL, 0 );
+	int fd  = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
-		_clients[fd].setFd( fd );
-		_clients[fd].start = 0;
-		epoll_event event  = { EPOLLIN, { .ptr = &_clients[fd] } };
+		Client *new_cli = new Client (fd, addr);
+		ircserv::_clients.push_back(new_cli);
+		epoll_event event = { EPOLLIN, { .ptr = new_cli } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
-		_clients[fd].buf.reserve( 512 );
+		new_cli->buf.reserve( 512 );
 	} else
 		logger( "ERROR", "accept error" );
 }
@@ -68,9 +76,11 @@ void ircserv::process_events( epoll_event& ev ) {
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
+			std::cout << "aa" << std::endl;
 			accept_client( ev );
+			//std::cout << ircserv::_clients.front().getFd() << std::endl;
 		} else {
-			c   = reinterpret_cast<Client*>( ev.data.ptr );
+			c = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
 			if ( len == 0 ) {
 				close( c->getFd() );
