@@ -22,6 +22,23 @@ Client::Client() {
 	_isPolled         = false;
 }
 
+Client::Client(Client const &a)
+{ 
+	this->_fd 		  = a._fd;
+	this->start             = a.start;
+	this->end               = a.end;
+	this->buf               = a.buf;
+	this->out               = a.out;
+	this->_cap              = a._cap;
+	this->_nick             = a._nick;
+	this->_hostname         = a._hostname;
+	this->_realuser         = a._realuser;
+	this->_hasGivenNick     = a._hasGivenNick;
+	this->_hasGivenUser     = a._hasGivenUser;
+	this->_hasGivenPassword = a._hasGivenPassword;
+	this->_isPolled         = a._isPolled;
+}
+
 void Client::reply( std::string const& str ) {
 	if ( !_isPolled ) {
 		epoll_event event = { EPOLLOUT | EPOLLIN, { .ptr = this } };
@@ -63,6 +80,7 @@ Client::Client( int fd, sockaddr_in6 &addr){
 }
 
 Client::~Client( void ) {
+	/*
 	std::map<std::string, Channel> channel_map = ircserv::getChannels();
 
 	for (std::map<std::string, Channel>::iterator it = channel_map.begin(); it != channel_map.end(); it ++)
@@ -71,9 +89,14 @@ Client::~Client( void ) {
 		if (it_chan != it->second.getClients().end())
 			it->second.getClients().erase(it_chan);
 	}
-	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), this));
-	std::cout << "destructor client called" << std::endl;
+	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), this));*/
+	for (std::vector<Client>::iterator it = ircserv::_clients.begin(); it != ircserv::_clients.end(); it++)
+	{
+		if (it->getFd() == _fd)
+			return ;
+	}
 	close( _fd );
+	std::cout << "destructor client called" << std::endl;
 }
 
 // getters

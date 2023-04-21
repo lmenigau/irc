@@ -29,7 +29,7 @@
 
 class ircserv {
 	public:
-	static std::vector<Client *>            _clients;
+	static std::vector<Client>            _clients;
    private:
 	ircserv();
 	static int                            _port;

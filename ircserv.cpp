@@ -9,7 +9,7 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-std::vector<Client *> ircserv::_clients;
+std::vector<Client> ircserv::_clients;
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
 std::map<std::string, Channel> ircserv::_channels;
@@ -37,7 +37,7 @@ void ircserv::initialisation( char* pass, char* port ) {
 bool ircserv::failed( void ) {
 	return _failed;
 }
-/*
+
 std::vector<Client>::iterator ircserv::getClientFromVector(int fd)
 {
 
@@ -48,7 +48,7 @@ std::vector<Client>::iterator ircserv::getClientFromVector(int fd)
 			return (it);
 	}
 	return (it);
-} */
+} 
 
 void ircserv::accept_client( epoll_event& ev ) {
 	sockaddr_in6 addr;
@@ -60,27 +60,26 @@ void ircserv::accept_client( epoll_event& ev ) {
 	int fd  = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
-		Client *new_cli = new Client (fd, addr);
-		ircserv::_clients.push_back(new_cli);
-		epoll_event event = { EPOLLIN, { .ptr = new_cli } };
+		ircserv::_clients.push_back(Client (fd, addr));
+		Client *ptr = &(*getClientFromVector(fd));
+		epoll_event event = { EPOLLIN, { .ptr = ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
-		new_cli->buf.reserve( 512 );
+		ptr->buf.reserve( 512 );
 	} else
 		logger( "ERROR", "accept error" );
 }
 
 void ircserv::process_events( epoll_event& ev ) {
-	// std::cout << ev;
 	char    buf[512];
 	Client* c;
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
 			accept_client( ev );
-			//std::cout << ircserv::_clients.front().getFd() << std::endl;
 		} else {
 			c = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
+			std::cout << c->getFd() << std::endl;
 			if ( len == 0 ) {
 				close( c->getFd() );
 				logger( "DEBUG", "closed : %d", c->getFd() );
@@ -139,6 +138,7 @@ void ircserv::start( void ) {
 	epoll_event event = { EPOLLIN, { .fd = _tcp6_socket } };
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
+	int b = 0;
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
@@ -146,6 +146,7 @@ void ircserv::start( void ) {
 		for ( int i = 0; i < nev; i++ ) {
 			process_events( events[i] );
 		}
+		b++;
 	}
 }
 

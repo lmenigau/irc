@@ -14,6 +14,7 @@ class Client {
 
 	Client( int );
 	Client( int fd, sockaddr_in6 &addr);
+	Client(const Client &a);
 	~Client( void );
 	Client( void );
 

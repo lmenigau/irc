@@ -9,14 +9,14 @@
 
 void	privmsg_client(std::list <std::string > * args, Client *c, const std::string &target)
 {
-	for ( std::vector<Client *>::iterator it = ircserv::_clients.begin();
+	for ( std::vector<Client>::iterator it = ircserv::_clients.begin();
 	      									it != ircserv::_clients.end(); it++ ) {
-		if ( ( *it )->getNick() == args->front() ) {
-			args->front().append( "@" + ( ( *it )->getHostname() ) );
+		if ( it->getNick() == args->front() ) {
+			args->front().append( "@" + ( it->getHostname() ) );
 			std::cout << args->front() << " : " << args->back() << std::endl;
 			// std::cout << send((*it)->getFd(), buf, args->back().length(), 0)
 			// << std::endl;
-			( *it )->reply(
+			it->reply(
 			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c->getNick().c_str(),
 			            ( c->getUser() + "@" + c->getHostname() ).c_str(),
 			            target.c_str(), args->back().c_str() ) );
@@ -29,7 +29,6 @@ void	privmsg_channel(std::list <std::string> * args, Client *c, const std::strin
 	std::map<std::string, Channel>           channels = ircserv::getChannels();
 	std::map<std::string, Channel>::iterator it = channels.find(target);
 
-	std::cout << "WTFFF"	 << std::endl;
 	if (it == channels.end())
 	{
 		c->reply( format ("%s!~%s@%s 403 %s :No such channel\r\n", c->getNick().c_str(),
