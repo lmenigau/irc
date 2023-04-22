@@ -9,8 +9,8 @@
 
 void	privmsg_client(std::list <std::string > * args, Client *c, const std::string &target)
 {
-	for ( std::vector<Client>::iterator it = ircserv::_clients.begin();
-	      									it != ircserv::_clients.end(); it++ ) {
+	for ( t_map_int_client::iterator it = ircserv::_clients.second.begin();
+	      									it != ircserv::_clients.second.end(); it++ ) {
 		if ( it->getNick() == args->front() ) {
 			args->front().append( "@" + ( it->getHostname() ) );
 			std::cout << args->front() << " : " << args->back() << std::endl;
@@ -26,8 +26,8 @@ void	privmsg_client(std::list <std::string > * args, Client *c, const std::strin
 
 void	privmsg_channel(std::list <std::string> * args, Client *c, const std::string &target)
 {
-	std::map<std::string, Channel>           channels = ircserv::getChannels();
-	std::map<std::string, Channel>::iterator it = channels.find(target);
+	t_map_channel           channels = ircserv::getChannels();
+	t_map_channel::iterator it = channels.find(target);
 
 	if (it == channels.end())
 	{
@@ -39,8 +39,7 @@ void	privmsg_channel(std::list <std::string> * args, Client *c, const std::strin
 	}
 	else
 	{
-		std::cout << "??" << std::endl;
-		for (std::vector<Client *>::iterator cli_list = it->second.getClients().begin();
+		for (t_vector_client_ref::iterator cli_list = it->second.getClients().begin();
 															cli_list != it->second.getClients().end();
 															cli_list++) {
 			std::string rep = format( ":%s!~%s@%s PRIVMSG %s: %s\r\n", c->getNick().c_str(),
@@ -59,7 +58,7 @@ void privmsg( std::list<std::string>* args, Client *c) {
 		return;
 	std::string target = args->front();
 	std::cout << target << std::endl;
-	if (target[0] == '#')
+	if (isChannel(target))
 		privmsg_channel(args, c, target);
 	else
 		privmsg_client(args, c, target);

@@ -9,7 +9,7 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-std::vector<Client> ircserv::_clients;
+t_map_int_client	ircserv::_clients;
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
 std::map<std::string, Channel> ircserv::_channels;
@@ -37,7 +37,7 @@ void ircserv::initialisation( char* pass, char* port ) {
 bool ircserv::failed( void ) {
 	return _failed;
 }
-
+/*
 std::vector<Client>::iterator ircserv::getClientFromVector(int fd)
 {
 
@@ -48,7 +48,7 @@ std::vector<Client>::iterator ircserv::getClientFromVector(int fd)
 			return (it);
 	}
 	return (it);
-} 
+} */
 
 void ircserv::accept_client( epoll_event& ev ) {
 	sockaddr_in6 addr;
@@ -60,8 +60,8 @@ void ircserv::accept_client( epoll_event& ev ) {
 	int fd  = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
-		ircserv::_clients.push_back(Client (fd, addr));
-		Client *ptr = &(*getClientFromVector(fd));
+		ircserv::_clients.insert(Client (fd, addr));
+		Client *ptr = &(*ircserv::_clients.find(fd))
 		epoll_event event = { EPOLLIN, { .ptr = ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 		ptr->buf.reserve( 512 );
@@ -158,7 +158,7 @@ std::string ircserv::getPassword( void ) {
 	return _password;
 }
 
-std::map<std::string, Channel>& ircserv::getChannels( void ) {
+t_map_channel& ircserv::getChannels( void ) {
 	return _channels;
 }
 
@@ -169,7 +169,7 @@ void ircserv::addChannel( std::string& name, Client& client ) {
 }
 
 void ircserv::removeChannel( std::string name ) {
-	std::map<std::string, Channel>::iterator it = _channels.find( name );
+	t_map_channel::iterator it = _channels.find( name );
 	if ( it == _channels.end() )
 		return;
 	_channels.erase( it );

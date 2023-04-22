@@ -7,15 +7,15 @@
 
 class Channel {
    private:
-	std::vector<Client*> 			_clients;
+	t_vector_client_ref	             _clients;
 	std::string                    _modes;
 	std::string                    _name;
 	std::string                    _topic;
 	std::string                    _password;
-	std::vector<Client*>           _ops;
-	std::vector<Client*>           _halfops;
-	std::vector<Client*>           _voiced;
-	std::vector<Client*>           _founder;
+	t_vector_client_ref	          _ops;
+	t_vector_client_ref           _halfops;
+	t_vector_client_ref          _voiced;
+	t_vector_client_ref          _founder;
 	std::vector<std::string>       _banned;
 	std::string                    _key;
 //	int                            _limit;
@@ -36,7 +36,7 @@ class Channel {
 	std::string getModes( void );
 
 	void                            setModes( std::string );
-	std::vector<Client*>& getClients( void );
+	t_vector_client_ref& getClients( void );
 };
 
 #endif

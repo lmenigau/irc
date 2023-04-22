@@ -1,9 +1,10 @@
 #include "channel.hpp"
 #include "client.hpp"
 #include "utils.hpp"
+#include "typedef.hpp"
 #include <iostream>
 
-std::map<std::string, Client> _clients;
+map_string_client _clients;
 
 Channel::Channel( void ) {}
 Channel::~Channel( void ) {}
@@ -20,7 +21,7 @@ void Channel::addClient( Client *client ) {
 }
 
 void Channel::removeClient( Client& rclient ) {
-	std::vector<Client*>::iterator it = _clients.begin();
+	t_vector_client_ref::iterator it = _clients.begin();
 	while ( it != _clients.end() ) {
 		if ( !( *it )->getUser().compare( rclient.getUser() ) ) {
 			_clients.erase( it );
@@ -38,7 +39,7 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
-std::vector<Client *>& Channel::getClients( void ) {
+t_vector_client_ref& Channel::getClients( void ) {
 	return _clients;
 }
 

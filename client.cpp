@@ -90,11 +90,8 @@ Client::~Client( void ) {
 			it->second.getClients().erase(it_chan);
 	}
 	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), this));*/
-	for (std::vector<Client>::iterator it = ircserv::_clients.begin(); it != ircserv::_clients.end(); it++)
-	{
-		if (it->getFd() == _fd)
+	if (ircserv::_clients.find(_fd) != _clients.end())
 			return ;
-	}
 	close( _fd );
 	std::cout << "destructor client called" << std::endl;
 }

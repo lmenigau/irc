@@ -13,5 +13,4 @@ void quit( std::list<std::string>* args, Client *c ) {
 		                 c->getUser().c_str(), c->getHostname().c_str(),
 		                 c->getNick().c_str() ) );
 	//Checker les channels dans lesquelles il y a ce client pour le remove de la liste
-	delete c;
 }
