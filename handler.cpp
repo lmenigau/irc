@@ -34,11 +34,10 @@ void join( std::list<std::string>* args, Client& c ) {
 	if ( it == channels.end() ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
-	}
-	else 
+	} else
 		it->second.addClient( c );
-	c.reply( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(), c.getHostname().c_str(),
-	                 args->front().c_str() ) );
+	c.reply( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
+	                 c.getHostname().c_str(), args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
 	                 c.getUser().c_str(), args->front().c_str(),
 	                 c.getNick().c_str() ) );
@@ -88,7 +87,7 @@ static bool is_valid_channel_mode( char mode ) {
 	         mode == 's' || mode == 'u' || mode == 'U' || mode == 'n' ||
 	         mode == 't' || mode == 'b' || mode == 'f' || mode == 'k' ||
 	         mode == 'l' || mode == 'q' || mode == 'a' || mode == 'h' ||
-			 mode == 'v');
+	         mode == 'v' );
 }
 
 static std::string check_user_modes( std::string modes ) {
@@ -135,7 +134,7 @@ void user_mode( Client&     c,
 		return;
 	}
 	if ( target != c.getNick() ) {
-		c.reply( ":ircserv.localhost 502 :Cant change mode for other users" );
+		c.reply( ":ircserv.localhost 502 :Cant change mode for other users\r\n" );
 		return;
 	}
 	if ( operation == '+' )
@@ -160,7 +159,7 @@ void channel_mode( Client&     c,
 	try {
 		ircserv::getChannels().at( target );
 	} catch ( std::exception& e ) {
-		c.reply( format( ":ircserv.localhost 403 %s :No such channel",
+		c.reply( format( ":ircserv.localhost 403 %s :No such channel\r\n",
 		                 target.c_str() ) );
 	}
 	logger( "DEBUG", "channel %s has now mode %s", target.c_str(),
@@ -172,7 +171,7 @@ void channel_mode( Client&     c,
 
 void mode( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
-		return ;
+		return;
 	std::string modes;
 	char        operation = modes[0];
 	modes.erase( 0, 1 );
@@ -190,7 +189,7 @@ void mode( std::list<std::string>* args, Client& c ) {
 
 void handler( std::list<std::string>* args, Client& c ) {
 	if ( args->size() == 1 ) {
-		c.reply( format( ":ircserv.localhost 461 %s :Not enough parameters",
+		c.reply( format( ":ircserv.localhost 461 %s :Not enough parameters\r\n",
 		                 args->front().c_str() ) );
 		return;
 	}

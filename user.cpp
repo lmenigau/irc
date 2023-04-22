@@ -47,22 +47,8 @@ void user( std::list<std::string>* args, Client& c ) {
 		// Checker la command 0 *: (real name)
 		c.setRealUser( get_realname( args ) );
 		// c.reply( format("~%s\r\n", c.getUser().c_str()));
-		c.reply(
-		    format( ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
-		            "server %s[!%s@%s]\r\n",
-		            c.getNick().c_str(), c.getUser().c_str(), c.getNick().c_str(),
-		            c.getHostname().c_str() ) );
-		c.reply(
-		    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
-		            "version 0.0.1dev\r\n",
-		            c.getNick().c_str() ) );
-		c.reply(
-		    format( ":ircserv.localhost 003 %s :This server was created idk "
-		            "like now ?\r\n",
-		            c.getNick().c_str() ) );
-		c.reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
-		                 c.getNick().c_str() ) );
-		logger( "INFO", "user :%s, nickname :%s, Connexion etablished !\n",
-		        c.getUser().c_str(), c.getNick().c_str() );
+		c.setHasGivenUser( true );
+		if (c.isRegistered() &&  !c.hasBeenWelcomed())
+			welcome(&c);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: ccambium <ccambium@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 06:34:50 by ccambium          #+#    #+#             */
-/*   Updated: 2023/04/17 11:07:00 by ccambium         ###   ########.fr       */
+/*   Updated: 2023/04/22 08:34:49 by ccambium         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,15 @@
 #include "sys/epoll.h"
 
 class ircserv {
-	public:
-	static std::vector<Client *>            _clients;
+   public:
+	static std::vector<Client*> _clients;
+
    private:
 	ircserv();
 	static int                            _port;
 	static bool                           _failed;
 	static std::string                    _password;
+	static std::string                    _servername;
 	static std::map<std::string, Channel> _channels;
 	static int                            _pollfd;
 	static int                            _tcp6_socket;
@@ -45,13 +47,14 @@ class ircserv {
    public:
 	static void initialisation( char* pass, char* port );
 	static void start( void );
-  static std::vector<Client>::iterator getClientFromVector(int fd);
+	static std::vector<Client>::iterator getClientFromVector( int fd );
 
 	static bool failed( void );
 
 	static int                             getPollfd( void );
 	static std::string                     getPassword( void );
 	static std::map<std::string, Channel>& getChannels( void );
+	static std::string                     getServername( void );
 
 	static void addChannel( std::string&, Client& );
 	static void removeChannel( std::string );
