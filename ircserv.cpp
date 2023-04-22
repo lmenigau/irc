@@ -76,7 +76,6 @@ void ircserv::process_events( epoll_event& ev ) {
 	size_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
-			std::cout << "aa" << std::endl;
 			accept_client( ev );
 			//std::cout << ircserv::_clients.front().getFd() << std::endl;
 		} else {

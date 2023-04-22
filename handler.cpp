@@ -16,7 +16,6 @@ void quit( std::list<std::string>* args, Client& c );
 
 void pass( std::list<std::string>* args, Client& c ) {
 	logger( "DEBUG", "PASS COMMAND" );
-	args->front().erase( args->front().length() - 1, 1 );
 	if ( args->front().compare( ircserv::getPassword() ) != 0 ) {
 		logger( "ERROR", "client %d : wrong password (%s)!", c.getFd(),
 		        args->front().c_str() );
@@ -29,7 +28,6 @@ void pass( std::list<std::string>* args, Client& c ) {
 void join( std::list<std::string>* args, Client& c ) {
 	std::map<std::string, Channel>           channels = ircserv::getChannels();
 	std::map<std::string, Channel>::iterator it;
-	/// args->front().erase( args->front().length() - 1, 1 );
 	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
@@ -39,7 +37,7 @@ void join( std::list<std::string>* args, Client& c ) {
 	}
 	else 
 		it->second.addClient( c );
-	c.reply( format( ":%s!foo.example.bar JOIN %s\r\n", c.getNick().c_str(),
+	c.reply( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(), c.getHostname().c_str(),
 	                 args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
 	                 c.getUser().c_str(), args->front().c_str(),
@@ -67,10 +65,8 @@ std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
 
 void pong( std::list<std::string>* args, Client& c ) {
 	(void) args;
-	args->front().erase( args->back().length() - 1, 1 );
 	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
 	        args->back().c_str() );
-	c.reply( format( "PONG\r\n" ) );
 }
 
 /*IRC MODS:
@@ -176,8 +172,7 @@ void channel_mode( Client&     c,
 
 void mode( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
-		return;
-	args->back().erase( args->back().length() - 1, 1 );
+		return ;
 	std::string modes;
 	char        operation = modes[0];
 	modes.erase( 0, 1 );

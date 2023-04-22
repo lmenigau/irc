@@ -13,7 +13,7 @@
 #include "utils.hpp"
 
 static bool authorize_setting_name( const std::string& name ) {
-	for ( std::vector<Client *>::iterator it = ircserv::_clients.begin();
+	for ( std::vector<Client*>::iterator it = ircserv::_clients.begin();
 	      it != ircserv::_clients.end(); it++ ) {
 		if ( ( *it )->getNick() == name )
 			return ( false );
@@ -38,16 +38,14 @@ void nick( std::list<std::string>* args, Client& c ) {
 	} else if ( c.hasGivenNick() ) {
 		buff = c.getNick();
 		c.setNick( args->front() );
-		c.reply( format( "%s!~%s@%s NICK %s\r\n", buff.c_str(),
-		                 c.getUser().c_str(), c.getHostname().c_str(),
+		c.reply( format( ":%s!%s NICK %s\r\n", buff.c_str(), c.getHostname().c_str(),
 		                 c.getNick().c_str() ) );
-		logger( "INFO", "User %s nickname change to %s.", c.getUser().c_str(),
+		logger( "INFO", "User %s nickname change to %s.\n", c.getUser().c_str(),
 		        c.getNick().c_str() );
+	} else {
+		buff = c.getNick();
+		c.setNick( args->front() );
+		c.reply( format( ":%s!%s NICK %s\r\n", buff.c_str(), c.getHostname().c_str(), c.getNick().c_str() ) );
+		c.setHasGivenNick( true );
 	}
-	c.setNick( args->front() );
-	c.setHasGivenNick( true );
-	c.reply( format( ":ircserv.localhost 001 %s : Welcome to ft_irc %s\r\n",
-	                 c.getNick().c_str(), c.getNick().c_str() ) );
-	logger( "INFO", "New user %s nickname %s set, Connexion etablished !",
-	        c.getUser().c_str(), c.getNick().c_str() );
 }

@@ -7,9 +7,9 @@
 #include "channel.hpp"
 
 void remove_backslash_r( std::string& c ) {
-	int idx = c.find( "\r" );
-	if ( idx != (int) std::string::npos )
-		c.erase( c.begin() + idx );
+	size_t idx = c.find( '\r' );
+	if ( idx != std::string::npos )
+		c.erase( idx, 1 );
 }
 
 std::string trim( const std::string& s ) {

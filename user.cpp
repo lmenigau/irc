@@ -30,14 +30,12 @@ void user( std::list<std::string>* args, Client& c ) {
 		c.reply( format(
 		    ":ircserv.localhost * 461 USER: Not enough parameters\r\n" ) );
 		return;
-	} 
-	else if ( !c.hasGivenPassword() ) {
-		c.reply( ":ircserv.localhost 464 :Password Incorrect" );
+	} else if ( !c.hasGivenPassword() ) {
+		c.reply( ":ircserv.localhost 464 :Password Incorrect\r\n" );
 		logger( "WARNING", "client %d did not give password !", c.getFd() );
 		close( c.getFd() );
 		return;
-	}
-	else if ( c.hasGivenUser() ) {
+	} else if ( c.hasGivenUser() ) {
 		c.reply(
 		    format( ":ircserv.localhost * 462: You may not reregister\r\n" ) );
 		return;
@@ -50,6 +48,11 @@ void user( std::list<std::string>* args, Client& c ) {
 		c.setRealUser( get_realname( args ) );
 		// c.reply( format("~%s\r\n", c.getUser().c_str()));
 		c.reply(
+		    format( ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
+		            "server %s[!%s@%s]\r\n",
+		            c.getNick().c_str(), c.getUser().c_str(), c.getNick().c_str(),
+		            c.getHostname().c_str() ) );
+		c.reply(
 		    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
 		            "version 0.0.1dev\r\n",
 		            c.getNick().c_str() ) );
@@ -59,8 +62,7 @@ void user( std::list<std::string>* args, Client& c ) {
 		            c.getNick().c_str() ) );
 		c.reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
 		                 c.getNick().c_str() ) );
-		logger( "INFO",
-		        "\n\nNew user %s nickname %s set\n, Connexion etablished !",
+		logger( "INFO", "user :%s, nickname :%s, Connexion etablished !\n",
 		        c.getUser().c_str(), c.getNick().c_str() );
 	}
 }

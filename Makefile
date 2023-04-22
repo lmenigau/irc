@@ -46,6 +46,9 @@ fclean: clean
 
 re: all
 
+debug: all
+	./$(NAME) 6667 password
+
 $(OBJ): arte/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 .PHONY: all clean fclean re
