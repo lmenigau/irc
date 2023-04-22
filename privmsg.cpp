@@ -9,14 +9,14 @@
 
 void	privmsg_client(std::list <std::string > * args, Client *c, const std::string &target)
 {
-	for ( t_map_int_client::iterator it = ircserv::_clients.second.begin();
-	      									it != ircserv::_clients.second.end(); it++ ) {
-		if ( it->getNick() == args->front() ) {
-			args->front().append( "@" + ( it->getHostname() ) );
+	for ( t_map_int_client::iterator it = ircserv::_clients.begin();
+	      									it != ircserv::_clients.end(); it++ ) {
+		if ( it->second.getNick() == args->front() ) {
+			args->front().append( "@" + ( it->second.getHostname() ) );
 			std::cout << args->front() << " : " << args->back() << std::endl;
 			// std::cout << send((*it)->getFd(), buf, args->back().length(), 0)
 			// << std::endl;
-			it->reply(
+			it->second.reply(
 			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c->getNick().c_str(),
 			            ( c->getUser() + "@" + c->getHostname() ).c_str(),
 			            target.c_str(), args->back().c_str() ) );

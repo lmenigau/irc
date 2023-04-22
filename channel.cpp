@@ -4,7 +4,7 @@
 #include "typedef.hpp"
 #include <iostream>
 
-map_string_client _clients;
+t_map_string_client _clients;
 
 Channel::Channel( void ) {}
 Channel::~Channel( void ) {}

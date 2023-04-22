@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "client.hpp"
+#include "typedef.hpp"
 
 class Channel {
    private:

@@ -60,8 +60,8 @@ void ircserv::accept_client( epoll_event& ev ) {
 	int fd  = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
-		ircserv::_clients.insert(Client (fd, addr));
-		Client *ptr = &(*ircserv::_clients.find(fd))
+		ircserv::_clients.insert(std::make_pair(fd, Client (fd, addr)));
+		Client *ptr = &(ircserv::_clients.find(fd)->second);
 		epoll_event event = { EPOLLIN, { .ptr = ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 		ptr->buf.reserve( 512 );

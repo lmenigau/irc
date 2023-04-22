@@ -13,8 +13,8 @@
 #include "utils.hpp"
 
 static bool authorize_setting_name( const std::string& name ) {
-	for ( t_map_int_client::iterator it = ircserv::_clients.second.begin();
-	      it != ircserv::_clients.second.end(); it++ ) {
+	for ( t_map_int_client::iterator it = ircserv::_clients.begin();
+	      it != ircserv::_clients.end(); it++ ) {
 		if (it->second.getNick() == name )
 			return ( false );
 	}
