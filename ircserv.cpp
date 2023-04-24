@@ -169,3 +169,16 @@ void ircserv::removeChannel( std::string name ) {
 std::string ircserv::getServername( void ) {
 	return _servername;
 }
+
+void	ircserv::removeClient(Client &c) {
+	std::vector<Client *>::iterator it = _clients.begin();
+	Client * to_delete;
+	for (; it != _clients.end(); it++) {
+		if ((*it)->getFd() == c.getFd()) {
+			to_delete = *it;
+			_clients.erase(it);
+			delete to_delete;
+			break ;
+		}
+	}
+}

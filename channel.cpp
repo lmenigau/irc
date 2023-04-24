@@ -68,3 +68,21 @@ std::string Channel::removeModes( std::string modes ) {
 	}
 	return ( _modes );
 }
+
+void	Channel::sendAll(std::string msg) {
+	std::map<std::string, Client *>::iterator it = _clients.begin();
+	for (; it != _clients.end(); it++) {
+		it->second->reply(msg);
+	}
+	logger("INFO", "%s sent to all client on %s", msg.c_str(), _name.c_str());
+}
+
+void	Channel::sendAll(std::string msg, Client &c) {
+	std::map<std::string, Client *>::iterator it = _clients.begin();
+	for (; it != _clients.end(); it++) {
+		if (it->second->getFd() == c.getFd())
+			continue ;
+		it->second->reply(msg);
+	}
+	logger("INFO", "%s sent to all client on %s else %s", msg.c_str(), _name.c_str(), c.getNick().c_str());
+}

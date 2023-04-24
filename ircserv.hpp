@@ -6,7 +6,7 @@
 /*   By: ccambium <ccambium@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 06:34:50 by ccambium          #+#    #+#             */
-/*   Updated: 2023/04/22 08:34:49 by ccambium         ###   ########.fr       */
+/*   Updated: 2023/04/24 15:17:51 by ccambium         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ class ircserv {
 
 	static void addChannel( std::string&, Client& );
 	static void removeChannel( std::string );
+
+	static void removeClient( Client &c );
 };
 
 #endif

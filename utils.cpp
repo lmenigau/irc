@@ -106,8 +106,8 @@ void welcome(Client * client) {
 		client->reply(
 		    format( ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
 		            "server %s[!%s@%s]\r\n",
-		            client->getNick().c_str(), client->getUser().c_str(),
-		            client->getNick().c_str(), client->getHostname().c_str() ) );
+		            client->getNick().c_str(), client->getNick().c_str(),
+		            client->getUser().c_str(), client->getHostname().c_str() ) );
 		client->reply(
 		    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
 		            "version 0.0.1dev\r\n",

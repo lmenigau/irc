@@ -34,10 +34,11 @@ void join( std::list<std::string>* args, Client& c ) {
 	if ( it == channels.end() ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
-	} else
-		it->second.addClient( c );
-	c.reply( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
-	                 c.getHostname().c_str(), args->front().c_str() ) );
+	}
+	it->second.addClient( c );
+	it->second.sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
+	                            c.getHostname().c_str(),
+	                            args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
 	                 c.getUser().c_str(), args->front().c_str(),
 	                 c.getNick().c_str() ) );
@@ -66,6 +67,8 @@ void pong( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
 	        args->back().c_str() );
+	c.reply( ( format( "PONG %s\r\n", ircserv::getServername().c_str(),
+	                   args->back().c_str() ) ) );
 }
 
 /*IRC MODS:
@@ -134,7 +137,8 @@ void user_mode( Client&     c,
 		return;
 	}
 	if ( target != c.getNick() ) {
-		c.reply( ":ircserv.localhost 502 :Cant change mode for other users\r\n" );
+		c.reply(
+		    ":ircserv.localhost 502 :Cant change mode for other users\r\n" );
 		return;
 	}
 	if ( operation == '+' )
@@ -196,7 +200,7 @@ void handler( std::list<std::string>* args, Client& c ) {
 	std::string commands[COMMAND_COUNT] = { "PASS",    "USER",  "NICK", "JOIN",
 	                                        "PRIVMSG", "CAPLS", "CAP",  "PING",
 	                                        "MODE",    "WHOIS", "QUIT" };
-	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client & c ) = {
+	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client& c ) = {
 	    &pass,  &user, &nick, &join,  &privmsg, &capls,
 	    &capls, &pong, &mode, &whois, &quit };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
