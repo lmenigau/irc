@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <cstdarg>
 #include <string>
-#include "client.hpp"
 #include "channel.hpp"
+#include "client.hpp"
 
 std::string format( std::string format, ... );
 std::string format( std::string format, va_list va_args );
@@ -16,6 +16,6 @@ std::string trim( const std::string& s );
 void        remove_backslash_r( std::string& c );
 Client*     find_client( std::string );
 Channel*    find_channel( std::string );
-void		welcome( Client* );
+void        welcome( Client* );
 
 #endif

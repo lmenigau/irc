@@ -67,7 +67,7 @@ class Client {
 	std::string _user;
 	std::string _realuser;
 	std::string _hostname;
-	bool		_hasBeenWelcomed;
+	bool        _hasBeenWelcomed;
 	bool        _hasGivenNick;
 	bool        _hasGivenUser;
 	bool        _hasGivenPassword;

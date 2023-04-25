@@ -102,21 +102,22 @@ Channel* find_channel( std::string name ) {
 	}
 }
 
-void welcome(Client * client) {
-		client->reply(
-		    format( ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
-		            "server %s[!%s@%s]\r\n",
-		            client->getNick().c_str(), client->getNick().c_str(),
-		            client->getUser().c_str(), client->getHostname().c_str() ) );
-		client->reply(
-		    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
-		            "version 0.0.1dev\r\n",
-		            client->getNick().c_str() ) );
-		client->reply(
-		    format( ":ircserv.localhost 003 %s :This server was created idk "
-		            "like now ?\r\n",
-		            client->getNick().c_str() ) );
-		client->reply( format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
-		                 client->getNick().c_str() ) );
-		client->setHasBeenWelcomed( true );
+void welcome( Client* client ) {
+	client->reply(
+	    format( ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
+	            "server %s[!%s@%s]\r\n",
+	            client->getNick().c_str(), client->getNick().c_str(),
+	            client->getUser().c_str(), client->getHostname().c_str() ) );
+	client->reply(
+	    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
+	            "version 0.0.1dev\r\n",
+	            client->getNick().c_str() ) );
+	client->reply(
+	    format( ":ircserv.localhost 003 %s :This server was created idk "
+	            "like now ?\r\n",
+	            client->getNick().c_str() ) );
+	client->reply(
+	    format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
+	            client->getNick().c_str() ) );
+	client->setHasBeenWelcomed( true );
 }

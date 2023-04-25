@@ -30,9 +30,11 @@ void privmsg( std::list<std::string>* args, Client& c ) {
 	} else if ( isChannel( target ) ) {
 		Channel* channel = find_channel( target );
 		if ( channel ) {
-			channel->sendAll(format( ":%s!%s PRIVMSG %s :%s\r\n", c.getNick().c_str(),
-				            ( c.getUser() + "@" + c.getHostname() ).c_str(),
-				            target.c_str(), args->back().c_str() ), c);
+			channel->sendAll(
+			    format( ":%s!%s PRIVMSG %s :%s\r\n", c.getNick().c_str(),
+			            ( c.getUser() + "@" + c.getHostname() ).c_str(),
+			            target.c_str(), args->back().c_str() ),
+			    c );
 		} else {
 			c.reply( format( ":%s 401 %s %s :No such nick/channel\r\n",
 			                 ircserv::getServername().c_str(),

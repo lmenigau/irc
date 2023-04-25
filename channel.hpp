@@ -36,9 +36,8 @@ class Channel {
 
 	void                            setModes( std::string );
 	std::map<std::string, Client*>& getClients( void );
-	void							sendAll(std::string msg);
-	void							sendAll(std::string msg, Client &);
-
+	void                            sendAll( std::string msg );
+	void                            sendAll( std::string msg, Client& );
 };
 
 #endif

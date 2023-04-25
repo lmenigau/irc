@@ -6,14 +6,14 @@
 
 #define MAX_PORT 65535
 
-int                            ircserv::_port   = 0;
-bool                           ircserv::_failed = false;
-std::string                    ircserv::_password;
-std::string                    ircserv::_servername = "ircserv.localhost";
-std::vector<Client*>           ircserv::_clients;
-int                            ircserv::_pollfd;
-int                            ircserv::_tcp6_socket;
-std::map<std::string, Channel *> ircserv::_channels;
+int                             ircserv::_port   = 0;
+bool                            ircserv::_failed = false;
+std::string                     ircserv::_password;
+std::string                     ircserv::_servername = "ircserv.localhost";
+std::vector<Client*>            ircserv::_clients;
+int                             ircserv::_pollfd;
+int                             ircserv::_tcp6_socket;
+std::map<std::string, Channel*> ircserv::_channels;
 
 void ircserv::initialisation( char* pass, char* port ) {
 	if ( strlen( port ) > 5 ) {
@@ -149,7 +149,7 @@ std::string ircserv::getPassword( void ) {
 	return _password;
 }
 
-std::map<std::string, Channel *>& ircserv::getChannels( void ) {
+std::map<std::string, Channel*>& ircserv::getChannels( void ) {
 	return _channels;
 }
 
@@ -160,7 +160,7 @@ void ircserv::addChannel( std::string& name, Client& client ) {
 }
 
 void ircserv::removeChannel( std::string name ) {
-	std::map<std::string, Channel *>::iterator it = _channels.find( name );
+	std::map<std::string, Channel*>::iterator it = _channels.find( name );
 	if ( it == _channels.end() )
 		return;
 	_channels.erase( it );
@@ -170,15 +170,15 @@ std::string ircserv::getServername( void ) {
 	return _servername;
 }
 
-void	ircserv::removeClient(Client &c) {
-	std::vector<Client *>::iterator it = _clients.begin();
-	Client * to_delete;
-	for (; it != _clients.end(); it++) {
-		if ((*it)->getFd() == c.getFd()) {
+void ircserv::removeClient( Client& c ) {
+	std::vector<Client*>::iterator it = _clients.begin();
+	Client*                        to_delete;
+	for ( ; it != _clients.end(); it++ ) {
+		if ( ( *it )->getFd() == c.getFd() ) {
 			to_delete = *it;
-			_clients.erase(it);
+			_clients.erase( it );
 			delete to_delete;
-			break ;
+			break;
 		}
 	}
 }

@@ -1,9 +1,9 @@
 #include "channel.hpp"
-#include "client.hpp"
-#include "utils.hpp"
 #include <iostream>
 #include <string>
+#include "client.hpp"
 #include "ostream.hpp"
+#include "utils.hpp"
 
 std::map<std::string, Client> _clients;
 
@@ -72,23 +72,24 @@ std::string Channel::removeModes( std::string modes ) {
 	return ( _modes );
 }
 
-void	Channel::sendAll(std::string msg) {
+void Channel::sendAll( std::string msg ) {
 	std::cout << "clients : " << _clients << "\n";
-	std::map<std::string, Client *>::iterator it = _clients.begin();
-	for (; it != _clients.end(); it++) {
-		it->second->reply(msg);
+	std::map<std::string, Client*>::iterator it = _clients.begin();
+	for ( ; it != _clients.end(); it++ ) {
+		it->second->reply( msg );
 	}
-	logger("INFO", "%s sent to all client on %s", msg.c_str(), _name.c_str());
+	logger( "INFO", "%s sent to all client on %s", msg.c_str(), _name.c_str() );
 }
 
-void	Channel::sendAll(std::string msg, Client &c) {
-	std::map<std::string, Client *>::iterator it = _clients.begin();
+void Channel::sendAll( std::string msg, Client& c ) {
+	std::map<std::string, Client*>::iterator it = _clients.begin();
 	std::cout << "clients : " << _clients << "\n";
-	for (; it != _clients.end(); it++) {
-		if (it->second->getFd() != c.getFd()){
-			it->second->reply(msg);
-			logger("DEBUG", "sent to %s", it->first.c_str());
+	for ( ; it != _clients.end(); it++ ) {
+		if ( it->second->getFd() != c.getFd() ) {
+			it->second->reply( msg );
+			logger( "DEBUG", "sent to %s", it->first.c_str() );
 		}
 	}
-	logger("INFO", "%s sent to all client on %s else %s", msg.c_str(), _name.c_str(), c.getNick().c_str());
+	logger( "INFO", "%s sent to all client on %s else %s", msg.c_str(),
+	        _name.c_str(), c.getNick().c_str() );
 }

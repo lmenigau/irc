@@ -6,6 +6,7 @@
 #include <map>
 #include "client.hpp"
 std::ostream& operator<<( std::ostream& os, epoll_event& ev );
-std::ostream& operator<<( std::ostream& os, std::map<std::string, Client *> map);
+std::ostream& operator<<( std::ostream&                  os,
+                          std::map<std::string, Client*> map );
 
 #endif
