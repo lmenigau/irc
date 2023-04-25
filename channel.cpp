@@ -1,6 +1,9 @@
 #include "channel.hpp"
 #include "client.hpp"
 #include "utils.hpp"
+#include <iostream>
+#include <string>
+#include "ostream.hpp"
 
 std::map<std::string, Client> _clients;
 
@@ -11,17 +14,17 @@ Channel::Channel( std::string name ) : _name( name ) {}
 
 Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 	_ops.push_back( &creator );
-	_clients.insert( std::make_pair( creator.getUser(), &creator ) );
+	_clients.insert( std::make_pair( creator.getNick(), &creator ) );
 }
 
 void Channel::addClient( Client& client ) {
-	_clients.insert( std::make_pair( client.getUser(), &client ) );
+	_clients.insert( std::make_pair( client.getNick(), &client ) );
 }
 
 void Channel::removeClient( Client& rclient ) {
 	std::map<std::string, Client*>::iterator it = _clients.begin();
 	while ( it != _clients.end() ) {
-		if ( !it->second->getUser().compare( rclient.getUser() ) ) {
+		if ( it->second->getFd() == rclient.getFd() ) {
 			_clients.erase( it );
 			return;
 		}
@@ -70,6 +73,7 @@ std::string Channel::removeModes( std::string modes ) {
 }
 
 void	Channel::sendAll(std::string msg) {
+	std::cout << "clients : " << _clients << "\n";
 	std::map<std::string, Client *>::iterator it = _clients.begin();
 	for (; it != _clients.end(); it++) {
 		it->second->reply(msg);
@@ -79,6 +83,7 @@ void	Channel::sendAll(std::string msg) {
 
 void	Channel::sendAll(std::string msg, Client &c) {
 	std::map<std::string, Client *>::iterator it = _clients.begin();
+	std::cout << "clients : " << _clients << "\n";
 	for (; it != _clients.end(); it++) {
 		if (it->second->getFd() != c.getFd()){
 			it->second->reply(msg);
