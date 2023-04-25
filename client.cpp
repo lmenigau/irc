@@ -65,7 +65,6 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 }
 
 Client::~Client( void ) {
-	std::cout << "destructor client called" << std::endl;
 	close( _fd );
 }
 

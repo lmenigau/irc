@@ -41,5 +41,4 @@ void privmsg( std::list<std::string>* args, Client& c ) {
 			                 c.getNick().c_str(), target.c_str() ) );
 		}
 	}
-	logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
 }

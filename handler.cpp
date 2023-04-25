@@ -10,7 +10,6 @@
 #define COMMAND_COUNT 12
 
 void pass( std::list<std::string>* args, Client& c ) {
-	logger( "DEBUG", "PASS COMMAND" );
 	if ( args->front().compare( ircserv::getPassword() ) != 0 ) {
 		logger( "ERROR", "client %d : wrong password (%s)!", c.getFd(),
 		        args->front().c_str() );
@@ -60,8 +59,6 @@ std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
 
 void pong( std::list<std::string>* args, Client& c ) {
 	(void) args;
-	logger( "DEBUG", "PING from %s, token = %s", c.getNick().c_str(),
-	        args->back().c_str() );
 	c.reply( ( format( "PONG %s\r\n", ircserv::getServername().c_str(),
 	                   args->back().c_str() ) ) );
 }
@@ -69,7 +66,7 @@ void pong( std::list<std::string>* args, Client& c ) {
 /*IRC MODS:
  *
  * client : ioRZBT
- * server : imRMsuU (+ defaults : nt, +specials : bfkl, +roles:qoahv)
+ * channel : imRMsuU (+ defaults : nt, +specials : bfkl, +roles:qoahv)
  *
  * go see documentation on notion !
  *
@@ -175,7 +172,6 @@ void mode( std::list<std::string>* args, Client& c ) {
 	char        operation = modes[0];
 	modes.erase( 0, 1 );
 	std::string target = args->front();
-	logger( "DEBUG", "target = %s", target.c_str() );
 	if ( isUser( target ) ) {
 		modes = check_user_modes( args->back() );
 		user_mode( c, target, modes, operation );

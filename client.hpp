@@ -19,7 +19,9 @@ class Client {
 
 	// methods
 
-	void reply( std::string const& str );
+	void        reply( std::string const& str );
+	std::string addModes( std::string );
+	std::string removeModes( std::string );
 	// getters
 
 	int         getFd( void );
@@ -44,11 +46,6 @@ class Client {
 	void setRealUser( std::string );
 	void setHostname( struct sockaddr_in6& addr );
 	void setHasBeenWelcomed( bool );
-
-	std::string addModes( std::string );
-	std::string removeModes( std::string );
-
-	// setters
 
 	// state accessors ?
 

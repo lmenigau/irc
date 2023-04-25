@@ -38,18 +38,6 @@ void ircserv::initialisation( char* pass, char* port ) {
 bool ircserv::failed( void ) {
 	return _failed;
 }
-/*
-std::vector<Client>::iterator ircserv::getClientFromVector(int fd)
-{
-
-    std::vector<Client>::iterator it = ircserv::_clients.begin();
-    for (; it != _clients.end(); it++)
-    {
-        if (it->getFd() == fd)
-            return (it);
-    }
-    return (it);
-} */
 
 void ircserv::accept_client( epoll_event& ev ) {
 	sockaddr_in6 addr;
@@ -59,7 +47,6 @@ void ircserv::accept_client( epoll_event& ev ) {
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
-	logger( "INFO", "%d %d", fd, addr.sin6_port );
 	if ( fd >= 0 ) {
 		Client* new_cli = new Client( fd, addr );
 		ircserv::_clients.push_back( new_cli );
@@ -83,8 +70,8 @@ void ircserv::process_events( epoll_event& ev ) {
 			c   = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
 			if ( len == 0 ) {
-				close( c->getFd() );
-				logger( "DEBUG", "closed : %d", c->getFd() );
+				logger( "INFO", "deleted: %d", c->getFd() );
+				ircserv::removeClient( *c );
 				return;
 			}
 			c->buf.append( buf, len );
@@ -92,7 +79,6 @@ void ircserv::process_events( epoll_event& ev ) {
 				size_t pos = c->buf.find( "\n" );
 				if ( pos == std::string::npos )
 					break;
-				logger( "DEBUG", "buf : %s", c->buf.c_str() );
 				std::list<std::string>* args = parse( c->buf.substr( 0, pos ) );
 				handler( args, *c );
 				c->buf.erase( 0, pos + 1 );
@@ -134,7 +120,7 @@ void ircserv::start( void ) {
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
-		logger( "DEBUG", "nev: %d", nev );
+		// logger( "DEBUG", "nev: %d", nev );
 		for ( int i = 0; i < nev; i++ ) {
 			process_events( events[i] );
 		}

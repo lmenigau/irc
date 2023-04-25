@@ -32,7 +32,7 @@ void user( std::list<std::string>* args, Client& c ) {
 		return;
 	} else if ( !c.hasGivenPassword() ) {
 		c.reply( ":ircserv.localhost 464 :Password Incorrect\r\n" );
-		logger( "WARNING", "client %d did not give password !", c.getFd() );
+		logger( "ERROR", "client %d did not give password !", c.getFd() );
 		close( c.getFd() );
 		return;
 	} else if ( c.hasGivenUser() ) {

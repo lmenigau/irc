@@ -30,7 +30,7 @@ void Channel::removeClient( Client& rclient ) {
 		}
 		it++;
 	}
-	logger( "WARNING", "user %s not found in channel %s !",
+	logger( "ERROR", "user %s not found in channel %s !",
 	        rclient.getUser().c_str(), _name.c_str() );
 }
 
@@ -73,23 +73,19 @@ std::string Channel::removeModes( std::string modes ) {
 }
 
 void Channel::sendAll( std::string msg ) {
-	std::cout << "clients : " << _clients << "\n";
+	//std::cout << "clients : " << _clients << "\n";
 	std::map<std::string, Client*>::iterator it = _clients.begin();
 	for ( ; it != _clients.end(); it++ ) {
 		it->second->reply( msg );
 	}
-	logger( "INFO", "%s sent to all client on %s", msg.c_str(), _name.c_str() );
 }
 
 void Channel::sendAll( std::string msg, Client& c ) {
 	std::map<std::string, Client*>::iterator it = _clients.begin();
-	std::cout << "clients : " << _clients << "\n";
+	//std::cout << "clients : " << _clients << "\n";
 	for ( ; it != _clients.end(); it++ ) {
 		if ( it->second->getFd() != c.getFd() ) {
 			it->second->reply( msg );
-			logger( "DEBUG", "sent to %s", it->first.c_str() );
 		}
 	}
-	logger( "INFO", "%s sent to all client on %s else %s", msg.c_str(),
-	        _name.c_str(), c.getNick().c_str() );
 }
