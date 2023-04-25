@@ -7,7 +7,7 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-#define COMMAND_COUNT 11
+#define COMMAND_COUNT 12
 
 void pass( std::list<std::string>* args, Client& c ) {
 	logger( "DEBUG", "PASS COMMAND" );
@@ -224,10 +224,10 @@ void handler( std::list<std::string>* args, Client& c ) {
 	}
 	std::string commands[COMMAND_COUNT] = { "PASS",    "USER",  "NICK", "JOIN",
 	                                        "PRIVMSG", "CAPLS", "CAP",  "PING",
-	                                        "MODE",    "WHOIS", "QUIT" };
+	                                        "MODE",    "WHOIS", "QUIT", "PART" };
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client& c ) = {
 	    &pass,  &user, &nick, &join,  &privmsg, &capls,
-	    &capls, &pong, &mode, &whois, &quit };
+	    &capls, &pong, &mode, &whois, &quit, &part };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {

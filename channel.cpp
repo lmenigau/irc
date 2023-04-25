@@ -80,9 +80,10 @@ void	Channel::sendAll(std::string msg) {
 void	Channel::sendAll(std::string msg, Client &c) {
 	std::map<std::string, Client *>::iterator it = _clients.begin();
 	for (; it != _clients.end(); it++) {
-		if (it->second->getFd() == c.getFd())
-			continue ;
-		it->second->reply(msg);
+		if (it->second->getFd() != c.getFd()){
+			it->second->reply(msg);
+			logger("DEBUG", "sent to %s", it->first.c_str());
+		}
 	}
 	logger("INFO", "%s sent to all client on %s else %s", msg.c_str(), _name.c_str(), c.getNick().c_str());
 }
