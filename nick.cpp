@@ -12,10 +12,10 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-static bool authorize_setting_name( const std::string& name ) {
+bool authorize_setting_name( const std::string& name, Client &c ) {
 	for ( std::vector<Client*>::iterator it = ircserv::_clients.begin();
 	      it != ircserv::_clients.end(); it++ ) {
-		if ( ( *it )->getNick() == name )
+		if ( ( *it )->getNick() == name && (*it)->getFd() != c.getFd())
 			return ( false );
 	}
 	return ( true );
@@ -31,7 +31,7 @@ void nick( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() || args->front() == "" ) {
 		c.reply( format(
 		    ":ircserv.localhost 431 *  NICK: Not enough parameters\r\n" ) );
-	} else if ( !authorize_setting_name( args->front() ) ) {
+	} else if ( !authorize_setting_name( args->front(), c ) && c.isRegistered()) {
 		logger(
 		    "INFO",
 		    "User %s tried to change nickname to %s but it's already taken.\n",
@@ -55,6 +55,10 @@ void nick( std::list<std::string>* args, Client& c ) {
 		logger( "INFO", "User %s nickname change to %s.\n", c.getUser().c_str(),
 		        c.getNick().c_str() );
 	}
-	if ( c.isRegistered() && !c.hasBeenWelcomed() )
-		welcome( &c );
+}
+
+void	nick_notregistered(std::list<std::string> *args, Client &c) {
+	std::string buff = c.getNick();
+	c.setNick( args->front() );
+	c.setHasGivenNick( true );
 }

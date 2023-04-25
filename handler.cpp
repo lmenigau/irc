@@ -1,3 +1,4 @@
+#include "handler.hpp"
 #include <unistd.h>
 #include <iostream>
 #include <list>
@@ -7,12 +8,6 @@
 #include "utils.hpp"
 
 #define COMMAND_COUNT 11
-
-void privmsg( std::list<std::string>* args, Client& c );
-void nick( std::list<std::string>* args, Client& c );
-void user( std::list<std::string>* args, Client& c );
-void whois( std::list<std::string>* args, Client& c );
-void quit( std::list<std::string>* args, Client& c );
 
 void pass( std::list<std::string>* args, Client& c ) {
 	logger( "DEBUG", "PASS COMMAND" );
@@ -26,19 +21,19 @@ void pass( std::list<std::string>* args, Client& c ) {
 }
 
 void join( std::list<std::string>* args, Client& c ) {
-	std::map<std::string, Channel>           channels = ircserv::getChannels();
-	std::map<std::string, Channel>::iterator it;
+	std::map<std::string, Channel*>           channels = ircserv::getChannels();
+	std::map<std::string, Channel*>::iterator it;
 	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
 	if ( it == channels.end() ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
-	}
-	it->second.addClient( c );
-	it->second.sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
-	                            c.getHostname().c_str(),
-	                            args->front().c_str() ) );
+	} else
+		it->second->addClient( c );
+	it->second->sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
+	                             c.getHostname().c_str(),
+	                             args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
 	                 c.getUser().c_str(), args->front().c_str(),
 	                 c.getNick().c_str() ) );
@@ -191,10 +186,40 @@ void mode( std::list<std::string>* args, Client& c ) {
 	}
 }
 
+void not_registered( std::list<std::string>* args, Client& c ) {
+	std::string commands[3] = { "PASS", "USER", "NICK" };
+	void ( *handlers[3] )( std::list<std::string>*, Client& c ) = {
+	    pass, user, nick_notregistered };
+	for ( size_t i = 0; i < 3; i++ ) {
+		//	std::cout << args->front() << std::endl;
+		if ( !args->front().compare( commands[i] ) ) {
+			args->pop_front();
+			remove_backslash_r( args->back() );
+			handlers[i]( args, c );
+			break;
+		}
+	}
+	if ( c.isRegistered() && !c.hasBeenWelcomed() && authorize_setting_name(c.getNick(), c)) {
+		c.reply( format( ":%s!%s NICK %s\r\n", c.getUser().c_str(),
+						c.getHostname().c_str(), c.getNick().c_str() ) );
+		welcome( &c );
+	}
+	else if (c.isRegistered()) {
+		c.setHasGivenNick(false);
+		c.reply( format(
+		    ":ircserv.localhost 433 * %s : Nickname is already in use\r\n",
+		    c.getNick().c_str() ) );
+	}
+}
+
 void handler( std::list<std::string>* args, Client& c ) {
 	if ( args->size() == 1 ) {
 		c.reply( format( ":ircserv.localhost 461 %s :Not enough parameters\r\n",
 		                 args->front().c_str() ) );
+		return;
+	}
+	if ( !c.isRegistered() ) {
+		not_registered( args, c );
 		return;
 	}
 	std::string commands[COMMAND_COUNT] = { "PASS",    "USER",  "NICK", "JOIN",

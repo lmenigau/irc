@@ -96,7 +96,7 @@ Client* find_client( std::string nick ) {
 
 Channel* find_channel( std::string name ) {
 	try {
-		return ( &ircserv::getChannels().at( name ) );
+		return ( ircserv::getChannels().at( name ) );
 	} catch ( std::out_of_range& e ) {
 		return ( NULL );
 	}

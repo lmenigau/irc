@@ -13,7 +13,7 @@ std::string                    ircserv::_servername = "ircserv.localhost";
 std::vector<Client*>           ircserv::_clients;
 int                            ircserv::_pollfd;
 int                            ircserv::_tcp6_socket;
-std::map<std::string, Channel> ircserv::_channels;
+std::map<std::string, Channel *> ircserv::_channels;
 
 void ircserv::initialisation( char* pass, char* port ) {
 	if ( strlen( port ) > 5 ) {
@@ -149,18 +149,18 @@ std::string ircserv::getPassword( void ) {
 	return _password;
 }
 
-std::map<std::string, Channel>& ircserv::getChannels( void ) {
+std::map<std::string, Channel *>& ircserv::getChannels( void ) {
 	return _channels;
 }
 
 void ircserv::addChannel( std::string& name, Client& client ) {
 	if ( _channels.find( name ) != _channels.end() )
 		return;
-	_channels.insert( std::make_pair( name, Channel( client, name ) ) );
+	_channels.insert( std::make_pair( name, new Channel( client, name ) ) );
 }
 
 void ircserv::removeChannel( std::string name ) {
-	std::map<std::string, Channel>::iterator it = _channels.find( name );
+	std::map<std::string, Channel *>::iterator it = _channels.find( name );
 	if ( it == _channels.end() )
 		return;
 	_channels.erase( it );

@@ -48,7 +48,5 @@ void user( std::list<std::string>* args, Client& c ) {
 		c.setRealUser( get_realname( args ) );
 		// c.reply( format("~%s\r\n", c.getUser().c_str()));
 		c.setHasGivenUser( true );
-		if (c.isRegistered() &&  !c.hasBeenWelcomed())
-			welcome(&c);
 	}
 }
