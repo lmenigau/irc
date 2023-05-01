@@ -1,9 +1,9 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <map>
 #include <string>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 class Client {
    public:
@@ -20,7 +20,9 @@ class Client {
 
 	// methods
 
-	void reply( std::string const& str );
+	void        reply( std::string const& str );
+	std::string addModes( std::string );
+	std::string removeModes( std::string );
 	// getters
 
 	int         getFd( void );
@@ -33,22 +35,18 @@ class Client {
 
 	// setters
 
-	void        setCap( std::string );
-	void        setNick( std::string );
-	void        setHasGivenPassword( bool );
-	void        setHasGivenUser( bool );
-	void        setHasGivenNick( bool );
-	void        setIsPolled( bool );
-	void        setFd( int );
-	void        setUser( std::string );
-	void        setModes( std::string );
-	void 		setRealUser( std::string );
-	void 		setHostname( struct sockaddr_in6& addr );
-	
-	std::string addModes( std::string );
-	std::string removeModes( std::string );
-
-	// setters
+	void setCap( std::string );
+	void setNick( std::string );
+	void setHasGivenPassword( bool );
+	void setHasGivenUser( bool );
+	void setHasGivenNick( bool );
+	void setIsPolled( bool );
+	void setFd( int );
+	void setUser( std::string );
+	void setModes( std::string );
+	void setRealUser( std::string );
+	void setHostname( struct sockaddr_in6& addr );
+	void setHasBeenWelcomed( bool );
 
 	// state accessors ?
 
@@ -57,6 +55,7 @@ class Client {
 	bool hasGivenUser( void );
 	bool hasGivenPassword( void );
 	bool isRegistered( void );
+	bool hasBeenWelcomed( void );
 
    private:
 	int         _fd;
@@ -66,6 +65,7 @@ class Client {
 	std::string _user;
 	std::string _realuser;
 	std::string _hostname;
+	bool        _hasBeenWelcomed;
 	bool        _hasGivenNick;
 	bool        _hasGivenUser;
 	bool        _hasGivenPassword;

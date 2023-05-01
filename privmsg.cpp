@@ -7,7 +7,7 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-void	privmsg_client(std::list <std::string > * args, Client *c, const std::string &target)
+void	privmsg_client(std::list <std::string > * args, Client &c, const std::string &target)
 {
 	for ( t_map_int_client::iterator it = ircserv::_clients.begin();
 	      									it != ircserv::_clients.end(); it++ ) {
@@ -17,43 +17,63 @@ void	privmsg_client(std::list <std::string > * args, Client *c, const std::strin
 			// std::cout << send((*it)->getFd(), buf, args->back().length(), 0)
 			// << std::endl;
 			it->second.reply(
-			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c->getNick().c_str(),
-			            ( c->getUser() + "@" + c->getHostname() ).c_str(),
+			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c.getNick().c_str(),
+			            ( c.getUser() + "@" + c.getHostname() ).c_str(),
 			            target.c_str(), args->back().c_str() ) );
+			c.reply( format( ":%s!~%s PRIVMSG %s :%s\r\n", c.getNick().c_str(),
+			                 ( c.getUser() + "@" + c.getHostname() ).c_str(),
+			                 target.c_str(), args->back().c_str() ) );
+		} else if ( isChannel( target ) ) {
+			Channel* channel = find_channel( target );
+			if ( channel ) {
+				channel->sendAll(
+				    format( ":%s!%s PRIVMSG %s :%s\r\n", c.getNick().c_str(),
+				            ( c.getUser() + "@" + c.getHostname() ).c_str(),
+				            target.c_str(), args->back().c_str() ),
+				    c );
+			} else {
+				c.reply( format( ":%s 401 %s %s :No such nick/channel\r\n",
+				                 ircserv::getServername().c_str(),
+				                 c.getNick().c_str(), target.c_str() ) );
+			}
+		} else {
+			c.reply( format( ":%s 401 %s %s :No such nick/channel\r\n",
+			                 ircserv::getServername().c_str(),
+			                 c.getNick().c_str(), target.c_str() ) );
 		}
-	}
+	}	
 }
 
-void	privmsg_channel(std::list <std::string> * args, Client *c, const std::string &target)
+void	privmsg_channel(std::list <std::string> * args, Client &c, const std::string &target)
 {
 	t_map_channel           channels = ircserv::getChannels();
 	t_map_channel::iterator it = channels.find(target);
 
 	if (it == channels.end())
 	{
-		c->reply( format ("%s!~%s@%s 403 %s :No such channel\r\n", c->getNick().c_str(),
-															c->getUser().c_str(),
-															c->getHostname().c_str(),
+		c.reply( format ("%s!~%s@%s 403 %s :No such channel\r\n", c.getNick().c_str(),
+															c.getUser().c_str(),
+															c.getHostname().c_str(),
 															target.c_str()));
 		return ;
 	}
 	else
 	{
-		for (t_vector_client_ref::iterator cli_list = it->second.getClients().begin();
+		for (t_map_string_client_ref::iterator cli_list = it->second.getClients().begin();
 															cli_list != it->second.getClients().end();
 															cli_list++) {
-			std::string rep = format( ":%s!~%s@%s PRIVMSG %s: %s\r\n", c->getNick().c_str(),
-																	c->getUser().c_str(), c->getHostname().c_str(),
+			std::string rep = format( ":%s!~%s@%s PRIVMSG %s: %s\r\n", c.getNick().c_str(),
+																	c.getUser().c_str(), c.getHostname().c_str(),
 																	target.c_str(), args->back().c_str());
 			std::cout << rep << std::endl;
-			( *cli_list)->reply( format( ":%s!~%s@%s PRIVMSG %s : %s\r\n", c->getNick().c_str(),
-																	c->getUser().c_str(), c->getHostname().c_str(),
+			cli_list->second->reply( format( ":%s!~%s@%s PRIVMSG %s : %s\r\n", c.getNick().c_str(),
+																	c.getUser().c_str(), c.getHostname().c_str(),
 																	target.c_str(), args->back().c_str()));
 		}													
 	}														
 }
 
-void privmsg( std::list<std::string>* args, Client *c) {
+void privmsg( std::list<std::string>* args, Client &c) {
 	if ( args->empty() )
 		return;
 	std::string target = args->front();
@@ -64,5 +84,5 @@ void privmsg( std::list<std::string>* args, Client *c) {
 		privmsg_client(args, c, target);
 	// void *buf = (const_cast<char *>(args->back().c_str()));
 	
-	logger( "INFO", "%s wants to send a message", c->getNick().c_str() );
+	logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
 }

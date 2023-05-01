@@ -20,6 +20,7 @@ Client::Client() {
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
 	_isPolled         = false;
+	_hasBeenWelcomed  = false;
 }
 
 Client::Client(Client const &a)
@@ -61,10 +62,11 @@ Client::Client( int fd ) {
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
 	_isPolled         = false;
+	_hasBeenWelcomed  = false;
 }
 
-Client::Client( int fd, sockaddr_in6 &addr){
-	setHostname(addr);
+Client::Client( int fd, sockaddr_in6& addr ) {
+	setHostname( addr );
 	_fd               = fd;
 	start             = 0;
 	end               = 0;
@@ -77,6 +79,7 @@ Client::Client( int fd, sockaddr_in6 &addr){
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
 	_isPolled         = false;
+	_hasBeenWelcomed  = false;
 }
 
 Client::~Client( void ) {
@@ -155,6 +158,10 @@ void Client::setFd( int fd ) {
 	_fd = fd;
 }
 
+void Client::setHasBeenWelcomed( bool f ) {
+	_hasBeenWelcomed = f;
+}
+
 void Client::setHostname( sockaddr_in6& addr ) {
 	char str_addr[256];
 	char hostname[256];
@@ -200,6 +207,10 @@ bool Client::hasGivenPassword( void ) {
 
 bool Client::isRegistered( void ) {
 	return ( _hasGivenNick && _hasGivenUser && _hasGivenPassword );
+}
+
+bool Client::hasBeenWelcomed( void ) {
+	return _hasBeenWelcomed;
 }
 
 std::string Client::addModes( std::string modes ) {

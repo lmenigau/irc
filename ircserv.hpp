@@ -6,7 +6,7 @@
 /*   By: ccambium <ccambium@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 06:34:50 by ccambium          #+#    #+#             */
-/*   Updated: 2023/04/17 11:07:00 by ccambium         ###   ########.fr       */
+/*   Updated: 2023/04/25 11:13:17 by ccambium         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class ircserv {
 	static t_map_channel 										_channels;
 	static int                            _pollfd;
 	static int                            _tcp6_socket;
+	static std::string			_servername;
 
 	static void accept_client( epoll_event& );
 	static void process_events( epoll_event& );
@@ -53,9 +54,13 @@ class ircserv {
 	static int                             getPollfd( void );
 	static std::string                     getPassword( void );
 	static t_map_channel& getChannels( void );
+	static std::string                      getServername( void );
+
 
 	static void addChannel( std::string&, Client & );
 	static void removeChannel( std::string );
+
+	static void removeClient( Client& c );
 };
 
 #endif

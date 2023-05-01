@@ -1,10 +1,13 @@
 #include "channel.hpp"
+#include <iostream>
+#include <string>
 #include "client.hpp"
+#include "ostream.hpp"
 #include "utils.hpp"
 #include "typedef.hpp"
 #include <iostream>
 
-t_map_string_client _clients;
+t_map_string_client_ref _clients;
 
 Channel::Channel( void ) {}
 Channel::~Channel( void ) {}
@@ -13,23 +16,23 @@ Channel::Channel( std::string name ) : _name( name ) {}
 
 Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 	_ops.push_back( &creator );
-	_clients.push_back( &creator );
+	_clients.insert( std::make_pair( creator.getNick(), &creator ) );
 }
 
-void Channel::addClient( Client *client ) {
-	_clients.push_back ( client );
+void Channel::addClient( Client &client ) {
+	_clients.insert( std::make_pair( client.getNick(), &client ) );
 }
 
 void Channel::removeClient( Client& rclient ) {
-	t_vector_client_ref::iterator it = _clients.begin();
+	t_map_string_client_ref::iterator it = _clients.begin();
 	while ( it != _clients.end() ) {
-		if ( !( *it )->getUser().compare( rclient.getUser() ) ) {
+		if ( it->second->getFd() == rclient.getFd() ) {
 			_clients.erase( it );
 			return;
 		}
 		it++;
 	}
-	logger( "WARNING", "user %s not found in channel %s !",
+	logger( "ERROR", "user %s not found in channel %s !",
 	        rclient.getUser().c_str(), _name.c_str() );
 }
 
@@ -39,7 +42,7 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
-t_vector_client_ref& Channel::getClients( void ) {
+t_map_string_client_ref& Channel::getClients( void ) {
 	return _clients;
 }
 
@@ -69,4 +72,22 @@ std::string Channel::removeModes( std::string modes ) {
 		_modes.erase( it );
 	}
 	return ( _modes );
+}
+
+void Channel::sendAll( std::string msg ) {
+	//std::cout << "clients : " << _clients <<
+	t_map_string_client_ref::iterator it = _clients.begin();
+	for ( ; it != _clients.end(); it++ ) {
+		it->second->reply( msg );
+	}
+}
+
+void Channel::sendAll( std::string msg, Client& c ) {
+	t_map_string_client_ref::iterator it = _clients.begin();
+	//std::cout << "clients : " << _clients << "\n";
+	for ( ; it != _clients.end(); it++ ) {
+		if ( it->second->getFd() != c.getFd() ) {
+			it->second->reply( msg );
+		}
+	}
 }

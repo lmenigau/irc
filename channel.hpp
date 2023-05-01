@@ -8,7 +8,7 @@
 
 class Channel {
    private:
-	t_vector_client_ref	             _clients;
+	t_map_string_client_ref             _clients;
 	std::string                    _modes;
 	std::string                    _name;
 	std::string                    _topic;
@@ -19,15 +19,14 @@ class Channel {
 	t_vector_client_ref          _founder;
 	std::vector<std::string>       _banned;
 	std::string                    _key;
-//	int                            _limit;
+	//	int                            _limit;
 
-
-  public :
-  Channel();
+   public:
+	Channel();
 	Channel( std::string );
 	Channel( Client& creator, const std::string& name );
 	~Channel();
-	void addClient( Client* );
+	void addClient( Client & );
 	void removeClient( Client& );
 	void changeModes( int );
 
@@ -37,7 +36,9 @@ class Channel {
 	std::string getModes( void );
 
 	void                            setModes( std::string );
-	t_vector_client_ref& getClients( void );
+	t_map_string_client_ref& getClients( void );
+	void                            sendAll( std::string msg );
+	void                            sendAll( std::string msg, Client& );
 };
 
 #endif

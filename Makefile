@@ -7,6 +7,7 @@ SRC = channel.cpp\
 	  	handler.cpp\
 		ircserv.cpp\
 		join.cpp \
+		leave.cpp\
 		logger.cpp\
 		main.cpp\
 		nick.cpp \
@@ -46,6 +47,9 @@ fclean: clean
 	rm -f $(NAME)
 
 re: all
+
+debug: all
+	./$(NAME) 6667 password
 
 $(OBJ): arte/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

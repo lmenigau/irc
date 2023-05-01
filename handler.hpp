@@ -6,6 +6,17 @@
 #include "client.hpp"
 #include "irc.hpp"
 
-void handler( std::list<std::string>* args, Client *c );
+void handler( std::list<std::string>* args, Client& c );
+bool authorize_setting_name( const std::string& name, Client& c );
+
+void privmsg( std::list<std::string>* args, Client& c );
+void nick( std::list<std::string>* args, Client& c );
+void user( std::list<std::string>* args, Client& c );
+void whois( std::list<std::string>* args, Client& c );
+void quit( std::list<std::string>* args, Client& c );
+void part( std::list<std::string>* args, Client& c );
+void join( std::list<std::string>* args, Client &c);
+
+void nick_notregistered( std::list<std::string>* args, Client& c );
 
 #endif
