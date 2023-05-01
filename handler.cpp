@@ -101,6 +101,11 @@ void user_mode( Client     &c,
                 std::string target,
                 std::string modes,
                 char        operation ) {
+                	(void) c;
+                	(void) target;
+                	(void) modes;
+                	(void) operation;
+                	/*
 	if ( modes.empty() ) {
 		c.reply( format( ":ircserv.localhost 501 %s :Unknown MODE flag\r\n",
 		                 c.getNick().c_str() ) );
@@ -118,7 +123,7 @@ void user_mode( Client     &c,
 	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 	        modes.c_str() );
 	c.reply( format( ":ircserv.localhost 221 %s %s\r\n", c.getUser().c_str(),
-	                 modes.c_str() ) );
+	                 modes.c_str() ) );*/
 }
 
 void channel_mode( Client     &c,

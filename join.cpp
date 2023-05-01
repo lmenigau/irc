@@ -45,7 +45,7 @@ void join( std::list<std::string>* args, Client &c)
 	}
 	else 
 		  it->second.addClient( c );
-	c.reply( format( ":%s!foo.example.bar JOIN %s\r\n", c.getNick().c_str(),
+	c.reply( format( ":%s!ircserv.localhost JOIN %s\r\n", c.getNick().c_str(),
 	                 args->front().c_str() ) );
     reply_to_join(args->front(), c, it);
 	c.reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
