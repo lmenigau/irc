@@ -11,22 +11,22 @@
 /* ************************************************************************** */
 
 #ifndef IRCSERV_HPP
-#define IRCSERV_HPP
+# define IRCSERV_HPP
 
-#include <arpa/inet.h>
-#include "typedef.hpp"
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <map>
-#include "channel.hpp"
-#include "client.hpp"
-#include "sys/epoll.h"
+# include <arpa/inet.h>
+# include "typedef.hpp"
+# include <netdb.h>
+# include <netinet/in.h>
+# include <sys/socket.h>
+# include <unistd.h>
+# include <cstdio>
+# include <cstdlib>
+# include <cstring>
+# include <iostream>
+# include <map>
+# include "channel.hpp"
+# include "client.hpp"
+# include "sys/epoll.h"
 
 class ircserv {
 	public:
@@ -36,7 +36,7 @@ class ircserv {
 	static int                            _port;
 	static bool                           _failed;
 	static std::string                    _password;
-	static t_map_channel 										_channels;
+	static t_map_channel 				  _channels;
 	static int                            _pollfd;
 	static int                            _tcp6_socket;
 	static std::string			_servername;

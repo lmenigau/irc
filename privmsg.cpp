@@ -59,8 +59,8 @@ void	privmsg_channel(std::list <std::string> * args, Client &c, const std::strin
 	}
 	else
 	{
-		for (t_map_string_client_ref::iterator cli_list = ircserv::getChannels()->second.getClients().begin();
-															cli_list != ircserv::getChannels()->second.getClients().end();
+		for (t_map_string_client_ref::iterator cli_list = it->second.getClients().begin();
+															cli_list != it->second.getClients().end();
 															cli_list++) {
 															std::cout << "okokokok" << std::endl;
 			std::string rep = format( ":%s!~%s@%s PRIVMSG %s: %s\r\n", c.getNick().c_str(),

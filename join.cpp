@@ -6,6 +6,8 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
+
+//To modify, ops with @ and other without
 static void reply_to_join(const std::string &channel_name, Client &c,
                              t_map_channel::iterator it)
 {
@@ -35,8 +37,9 @@ void join( std::list<std::string>* args, Client &c)
 {
 	t_map_channel           channels = ircserv::getChannels();
 	t_map_channel::iterator it;
+	//checker que le nom du chann commence par #
 	/// args->front().erase( args->front().length() - 1, 1 );
-	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
+	logger( "INFO", "%s joined channel |%s|", c.getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
 	if ( it == channels.end() ) {
@@ -44,7 +47,9 @@ void join( std::list<std::string>* args, Client &c)
 		it = ircserv::getChannels().find( args->front() );
 	}
 	else 
+		  {
 		  it->second.addClient( c );
+		  }
 	c.reply( format( ":%s!ircserv.localhost JOIN %s\r\n", c.getNick().c_str(),
 	                 args->front().c_str() ) );
     reply_to_join(args->front(), c, it);
