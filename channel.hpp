@@ -25,6 +25,7 @@ class Channel {
 	Channel();
 	Channel( std::string );
 	Channel( Client& creator, const std::string& name );
+	Channel( const Channel &a);
 	~Channel();
 	void addClient( Client & );
 	void removeClient( Client& );

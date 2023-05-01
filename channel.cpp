@@ -20,8 +20,17 @@ Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 }
 
 void Channel::addClient( Client &client ) {
+	std::cout << "addclients" << std::endl;
 	_clients.insert( std::make_pair( client.getNick(), &client ) );
+	for (t_map_string_client_ref::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		std::cout << "DEBUUUF" <<it->second->getNick() << std::endl;;
+	}
 }
+
+Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name), 
+									_topic(a._topic), _password(a._password), _ops(a._ops), _halfops(a._halfops), _voiced(a._voiced), _founder(a._founder), _banned(a._banned), _key(a._key)
+{}									
 
 void Channel::removeClient( Client& rclient ) {
 	t_map_string_client_ref::iterator it = _clients.begin();
