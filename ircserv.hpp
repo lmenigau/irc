@@ -31,7 +31,7 @@
 class ircserv {
    private:
 	ircserv();
-	static t_vector_client				  _clients;
+	static t_map_client				  _clients;
 	static int                            _port;
 	static bool                           _failed;
 	static std::string                    _password;
@@ -55,7 +55,7 @@ class ircserv {
 	static t_map_channel& getChannels( void );
 	static std::string                      getServername( void );
 
-	static t_vector_client &getClients( void );
+	static t_map_client &getClients( void );
 	static void addChannel( std::string&, Client & );
 	static void removeChannel( std::string );
 

@@ -10,7 +10,7 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-t_vector_client		ircserv::_clients;
+t_map_client		ircserv::_clients;
 std::string	    	ircserv::_servername = "ircserv::";
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
@@ -49,8 +49,8 @@ void ircserv::accept_client( epoll_event& ev ) {
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
-		ircserv::_clients.push_back(Client (fd, addr));
-		Client *ptr = &(ircserv::_clients.back());
+		ircserv::_clients.insert(std::make_pair(fd, Client (fd, addr)));
+		Client *ptr = &(ircserv::_clients.find(fd)->second);
 		epoll_event event = { EPOLLIN, { .ptr = ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 		ptr->buf.reserve( 512 );
@@ -156,7 +156,7 @@ t_map_channel& ircserv::getChannels( void ) {
 	return _channels;
 }
 
-t_vector_client & ircserv::getClients(void) {
+t_map_client & ircserv::getClients(void) {
 	return _clients;
 }
 
@@ -177,12 +177,8 @@ std::string ircserv::getServername( void ) {
 }
 
 void ircserv::removeClient( Client& c ) {
-	t_vector_client::iterator it;
-	for (it = ircserv::getClients().begin(); it != ircserv::getClients().end(); it++)
-	{
-	(void) c;
-
-		if (it->getFd() == c.getFd())
-			ircserv::getClients().erase( it );
-	}
+	t_map_client::iterator it;
+	it = _clients.find(c.getFd());
+	if (it != _clients.end())
+		_clients.erase(it);
 }

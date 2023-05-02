@@ -9,14 +9,14 @@
 
 void	privmsg_client(std::list <std::string > * args, Client &c, const std::string &target)
 {
-	for ( t_vector_client::iterator it = ircserv::getClients().begin();
+	for ( t_map_client::iterator it = ircserv::getClients().begin();
 	      									it != ircserv::getClients().end(); it++ ) {
-		if ( it->getNick() == args->front() ) {
-			args->front().append( "@" + ( it->getHostname() ) );
+		if ( it->second.getNick() == args->front() ) {
+			args->front().append( "@" + ( it->second.getHostname() ) );
 			//std::cout << args->front() << " : " << args->back() << std::endl;
 			// std::cout << send((*it)->getFd(), buf, args->back().length(), 0)
 			// << std::endl;
-			it->reply(
+			it->second.reply(
 			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c.getNick().c_str(),
 			            ( c.getUser() + "@" + c.getHostname() ).c_str(),
 			            target.c_str(), args->back().c_str() ) );
@@ -41,7 +41,7 @@ void	privmsg_client(std::list <std::string > * args, Client &c, const std::strin
 			                 ircserv::getServername().c_str(),
 			                 c.getNick().c_str(), target.c_str() ) );
 		}
-	}	
+	}
 }
 
 void	privmsg_channel(std::list <std::string> * args, Client &c, const std::string &target)
@@ -70,8 +70,8 @@ void	privmsg_channel(std::list <std::string> * args, Client &c, const std::strin
 				( *cli_list )->reply( format( ":%s!~%s@%s PRIVMSG %s : %s\r\n", c.getNick().c_str(),
 																	c.getUser().c_str(), c.getHostname().c_str(),
 																	target.c_str(), args->back().c_str()));
-		}													
-	}														
+		}
+	}
 }
 
 void privmsg( std::list<std::string>* args, Client &c) {
@@ -84,6 +84,6 @@ void privmsg( std::list<std::string>* args, Client &c) {
 	else
 		privmsg_client(args, c, target);
 	// void *buf = (const_cast<char *>(args->back().c_str()));
-	
+
 	//logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
 }

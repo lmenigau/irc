@@ -13,9 +13,9 @@
 #include "utils.hpp"
 
 bool authorize_setting_name( const std::string& name, Client& c ) {
-	for ( t_vector_client::iterator it = ircserv::getClients().begin();
+	for ( t_map_client::iterator it = ircserv::getClients().begin();
 	      it != ircserv::getClients().end(); it++ ) {
-		if ( it->getNick() == name && it->getFd() != c.getFd() )
+		if ( it->second.getNick() == name && it->second.getFd() != c.getFd() )
 			return ( false );
 	}
 	return ( true );
