@@ -7,8 +7,8 @@
 #include "typedef.hpp"
 #include <iostream>
 
-Channel::Channel( void ) {}
-Channel::~Channel( void ) {}
+ Channel::~Channel() {}
+ Channel::Channel( void ) {}
 
 Channel::Channel( std::string name ) : _name( name ) {}
 
@@ -18,13 +18,7 @@ Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 }
 
 void Channel::addClient( Client &client ) {
-	std::cout << "map before :" << _clients.size() << std::endl;
 	_clients.insert( std::make_pair( client.getNick(), &client ) );
-	std::cout << "map cient size :" << _clients.size() << std::endl;
-	for (t_map_string_client_ref::iterator it = _clients.begin(); it != _clients.end(); it++)
-	{
-		std::cout << "DEBUUUF" <<it->second->getNick() << std::endl;;
-	}
 }
 
 Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name), 

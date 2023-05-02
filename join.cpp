@@ -48,7 +48,10 @@ void join( std::list<std::string>* args, Client &c)
 	}
 	else 
 		  {
-		  it->second.addClient( c );
+			display_elem(it);
+		  	ircserv::getChannels().find(args->front())->second.getClients().insert(std::make_pair(c.getNick(), &c));
+			std::cout << "after :" << std::endl;
+			display_elem(it);
 		  }
 	c.reply( format( ":%s!ircserv.localhost JOIN %s\r\n", c.getNick().c_str(),
 	                 args->front().c_str() ) );

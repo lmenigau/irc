@@ -7,6 +7,14 @@
 #include "client.hpp"
 #include "ircserv.hpp"
 
+void	display_elem(t_map_channel::iterator channel)
+{
+	for (t_map_string_client_ref::iterator it = channel->second.getClients().begin(); it != channel->second.getClients().end(); it++)
+	{
+		std::cout << it->first << std::endl;
+	}
+}
+
 void remove_backslash_r( std::string& c ) {
 	size_t idx = c.find( '\r' );
 	if ( idx != std::string::npos )

@@ -6,6 +6,7 @@
 #include <string>
 #include "channel.hpp"
 #include "client.hpp"
+#include "typedef.hpp"
 
 std::string format( std::string format, ... );
 std::string format( std::string format, va_list va_args );
@@ -17,5 +18,5 @@ void        remove_backslash_r( std::string& c );
 Client*     find_client( std::string );
 Channel*    find_channel( std::string );
 void        welcome( Client* );
-
+void	display_elem(t_map_channel::iterator channel);
 #endif
