@@ -85,6 +85,11 @@ void Channel::sendAll( std::string msg ) {
 	}
 }
 
+t_vetor_client_ptr &Channel::getOps(void)
+{
+	return (_ops);
+}
+
 void Channel::sendAll( std::string msg, Client& c ) {
 	t_vector_client_ptr::iterator it = _clients.begin();
 	//std::cout << "clients : " << _clients << "\n";

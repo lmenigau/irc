@@ -33,8 +33,9 @@ class Channel {
 
 	std::string addModes( std::string );
 	std::string removeModes( std::string );
-
+	t_vector_client_ptr &getOps(void);
 	std::string getModes( void );
+	
 
 	void                            setModes( std::string );
 	t_vector_client_ptr& getClients( void );
