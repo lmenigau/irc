@@ -38,6 +38,7 @@ Client::Client(Client const &a)
 	this->_hasGivenUser     = a._hasGivenUser;
 	this->_hasGivenPassword = a._hasGivenPassword;
 	this->_isPolled         = a._isPolled;
+	this->_hasBeenWelcomed  = a._hasBeenWelcomed;
 }
 
 void Client::reply( std::string const& str ) {
