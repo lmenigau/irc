@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "ircserv.hpp"
 #include "utils.hpp"
-#include "channel.hpp"
 
 Client::Client() {
 	_fd               = -1;
@@ -168,10 +167,10 @@ void Client::setHostname( sockaddr_in6& addr ) {
 
 	_hostname = "";
 	if ( !inet_ntop( AF_INET6, &addr.sin6_addr, str_addr, 256 ) )
-		return ( perror( "ircserv" ) );
+		logger("ERROR", strerror( errno ) );
 	if ( getnameinfo( (struct sockaddr*) &addr, sizeof( addr ), hostname, 256,
 	                  NULL, 0, 0 ) != 0 )
-		return ( perror( "ircserv" ) );
+		logger("ERROR", strerror( errno ) );
 	_hostname = hostname;
 }
 

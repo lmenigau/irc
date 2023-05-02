@@ -3,6 +3,7 @@
 #include "ostream.hpp"
 #include "parsing.hpp"
 #include "utils.hpp"
+#include <cerrno>
 
 #define MAX_PORT 65535
 
@@ -60,7 +61,7 @@ void ircserv::accept_client( epoll_event& ev ) {
 void ircserv::process_events( epoll_event& ev ) {
 	char    buf[512];
 	Client* c;
-	size_t  len;
+	ssize_t  len;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
 			accept_client( ev );
@@ -68,7 +69,10 @@ void ircserv::process_events( epoll_event& ev ) {
 		} else {
 			c   = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
-			std::cout << c->getFd() << std::endl;
+			if ( len < 0 ) {
+				logger("WARNING", strerror(errno));
+				return ;
+			}
 			if ( len == 0 ) {
 				logger( "INFO", "deleted: %d", c->getFd() );
 				ircserv::removeClient( *c );
@@ -97,6 +101,9 @@ void ircserv::process_events( epoll_event& ev ) {
 		len = c->out.copy( buf, 512 );
 		logger( "DEBUG", "bruuh buf : %s", c->buf.c_str() );
 		len = write( c->getFd(), buf, len );
+		if (len < 1) {
+			logger("WARNING", "useless event detected");
+		}
 		c->out.erase( 0, len );
 		if ( c->out.empty() ) {
 			epoll_event event = { EPOLLIN, { c } };
@@ -116,7 +123,7 @@ void ircserv::start( void ) {
 	setsockopt( _tcp6_socket, SOL_SOCKET, SO_REUSEADDR, &a, sizeof( a ) );
 	int ret = bind( _tcp6_socket, (sockaddr*) &addr, sizeof( addr ) );
 	if ( ret < 0 ) {
-		std::perror( "ircserv" );
+		logger("ERROR", strerror( errno ) );
 		return;
 	}
 	listen( _tcp6_socket, 256 );

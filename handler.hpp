@@ -15,7 +15,9 @@ void user( std::list<std::string>* args, Client& c );
 void whois( std::list<std::string>* args, Client& c );
 void quit( std::list<std::string>* args, Client& c );
 void part( std::list<std::string>* args, Client& c );
-void join( std::list<std::string>* args, Client &c);
+void pass( std::list<std::string>* args, Client& c );
+void join( std::list<std::string>* args, Client& c );
+void mode( std::list<std::string>* args, Client& c );
 
 void nick_notregistered( std::list<std::string>* args, Client& c );
 

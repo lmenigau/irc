@@ -24,10 +24,10 @@ bool authorize_setting_name( const std::string& name, Client& c ) {
 void nick( std::list<std::string>* args, Client &c) {
 	std::string buff;
 
-	for ( std::list<std::string>::iterator it = args->begin();
-	      it != args->end(); it++ ) {
-		std::cout << "sent :" << *it << std::endl;
-	}
+	// for ( std::list<std::string>::iterator it = args->begin();
+	//       it != args->end(); it++ ) {
+	// 	std::cout << "sent :" << *it << std::endl;
+	// }
 	if ( args->empty() || args->front() == "" ) {
 		c.reply( format(
 		    ":ircserv.localhost 431 *  NICK: Not enough parameters\r\n" ) );
@@ -35,7 +35,7 @@ void nick( std::list<std::string>* args, Client &c) {
 	            c.isRegistered() ) {
 		logger(
 		    "INFO",
-		    "User %s tried to change nickname to %s but it's already taken.\n",
+		    "User %s tried to change nickname to %s but it's already taken.",
 		    c.getUser().c_str(), args->front().c_str() );
 		c.reply( format(
 		    ":ircserv.localhost 433 * %s : Nickname is already in use\r\n",
@@ -45,7 +45,7 @@ void nick( std::list<std::string>* args, Client &c) {
 		c.setNick( args->front() );
 		c.reply( format( ":%s!%s NICK %s\r\n", buff.c_str(),
 		                 c.getHostname().c_str(), c.getNick().c_str() ) );
-		logger( "INFO", "User %s nickname change to %s.\n", c.getUser().c_str(),
+		logger( "INFO", "User %s nickname change to %s.", c.getUser().c_str(),
 		        c.getNick().c_str() );
 	} else {
 		buff = c.getNick();
@@ -53,9 +53,7 @@ void nick( std::list<std::string>* args, Client &c) {
 		c.reply( format( ":%s!%s NICK %s\r\n", buff.c_str(),
 		                 c.getHostname().c_str(), c.getNick().c_str() ) );
 		c.setHasGivenNick( true );
-		c.reply( format( ":ircserv.localhost 001 %s : Welcome to ft_irc %s\r\n",
-	                 c.getNick().c_str(), c.getNick().c_str() ) );
-		logger( "INFO", "User %s nickname change to %s.\n", c.getUser().c_str(),
+		logger( "INFO", "User %s nickname change to %s.", c.getUser().c_str(),
 		        c.getNick().c_str() );
 	}
 }
