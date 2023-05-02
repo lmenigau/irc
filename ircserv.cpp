@@ -10,11 +10,11 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-t_map_int_client	ircserv::_clients;
-std::string	    ircserv::_servername = "ircserv::";
+t_vector_client		ircserv::_clients;
+std::string	    	ircserv::_servername = "ircserv::";
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
-std::map<std::string, Channel> ircserv::_channels;
+t_map_channel 		ircserv::_channels;
 
 void ircserv::initialisation( char* pass, char* port ) {
 	if ( strlen( port ) > 5 ) {
@@ -49,8 +49,8 @@ void ircserv::accept_client( epoll_event& ev ) {
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
-		ircserv::_clients.insert(std::make_pair(fd, Client (fd, addr)));
-		Client *ptr = &(ircserv::_clients.find(fd)->second);
+		ircserv::_clients.push_back(Client (fd, addr));
+		Client *ptr = &(ircserv::_clients.back());
 		epoll_event event = { EPOLLIN, { .ptr = ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 		ptr->buf.reserve( 512 );
@@ -74,8 +74,8 @@ void ircserv::process_events( epoll_event& ev ) {
 				return ;
 			}
 			if ( len == 0 ) {
-				logger( "INFO", "deleted: %d", c->getFd() );
-				ircserv::removeClient( *c );
+		//		logger( "INFO", "deleted: %d", c->getFd() );
+		//		ircserv::removeClient( *c );
 				return;
 			}
 			c->buf.append( buf, len );
@@ -156,6 +156,10 @@ t_map_channel& ircserv::getChannels( void ) {
 	return _channels;
 }
 
+t_vector_client & ircserv::getClients(void) {
+	return _clients;
+}
+
 void ircserv::addChannel( std::string& name, Client& client ) {
 	if ( _channels.find( name ) != _channels.end() )
 		return;
@@ -173,9 +177,12 @@ std::string ircserv::getServername( void ) {
 }
 
 void ircserv::removeClient( Client& c ) {
-	t_map_int_client::iterator it;
-	it = _clients.find(c.getFd());
-	if (it != _clients.end()) {
-		_clients.erase( it );
+	t_vector_client::iterator it;
+	for (it = ircserv::getClients().begin(); it != ircserv::getClients().end(); it++)
+	{
+	(void) c;
+
+		if (it->getFd() == c.getFd())
+			ircserv::getClients().erase( it );
 	}
 }

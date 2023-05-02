@@ -14,11 +14,12 @@ Channel::Channel( std::string name ) : _name( name ) {}
 
 Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 	_ops.push_back( &creator );
-	_clients.insert( std::make_pair( creator.getNick(), &creator ) );
+	_clients.push_back( &creator );
 }
 
+//Is it working ?
 void Channel::addClient( Client &client ) {
-	_clients.insert( std::make_pair( client.getNick(), &client ) );
+	_clients.push_back( &client );
 }
 
 Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name), 
@@ -26,9 +27,9 @@ Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _na
 {}									
 
 void Channel::removeClient( Client& rclient ) {
-	t_map_string_client_ref::iterator it = _clients.begin();
+	t_vector_client_ptr::iterator it = _clients.begin();
 	while ( it != _clients.end() ) {
-		if ( it->second->getFd() == rclient.getFd() ) {
+		if ( ( *it )->getFd() == rclient.getFd() ) {
 			_clients.erase( it );
 			return;
 		}
@@ -44,7 +45,7 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
-t_map_string_client_ref& Channel::getClients( void ) {
+t_vector_client_ptr& Channel::getClients( void ) {
 	return _clients;
 }
 
@@ -78,18 +79,18 @@ std::string Channel::removeModes( std::string modes ) {
 
 void Channel::sendAll( std::string msg ) {
 	//std::cout << "clients : " << _clients <<
-	t_map_string_client_ref::iterator it = _clients.begin();
+	t_vector_client_ptr::iterator it = _clients.begin();
 	for ( ; it != _clients.end(); it++ ) {
-		it->second->reply( msg );
+		( *it )->reply( msg );
 	}
 }
 
 void Channel::sendAll( std::string msg, Client& c ) {
-	t_map_string_client_ref::iterator it = _clients.begin();
+	t_vector_client_ptr::iterator it = _clients.begin();
 	//std::cout << "clients : " << _clients << "\n";
 	for ( ; it != _clients.end(); it++ ) {
-		if ( it->second->getFd() != c.getFd() ) {
-			it->second->reply( msg );
+		if ( ( *it )->getFd() != c.getFd() ) {
+			( *it )->reply( msg );
 		}
 	}
 }

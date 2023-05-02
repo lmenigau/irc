@@ -6,7 +6,7 @@
 /*   By: ccambium <ccambium@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 06:34:50 by ccambium          #+#    #+#             */
-/*   Updated: 2023/04/25 11:13:17 by ccambium         ###   ########.fr       */
+/*   Updated: 2023/05/02 16:32:38 by odessein         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,9 @@
 # include "sys/epoll.h"
 
 class ircserv {
-	public:
-	static t_map_int_client            _clients;
    private:
 	ircserv();
+	static t_vector_client				  _clients;
 	static int                            _port;
 	static bool                           _failed;
 	static std::string                    _password;
@@ -56,7 +55,7 @@ class ircserv {
 	static t_map_channel& getChannels( void );
 	static std::string                      getServername( void );
 
-
+	static t_vector_client &getClients( void );
 	static void addChannel( std::string&, Client & );
 	static void removeChannel( std::string );
 

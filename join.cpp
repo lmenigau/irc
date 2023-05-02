@@ -15,7 +15,7 @@ void join( std::list<std::string>* args, Client& c ) {
 		ircserv::getChannels()
 		    .find( args->front() )
 		    ->second.getClients()
-		    .insert( std::make_pair( c.getNick(), &c ) );
+		    .push_back(&c);
 	it->second.sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
 	                            c.getHostname().c_str(),
 	                            args->front().c_str() ) );

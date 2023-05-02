@@ -37,6 +37,7 @@ Client::Client(Client const &a)
 	this->_hasGivenNick     = a._hasGivenNick;
 	this->_hasGivenUser     = a._hasGivenUser;
 	this->_hasGivenPassword = a._hasGivenPassword;
+	this->_hasBeenWelcomed  = a._hasBeenWelcomed;
 	this->_isPolled         = a._isPolled;
 }
 
@@ -93,10 +94,13 @@ Client::~Client( void ) {
 			it->second.getClients().erase(it_chan);
 	}
 	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), this));*/
-	if (ircserv::_clients.find(_fd) != ircserv::_clients.end())
+	for (t_vector_client::iterator it = ircserv::getClients().begin(); it != ircserv::getClients().end(); it++)
+	{
+		if (this->_fd == it->getFd())
 			return ;
+	}
 	close( _fd );
-	//logger("DEBUG", "destructor client called");
+	logger("DEBUG", "destructor client called");
 }
 
 // getters
