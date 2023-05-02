@@ -30,6 +30,7 @@ class Channel {
 	void addClient( Client & );
 	void removeClient( Client& );
 	void changeModes( int );
+  bool isOps(Client &c);
 
 	std::string addModes( std::string );
 	std::string removeModes( std::string );

@@ -7,19 +7,6 @@
 #include "client.hpp"
 #include "ircserv.hpp"
 
-bool	is_ops(std::string name, Client &c)
-{
-	t_map_channel channel = ircserv::getChannels();
-	t_map_channel::iterator it = channel.find(name);
-	if ( it != channel.end() )
-	{
-		for ( t_vector_client_ptr::iterator it_cli = it->second.getClients().begin(); it_cli != it->second.getClients().end(); it_cli++)
-		{
-			if (it_
-		}
-	}
-	return (false);
-}
 
 void remove_backslash_r( std::string& c ) {
 	size_t idx = c.find( '\r' );

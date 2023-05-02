@@ -9,16 +9,17 @@ static void reply_to_join(const std::string &channel_name, Client &c,
 	
 	reply = format(":ircserv.localhost 353 %s = %s :", c.getNick().c_str(),
 	                                                    channel_name.c_str());
-	for (t_vector_client_ref::iterator it_member = it->second.getClients().begin();
+	for (t_vector_client_ptr::iterator it_member = it->second.getClients().begin();
 	                                                        it_member != it->second.getClients().end();
-	                                                        it_member++) {
-	        reply.append(( *it_member)->getNick() + " ");
-	for (t_map_string_client_ref::iterator it_member = it->second.getClients().begin();
-	                                                        it_member != it->second.getClients().end(); it_member++) {
-	        reply.append( it_member->second->getNick() + " ");
+	                                                        it_member++) 
+	{
+					if (it->second.isOps(**it_member))
+		        reply.append("@" + ( *it_member)->getNick() + " ");
+					else
+		        reply.append(( *it_member)->getNick() + " ");
 	}
 	reply.append("\r\n");
-	c->reply(reply);
+	c.reply(reply);
 	c.reply(reply);
 }
 
@@ -44,6 +45,7 @@ void join( std::list<std::string>* args, Client& c ) {
 	it->second.sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
 	                            c.getHostname().c_str(),
 	                            args->front().c_str() ) );
+	reply_to_join(args->front(), c, it);
 	c.reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
 	                 c.getUser().c_str(), args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",

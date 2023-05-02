@@ -45,6 +45,16 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
+bool	Channel::isOps(Client &c)
+{
+	for (t_vector_client_ptr::iterator it = _ops.begin(); it != _ops.end(); it++)
+	{
+		if (c.getFd() ==  ( *it)->getFd())
+				return (true);
+	}
+	return (false);
+}
+
 t_vector_client_ptr& Channel::getClients( void ) {
 	return _clients;
 }
@@ -85,7 +95,7 @@ void Channel::sendAll( std::string msg ) {
 	}
 }
 
-t_vetor_client_ptr &Channel::getOps(void)
+t_vector_client_ptr &Channel::getOps(void)
 {
 	return (_ops);
 }
