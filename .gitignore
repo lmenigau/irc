@@ -4,3 +4,4 @@
 ircserv
 *.cache
 arte
+.nfs*

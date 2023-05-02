@@ -6,12 +6,15 @@ SRC = channel.cpp\
 	  	client.cpp\
 	  	handler.cpp\
 		ircserv.cpp\
+		join.cpp\
 		leave.cpp\
 		logger.cpp\
 		main.cpp\
+		mode.cpp\
 		nick.cpp \
 		ostream.cpp\
 		parsing.cpp\
+		pass.cpp\
 		privmsg.cpp \
 		quit.cpp \
 		user.cpp \
