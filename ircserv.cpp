@@ -99,7 +99,6 @@ void ircserv::process_events( epoll_event& ev ) {
 	} else if ( ev.events & EPOLLOUT ) {
 		c   = reinterpret_cast<Client*>( ev.data.ptr );
 		len = c->out.copy( buf, 512 );
-		logger( "DEBUG", "bruuh buf : %s", c->buf.c_str() );
 		len = write( c->getFd(), buf, len );
 		if (len < 1) {
 			logger("WARNING", "useless event detected");

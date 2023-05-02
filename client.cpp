@@ -96,7 +96,7 @@ Client::~Client( void ) {
 	if (ircserv::_clients.find(_fd) != ircserv::_clients.end())
 			return ;
 	close( _fd );
-	std::cout << "destructor client called" << std::endl;
+	//logger("DEBUG", "destructor client called");
 }
 
 // getters

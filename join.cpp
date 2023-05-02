@@ -1,6 +1,6 @@
-#include "utils.hpp"
-#include "ircserv.hpp"
 #include <list>
+#include "ircserv.hpp"
+#include "utils.hpp"
 
 void join( std::list<std::string>* args, Client& c ) {
 	t_map_channel           channels = ircserv::getChannels();
@@ -12,10 +12,13 @@ void join( std::list<std::string>* args, Client& c ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
 	} else
-		it->second.addClient( c );
+		ircserv::getChannels()
+		    .find( args->front() )
+		    ->second.getClients()
+		    .insert( std::make_pair( c.getNick(), &c ) );
 	it->second.sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
-	                             c.getHostname().c_str(),
-	                             args->front().c_str() ) );
+	                            c.getHostname().c_str(),
+	                            args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
 	                 c.getUser().c_str(), args->front().c_str(),
 	                 c.getNick().c_str() ) );

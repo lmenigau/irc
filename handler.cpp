@@ -82,17 +82,10 @@ void handler( std::list<std::string>* args, Client& c ) {
 	    &capls, &pong, &mode, &whois, &quit,    &part };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		//	std::cout << args->front() << std::endl;
-		std::string buff = args->front();
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
 			remove_backslash_r( args->back() );
 			handlers[i]( args, c );
-			if (buff == "JOIN")
-			{
-				std::cout << "OUt scope" << std::endl;
-				t_map_channel bruh = ircserv::getChannels();
-				display_elem(bruh.find(args->front()));
-			}
 			return;
 		}
 	}
