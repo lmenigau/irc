@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "ircserv.hpp"
 #include "utils.hpp"
+#include <cerrno>
 
 Client::Client() {
 	_fd               = -1;

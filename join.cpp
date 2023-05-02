@@ -3,8 +3,8 @@
 #include <list>
 
 void join( std::list<std::string>* args, Client& c ) {
-	std::map<std::string, Channel*>           channels = ircserv::getChannels();
-	std::map<std::string, Channel*>::iterator it;
+	t_map_channel           channels = ircserv::getChannels();
+	t_map_channel::iterator it;
 	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
 	        args->front().c_str() );
 	it = channels.find( args->front() );
@@ -12,8 +12,8 @@ void join( std::list<std::string>* args, Client& c ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
 	} else
-		it->second->addClient( c );
-	it->second->sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
+		it->second.addClient( c );
+	it->second.sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
 	                             c.getHostname().c_str(),
 	                             args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 %s = %s :@%s\r\n",
