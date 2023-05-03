@@ -67,6 +67,23 @@ std::string Channel::getModes( void ) {
 	return _modes;
 }
 
+void	Channel::setTopic(const std::string &topic)
+{
+	_topic = topic;
+}
+
+bool	Channel::topicSet(void)
+{
+	if (!_topic.empty())
+		return (true);
+	return (false);
+}
+
+std::string Channel::getTopic(void)
+{
+	return _topic;
+}
+
 std::string Channel::addModes( std::string modes ) {
 	for ( size_t i = 0; i < modes.size(); i++ ) {
 		if ( _modes.find( modes[i] ) != std::string::npos )

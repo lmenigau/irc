@@ -31,6 +31,9 @@ class Channel {
 	void removeClient( Client& );
 	void changeModes( int );
   bool isOps(Client &c);
+bool	topicSet(void);
+void	setTopic(const std::string &topic);
+std::string getTopic(void);
 
 	std::string addModes( std::string );
 	std::string removeModes( std::string );

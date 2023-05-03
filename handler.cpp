@@ -7,7 +7,7 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-#define COMMAND_COUNT 12
+#define COMMAND_COUNT 13
 
 void capls( std::list<std::string>* args, Client& c ) {
 	(void) c;
@@ -76,10 +76,12 @@ void handler( std::list<std::string>* args, Client& c ) {
 	}
 	std::string commands[COMMAND_COUNT] = {
 	    "PASS", "USER", "NICK", "JOIN",  "PRIVMSG", "CAPLS",
-	    "CAP",  "PING", "MODE", "WHOIS", "QUIT",    "PART" };
+	    "CAP",  "PING", "MODE", "WHOIS", "QUIT",    "PART",
+		"TOPIC"};
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client& c ) = {
 	    &pass,  &user, &nick, &join,  &privmsg, &capls,
-	    &capls, &pong, &mode, &whois, &quit,    &part };
+	    &capls, &pong, &mode, &whois, &quit,    &part,
+		&topic };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {

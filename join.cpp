@@ -48,7 +48,7 @@ void join( std::list<std::string>* args, Client& c ) {
 	reply_to_join(args->front(), c, it);
 	c.reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
 	                 c.getUser().c_str(), args->front().c_str() ) );
-	c.reply( format( ":ircserv.localhost 332 :%s :no topic\r\n",
+	c.reply( format( ":ircserv.localhost 332 %s :no topic set\r\n",
 	                 args->front().c_str() ) );
 	c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }
