@@ -176,6 +176,7 @@ void ircserv::removeClient( Client& c ) {
 	t_client_array::iterator it = _clients.begin();
 	for (; it < _clients.end(); it++) {
 		if (it->getFd() == c.getFd()) {
+			close(c.getFd());
 			_clients.erase(it);
 			break ;
 		}
