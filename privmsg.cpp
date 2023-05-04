@@ -7,7 +7,7 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-void	privmsg_client(std::list <std::string > * args, Client &c)
+static void	privmsg_client(std::list <std::string > * args, Client &c)
 {
 	for ( t_map_client::iterator it = ircserv::getClients().begin();
 	      									it != ircserv::getClients().end(); it++ ) {
@@ -28,7 +28,7 @@ void	privmsg_client(std::list <std::string > * args, Client &c)
 	}
 }
 
-void	privmsg_channel(std::list <std::string> * args, Client &c)
+static void	privmsg_channel(std::list <std::string> * args, Client &c)
 {
 	t_map_channel           channels = ircserv::getChannels();
 

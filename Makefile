@@ -11,6 +11,7 @@ SRC = channel.cpp\
 		logger.cpp\
 		main.cpp\
 		mode.cpp\
+		notice.cpp \
 		nick.cpp \
 		ostream.cpp\
 		parsing.cpp\
