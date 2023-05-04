@@ -1,0 +1,24 @@
+<< CAP LS
+<< PASS 1
+<< NICK hanako
+<< USER hanako hanako localhost :hanako
+>> :hanako!localhost NICK hanako
+>> :ircserv.localhost 001 hanako :Welcome to the FT_IRC server hanako[!hanako@localhost]
+<< MODE hanako +i
+>> :ircserv.localhost 002 hanako :Your host is FT_IRC running version 0.0.1dev
+>> :ircserv.localhost 003 hanako :This server was created idk like now ?
+>> :ircserv.localhost 004 hanako :FT_IRC 0.0.1dev ia i
+>> :ircserv.localhost 221 hanako +i
+<< PING ircserv.localhost
+>> PONG ircserv::
+--> lag pong
+<< NICK b
+>> :hanako!localhost NICK b
+>> :hanako_!~hanako@localhost PRIVMSG b@localhost: test
+<< PRIVMSG hanako_ :test
+>> :ircserv:: 401 b hanako_ :No such nick/channel
+>> :b!~hanako@localhost PRIVMSG hanako_@localhost :test
+>> :ircserv:: 401 b hanako_@localhost :No such nick/channel
+<< PING ircserv.localhost
+>> PONG ircserv::
+--> lag pong
