@@ -8,17 +8,14 @@
 #include "utils.hpp"
 
 
+
+
 //From my point of view only OPs or Creator should be able to change the topic of a channel.
 void    topic(std::list <std::string> * args, Client &c)
 {
 	t_map_channel	channels = ircserv::getChannels();
 	t_map_channel::iterator	it;
 
-	for (std::list <std::string>::iterator it = args->begin(); it != args->end(); it++)
-{
-		std::cout << *it << std::endl;
-		std::cout << "end" << std::endl;
-}
 	if (!args->size())
 			return (c.reply(format(":%s!%s 461 : Not enough parameters\r\n", c.getNick().c_str(), c.getHostname().c_str())));
 	if (args->size() == 1)
@@ -48,7 +45,7 @@ void    topic(std::list <std::string> * args, Client &c)
 				//Should sennd to all clients the new topic !
 				ircserv::getChannels().find(args->front())->second.setTopic(args->back());
 				std::cout << "TOPIC :: " << ircserv::getChannels().find(args->front())->second.getTopic() << std::endl;
-				return (c.reply(format(":%s~!u@%s TOPIC %s :%s\r\n", c.getNick().c_str(), c.getHostname().c_str(), args->front().c_str(), args->back().c_str())));
+				return (it->second.sendAll(format(":%s~!u@%s TOPIC %s :%s\r\n", c.getNick().c_str(), c.getHostname().c_str(), args->front().c_str(), args->back().c_str())));
 			}
 			else
 				return (c.reply(format(":ircserv.localhost 442 %s :You're not on that channel\r\n", args->front().c_str())));
