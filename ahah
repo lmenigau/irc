@@ -1,0 +1,24 @@
+<< CAP LS
+<< PASS 1
+<< NICK odessein
+<< USER odessein odessein localhost :Orson DESSEIN
+>> :odessein!localhost NICK odessein
+>> :ircserv.localhost 001 odessein :Welcome to the FT_IRC server odessein[!odessein@localhost]
+<< MODE odessein +i
+>> :ircserv.localhost 002 odessein :Your host is FT_IRC running version 0.0.1dev
+>> :ircserv.localhost 003 odessein :This server was created idk like now ?
+>> :ircserv.localhost 004 odessein :FT_IRC 0.0.1dev ia i
+>> :ircserv.localhost 221 odessein +i
+<< PING ircserv.localhost
+>> PONG ircserv::
+--> lag pong
+<< PRIVMSG #ok :test
+<< PRIVMSG ty :test
+>> odessein!~odessein@localhost 403 #ok :No such channel
+>> :ircserv:: 401 odessein ty :No such nick
+<< PING ircserv.localhost
+>> PONG ircserv::
+--> lag pong
+<< PING ircserv.localhost
+>> PONG ircserv::
+--> lag pong
