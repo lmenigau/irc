@@ -7,10 +7,10 @@
 #include "client.hpp"
 #include "ircserv.hpp"
 
-void	display_elem(t_map_channel::iterator channel)
-{
-	for (t_map_string_client_ref::iterator it = channel->second.getClients().begin(); it != channel->second.getClients().end(); it++)
-	{
+void display_elem( t_map_channel::iterator channel ) {
+	for ( t_map_string_client_ref::iterator it =
+	          channel->second.getClients().begin();
+	      it != channel->second.getClients().end(); it++ ) {
 		std::cout << it->first << std::endl;
 	}
 }
@@ -94,10 +94,10 @@ bool hasMode( Channel& user, char mode ) {
 }
 
 Client* find_client( std::string nick ) {
-	for ( t_map_int_client::iterator it = ircserv::_clients.begin();
+	for ( t_client_array::iterator it = ircserv::_clients.begin();
 	      it != ircserv::_clients.end(); it++ ) {
-		if ( it->second.getNick() == nick )
-			return ( &( it->second) );
+		if ( it->getNick() == nick )
+			return ( &(*it) );
 	}
 	return ( NULL );
 }

@@ -10,35 +10,37 @@ Client::Client() {
 	_fd               = -1;
 	start             = 0;
 	end               = 0;
-	buf               = "";
-	out               = "";
-	_cap              = "";
-	_nick             = "";
-	_hostname         = "";
-	_realuser         = "";
+	buf               = std::string();
+	out               = std::string();
+	_cap              = std::string();
+	_nick             = std::string();
+	_hostname         = std::string();
+	_realuser         = std::string();
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	buf.reserve( 512 );
+
 }
 
 Client::Client(Client const &a)
 { 
-	this->_fd 		  = a._fd;
-	this->start             = a.start;
-	this->end               = a.end;
-	this->buf               = a.buf;
-	this->out               = a.out;
-	this->_cap              = a._cap;
-	this->_nick             = a._nick;
-	this->_hostname         = a._hostname;
-	this->_realuser         = a._realuser;
-	this->_hasGivenNick     = a._hasGivenNick;
-	this->_hasGivenUser     = a._hasGivenUser;
-	this->_hasGivenPassword = a._hasGivenPassword;
-	this->_isPolled         = a._isPolled;
-	this->_hasBeenWelcomed  = a._hasBeenWelcomed;
+	_fd 		  = a._fd;
+	start             = a.start;
+	end               = a.end;
+	buf               = std::string().append(a.buf);
+	out               = std::string().append(a.out);
+	_cap              = std::string().append(a._cap);
+	_nick             = std::string().append(a._nick);
+	_hostname         = std::string().append(a._hostname);
+	_realuser         = std::string().append(a._realuser);
+	_hasGivenNick     = a._hasGivenNick;
+	_hasGivenUser     = a._hasGivenUser;
+	_hasGivenPassword = a._hasGivenPassword;
+	_isPolled         = a._isPolled;
+	_hasBeenWelcomed  = a._hasBeenWelcomed;
 }
 
 void Client::reply( std::string const& str ) {
@@ -53,17 +55,18 @@ Client::Client( int fd ) {
 	_fd               = fd;
 	start             = 0;
 	end               = 0;
-	buf               = "";
-	out               = "";
-	_cap              = "";
-	_nick             = "";
-	_hostname         = "";
-	_realuser         = "";
+	buf               = std::string();
+	out               = std::string();
+	_cap              = std::string();
+	_nick             = std::string();
+	_hostname         = std::string();
+	_realuser         = std::string();
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	buf.reserve( 512 );
 }
 
 Client::Client( int fd, sockaddr_in6& addr ) {
@@ -71,16 +74,17 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 	_fd               = fd;
 	start             = 0;
 	end               = 0;
-	buf               = "";
-	out               = "";
-	_cap              = "";
-	_nick             = "";
-	_realuser         = "";
+	buf               = std::string();
+	out               = std::string();
+	_cap              = std::string();
+	_nick             = std::string();
+	_realuser         = std::string();
 	_hasGivenNick     = false;
 	_hasGivenUser     = false;
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	buf.reserve( 512 );
 }
 
 Client::~Client( void ) {
@@ -94,9 +98,23 @@ Client::~Client( void ) {
 			it->second.getClients().erase(it_chan);
 	}
 	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(), ircserv::_clients.end(), this));*/
-	if (ircserv::_clients.find(_fd) != ircserv::_clients.end())
-			return ;
-	close( _fd );
+	// t_client_array::iterator it = ircserv::_clients.begin();
+	// for(; it != ircserv::_clients.end(); it++)
+	// {
+	// 	if (it->getFd() == _fd) {
+	// 		ircserv::_clients.erase(it);
+	// 		break;
+	// 	}
+	// }
+	// close( _fd );
+
+
+	//! PLEASE DO NOT CHANGE ANYTHING HERE IF WE WANT THIS TO WORK AS NOW !
+	//? making the destructor close the fd or removing it from vector will reset the connection and lose the client !
+	// * we will close the fd at the moment needed in the main loop or in commands
+	// * merci de comprendre la situation ! :)
+	
+	
 	//logger("DEBUG", "destructor client called");
 }
 

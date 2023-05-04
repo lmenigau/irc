@@ -34,7 +34,7 @@ class Client {
 	std::string getModes( void );
 
 	// setters
-
+ 
 	void setCap( std::string );
 	void setNick( std::string );
 	void setHasGivenPassword( bool );
