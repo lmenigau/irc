@@ -46,6 +46,7 @@ void	privmsg_channel(std::list <std::string> * args, Client &c)
 	t_map_channel           channels = ircserv::getChannels();
 	t_map_channel::iterator it = channels.find(args->front());
 
+
 	if (it == channels.end())
 	{
 		c.reply( format ("%s!~%s@%s 403 %s :No such channel\r\n", c.getNick().c_str(),
