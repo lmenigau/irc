@@ -10,18 +10,14 @@
 
 static void	notice_client(std::list <std::string > * args, Client &c)
 {
-	for ( t_map_client::iterator it = ircserv::getClients().begin();
-	      									it != ircserv::getClients().end(); it++ ) {
-		if ( it->second.getNick() == args->front() ) {
-			args->front().append( "@" + ( it->second.getHostname() ) );
-			it->second.reply(
-			    format( ":%s!~%s NOTICE %s: %s\r\n", c.getNick().c_str(),
+	Client *target = find_client( args->front() );
+	if (target)
+	{
+			args->front();
+			target->reply(
+			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c.getNick().c_str(),
 			            ( c.getUser() + "@" + c.getHostname() ).c_str(),
 			            args->front().c_str(), args->back().c_str() ) );
-		//	c.reply( format( ":%s!~%s NOTICE %s :%s\r\n", c.getNick().c_str(),
-			//                 ( c.getUser() + "@" + c.getHostname() ).c_str(),
-			  //               args->front().c_str(), args->back().c_str() ) );
-		}
 	}
 }
 

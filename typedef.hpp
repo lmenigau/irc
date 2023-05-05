@@ -9,7 +9,9 @@
 class Channel;
 class Client;
 
-typedef std::map<int, Client> t_map_client;
+typedef std::vector<Client> t_client_array;
+typedef std::map<std::string, Client> t_map_string_client;
+typedef std::map<std::string, Client *> t_map_string_client_ref;
 typedef std::map<std::string, Channel> t_map_channel;
 typedef std::vector<Client *> t_vector_client_ptr;
 

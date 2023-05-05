@@ -9,24 +9,21 @@
 
 static void	privmsg_client(std::list <std::string > * args, Client &c)
 {
-	for ( t_map_client::iterator it = ircserv::getClients().begin();
-	      									it != ircserv::getClients().end(); it++ ) {
-		if ( it->second.getNick() == args->front() ) {
-			args->front().append( "@" + ( it->second.getHostname() ) );
-			it->second.reply(
+	Client *target = find_client( args->front() );
+	if (target)
+	{
+			args->front();
+			target->reply(
 			    format( ":%s!~%s PRIVMSG %s: %s\r\n", c.getNick().c_str(),
 			            ( c.getUser() + "@" + c.getHostname() ).c_str(),
 			            args->front().c_str(), args->back().c_str() ) );
-			c.reply( format( ":%s!~%s PRIVMSG %s :%s\r\n", c.getNick().c_str(),
-			                 ( c.getUser() + "@" + c.getHostname() ).c_str(),
-			                 args->front().c_str(), args->back().c_str() ) );
 		} else {
 			c.reply( format( ":%s 401 %s %s :No such nick\r\n",
 			                 ircserv::getServername().c_str(),
 			                 c.getNick().c_str(), args->front().c_str() ) );
 		}
-	}
 }
+
 
 static void	privmsg_channel(std::list <std::string> * args, Client &c)
 {
@@ -47,7 +44,7 @@ static void	privmsg_channel(std::list <std::string> * args, Client &c)
 	}
 }
 
-void privmsg( std::list<std::string>* args, Client &c) {
+void privmsg( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
 	std::string target = args->front();

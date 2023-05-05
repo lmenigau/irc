@@ -13,15 +13,15 @@
 #include "utils.hpp"
 
 bool authorize_setting_name( const std::string& name, Client& c ) {
-	for ( t_map_client::iterator it = ircserv::getClients().begin();
+	for ( t_client_array::iterator it = ircserv::getClients().begin();
 	      it != ircserv::getClients().end(); it++ ) {
-		if ( it->second.getNick() == name && it->second.getFd() != c.getFd() )
+		if ( it->getNick() == name && it->getFd() != c.getFd() )
 			return ( false );
 	}
 	return ( true );
 }
 
-void nick( std::list<std::string>* args, Client &c) {
+void nick( std::list<std::string>* args, Client& c ) {
 	std::string buff;
 
 	// for ( std::list<std::string>::iterator it = args->begin();

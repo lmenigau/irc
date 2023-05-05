@@ -7,9 +7,9 @@
 #include "utils.hpp"
 
 static bool if_nick_set( const std::string& name ) {
-	for ( t_map_client::iterator it = ircserv::getClients().begin();
+	for ( t_client_array::iterator it = ircserv::getClients().begin();
 	      it != ircserv::getClients().end(); it++ ) {
-		if ( it->second.getNick() == name )
+		if ( it->getNick() == name )
 			return ( true );
 	}
 	return ( false );
@@ -23,7 +23,7 @@ static bool if_nick_set( const std::string& name ) {
 // display Who is host, displaying the host name / ip 378 Who is mode,
 // displaying the modes 379 RPL_AWAY  301, is away
 
-void whois( std::list<std::string>* args, Client &c) {
+void whois( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
 	return;

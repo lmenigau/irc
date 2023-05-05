@@ -87,10 +87,10 @@ bool hasMode( Channel& user, char mode ) {
 }
 
 Client* find_client( std::string nick ) {
-	for ( t_map_client::iterator it = ircserv::getClients().begin();
+	for ( t_client_array::iterator it = ircserv::getClients().begin();
 	      it != ircserv::getClients().end(); it++ ) {
-		if ( it->second.getNick() == nick )
-			return &( it->second );
+		if ( it->getNick() == nick )
+			return ( &(*it) );
 	}
 	return ( NULL );
 }

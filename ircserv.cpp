@@ -10,8 +10,8 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-t_map_client		ircserv::_clients;
-std::string	    	ircserv::_servername = "ircserv::";
+t_client_array	ircserv::_clients = t_client_array(1024);
+std::string	    ircserv::_servername = "ircserv.localhost"; //!pls do not change
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
 t_map_channel 		ircserv::_channels;
@@ -49,11 +49,10 @@ void ircserv::accept_client( epoll_event& ev ) {
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
-		ircserv::_clients.insert(std::make_pair(fd, Client (fd, addr)));
-		Client *ptr = &(ircserv::_clients.find(fd)->second);
-		epoll_event event = { EPOLLIN, { .ptr = ptr } };
+		ircserv::_clients.push_back(Client (fd, addr));
+		Client &ptr = ircserv::_clients.back();
+		epoll_event event = { EPOLLIN, { .ptr = &ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
-		ptr->buf.reserve( 512 );
 	} else
 		logger( "ERROR", "accept error" );
 }
@@ -74,8 +73,9 @@ void ircserv::process_events( epoll_event& ev ) {
 				return ;
 			}
 			if ( len == 0 ) {
-		//		logger( "INFO", "deleted: %d", c->getFd() );
-		//		ircserv::removeClient( *c );
+				logger( "INFO", "deleted: %d", c->getFd() );
+				c->buf.clear();
+				ircserv::removeClient( *c );
 				return;
 			}
 			c->buf.append( buf, len );
@@ -132,7 +132,7 @@ void ircserv::start( void ) {
 	epoll_event event = { EPOLLIN, { .fd = _tcp6_socket } };
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
-	int b = 0;
+	//int b = 0;
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
@@ -140,7 +140,7 @@ void ircserv::start( void ) {
 		for ( int i = 0; i < nev; i++ ) {
 			process_events( events[i] );
 		}
-		b++;
+		//b++;
 	}
 }
 
@@ -156,7 +156,7 @@ t_map_channel& ircserv::getChannels( void ) {
 	return _channels;
 }
 
-t_map_client & ircserv::getClients(void) {
+t_client_array &ircserv::getClients(void) {
 	return _clients;
 }
 
@@ -177,8 +177,12 @@ std::string ircserv::getServername( void ) {
 }
 
 void ircserv::removeClient( Client& c ) {
-	t_map_client::iterator it;
-	it = _clients.find(c.getFd());
-	if (it != _clients.end())
-		_clients.erase(it);
+	t_client_array::iterator it = _clients.begin();
+	for (; it < _clients.end(); it++) {
+		if (it->getFd() == c.getFd()) {
+			close(c.getFd());
+			_clients.erase(it);
+			break ;
+		}
+	}
 }
