@@ -129,7 +129,6 @@ void ircserv::start( void ) {
 	// sockaddr_in6 peer_addr = {};
 	// socklen_t len = sizeof(peer_addr);
 	_pollfd           = epoll_create( 1 );
-	std::cout << "Yo " <<_tcp6_socket << std::endl;
 	epoll_event event = { EPOLLIN, { .fd = _tcp6_socket } };
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
