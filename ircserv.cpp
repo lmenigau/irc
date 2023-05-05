@@ -10,7 +10,7 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-t_client_array	ircserv::_clients = t_client_array(1024);
+t_client_array	ircserv::_clients;
 std::string	    ircserv::_servername = "ircserv.localhost"; //!pls do not change
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
@@ -133,6 +133,8 @@ void ircserv::start( void ) {
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
 	//int b = 0;
+	_clients.reserve(1024);
+	logger("INFO", "clients contain %d elements", _clients.size());
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
