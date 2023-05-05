@@ -10,7 +10,7 @@
 int                 ircserv::_port   = 0;
 bool                ircserv::_failed = false;
 std::string         ircserv::_password;
-t_client_array	ircserv::_clients;
+t_client_array	ircserv::_clients = t_client_array(1024);
 std::string	    ircserv::_servername = "ircserv.localhost"; //!pls do not change
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;

@@ -27,7 +27,8 @@ Client::Client() {
 
 Client::Client(Client const &a)
 { 
-	_fd 		  = a._fd;
+	buf.reserve( 512 );
+	_fd 		  	  = a._fd;
 	start             = a.start;
 	end               = a.end;
 	buf               = std::string().append(a.buf);

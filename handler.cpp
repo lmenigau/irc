@@ -70,7 +70,6 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 }
 
 void handler( std::list<std::string>* args, Client& c ) {
-	std::cout << args;
 	if ( args->size() == 1 ) {
 		c.reply( format( ":ircserv.localhost 461 %s :Not enough parameters\r\n",
 		                 args->front().c_str() ) );
