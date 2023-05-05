@@ -134,7 +134,6 @@ void ircserv::start( void ) {
 	logger( "INFO", "server started successfuly" );
 	//int b = 0;
 	_clients.reserve(1024);
-	logger("INFO", "clients contain %d elements", _clients.size());
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
