@@ -19,6 +19,7 @@ Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 
 //Is it working ?
 void Channel::addClient( Client &client ) {
+	std::cout << client.getNick() << " added" << std::endl;
 	_clients.push_back( &client );
 }
 
@@ -125,4 +126,16 @@ void Channel::sendAll( std::string msg, Client& c ) {
 			( *it )->reply( msg );
 		}
 	}
+}
+
+bool	Channel::findClients( const std::string &nick )
+{
+	t_vector_client_ptr::iterator it = this->_clients.begin();
+	//std::cout << "clients : " << _clients << "\n";
+	for ( ; it != this->_clients.end(); it++ ) {
+	//	std::cout << "it " <<  (*it)->getNick() << " nick :" << nick << std::endl;
+		if (( *it )->getNick() == nick)
+			return (true);
+	}
+	return (false);
 }
