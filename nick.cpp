@@ -13,8 +13,8 @@
 #include "utils.hpp"
 
 bool authorize_setting_name( const std::string& name, Client& c ) {
-	for ( t_client_array::iterator it = ircserv::_clients.begin();
-	      it != ircserv::_clients.end(); it++ ) {
+	for ( t_client_array::iterator it = ircserv::getClients().begin();
+	      it != ircserv::getClients().end(); it++ ) {
 		if ( it->getNick() == name && it->getFd() != c.getFd() )
 			return ( false );
 	}

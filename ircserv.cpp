@@ -14,7 +14,7 @@ t_client_array	ircserv::_clients;
 std::string	    ircserv::_servername = "ircserv.localhost"; //!pls do not change
 int                 ircserv::_pollfd;
 int                 ircserv::_tcp6_socket;
-std::map<std::string, Channel> ircserv::_channels;
+t_map_channel 		ircserv::_channels;
 
 void ircserv::initialisation( char* pass, char* port ) {
 	if ( strlen( port ) > 5 ) {
@@ -156,6 +156,10 @@ std::string ircserv::getPassword( void ) {
 
 t_map_channel& ircserv::getChannels( void ) {
 	return _channels;
+}
+
+t_client_array &ircserv::getClients(void) {
+	return _clients;
 }
 
 void ircserv::addChannel( std::string& name, Client& client ) {

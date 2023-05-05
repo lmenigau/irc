@@ -7,8 +7,8 @@
 #include "utils.hpp"
 
 static bool if_nick_set( const std::string& name ) {
-	for ( t_client_array::iterator it = ircserv::_clients.begin();
-	      it != ircserv::_clients.end(); it++ ) {
+	for ( t_client_array::iterator it = ircserv::getClients().begin();
+	      it != ircserv::getClients().end(); it++ ) {
 		if ( it->getNick() == name )
 			return ( true );
 	}
