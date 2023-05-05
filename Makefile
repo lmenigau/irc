@@ -1,7 +1,7 @@
 $(if $(filter re as, $(MAKECMDGOALS)),\
 	$(shell $(RM) arte/*.o ft std))
 CXX=clang++
-CXXFLAGS=-std=c++98 -Wall -Werror -Wextra -g3
+CXXFLAGS=-std=c++98 -Wall -Werror -Wextra
 SRC = channel.cpp\
 	  	client.cpp\
 	  	handler.cpp\
