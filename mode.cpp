@@ -3,6 +3,9 @@
 #include <map>
 #include <list>
 
+#define USERMODE "ioRZBT"
+#define CHANNELMODE "imRMsuUntbfklqahv"
+
 static bool is_valid_user_mode( char mode ) {
 	return ( mode == 'i' || mode == 'o' || mode == 'R' || mode == 'Z' ||
 	         mode == 'B' || mode == 'T' );
