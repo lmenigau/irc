@@ -7,24 +7,24 @@
 #include "typedef.hpp"
 #include <iostream>
 
- Channel::~Channel() {}
- Channel::Channel( void ) {}
+Channel::~Channel() {}
+Channel::Channel( void ) {}
 
 Channel::Channel( std::string name ) : _name( name ) {}
 
 Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 	_ops.push_back( &creator );
 	_clients.push_back( &creator );
+	_invite_only = false;
 }
 
-//Is it working ?
 void Channel::addClient( Client &client ) {
 	std::cout << client.getNick() << " added" << std::endl;
 	_clients.push_back( &client );
 }
 
 Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name), 
-									_topic(a._topic), _password(a._password), _ops(a._ops), _halfops(a._halfops), _voiced(a._voiced), _founder(a._founder), _banned(a._banned), _key(a._key)
+									_topic(a._topic), _password(a._password), _ops(a._ops), _halfops(a._halfops), _voiced(a._voiced), _founder(a._founder), _banned(a._banned), _key(a._key), _invite_only(a._invite_only)
 {}									
 
 void Channel::removeClient( Client& rclient ) {

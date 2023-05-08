@@ -32,6 +32,8 @@ class Client {
 	std::string getRealUser( void );
 	std::string getHostname( void );
 	std::string getModes( void );
+	bool        isServerOp ( void );
+	void        setOp ( void );
 
 	// setters
  
@@ -59,6 +61,7 @@ class Client {
 
    private:
 	int         _fd;
+	bool        _server_op;
 	std::string _modes;
 	std::string _cap;
 	std::string _nick;

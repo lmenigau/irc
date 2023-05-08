@@ -21,6 +21,7 @@ Client::Client() {
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	_server_op        = false;
 	buf.reserve( 512 );
 
 }
@@ -42,6 +43,7 @@ Client::Client(Client const &a)
 	_hasGivenPassword = a._hasGivenPassword;
 	_isPolled         = a._isPolled;
 	_hasBeenWelcomed  = a._hasBeenWelcomed;
+	_server_op        = a._server_op;
 }
 
 void Client::reply( std::string const& str ) {
@@ -67,6 +69,7 @@ Client::Client( int fd ) {
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	_server_op        = false;
 	buf.reserve( 512 );
 }
 
@@ -85,6 +88,7 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	_server_op        = false;
 	buf.reserve( 512 );
 }
 
@@ -176,6 +180,14 @@ void Client::setHasGivenPassword( bool f ) {
 
 void Client::setFd( int fd ) {
 	_fd = fd;
+}
+
+bool	Client::isServerOp ( void ) {
+	return (_server_op);
+}
+
+void	Client::setOp ( void ) {
+	_server_op = true;
 }
 
 void Client::setHasBeenWelcomed( bool f ) {

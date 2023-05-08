@@ -17,8 +17,9 @@ class Channel {
 	t_vector_client_ptr           _halfops;
 	t_vector_client_ptr          _voiced;
 	t_vector_client_ptr          _founder;
-	std::vector<std::string>       _banned;
-	std::string                    _key;
+	std::vector<std::string>     _banned;
+	std::string                  _key;
+	bool                         _invite_only;
 	//	int                            _limit;
 
    public:
@@ -40,7 +41,7 @@ std::string getTopic(void);
 	std::string removeModes( std::string );
 	t_vector_client_ptr &getOps(void);
 	std::string getModes( void );
-	
+
 
 	void                            setModes( std::string );
 	t_vector_client_ptr& getClients( void );
