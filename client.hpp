@@ -34,6 +34,9 @@ class Client {
 	std::string getModes( void );
 	bool        isServerOp ( void );
 	void        setOp ( void );
+  void        unsetOp(void);
+  void        unsetInvisible (void);
+  void        unsetBot(void);
 
 	// setters
  
@@ -49,30 +52,36 @@ class Client {
 	void setRealUser( std::string );
 	void setHostname( struct sockaddr_in6& addr );
 	void setHasBeenWelcomed( bool );
+  void setInvisible( void );
+  void setBot (void);
 
 	// state accessors ?
 
 	bool isPolled( void );
+  bool isBot (void );
+  bool isInvisble ( void );
 	bool hasGivenNick( void );
 	bool hasGivenUser( void );
 	bool hasGivenPassword( void );
 	bool isRegistered( void );
 	bool hasBeenWelcomed( void );
 
-   private:
-	int         _fd;
-	bool        _server_op;
-	std::string _modes;
-	std::string _cap;
-	std::string _nick;
-	std::string _user;
-	std::string _realuser;
-	std::string _hostname;
-	bool        _hasBeenWelcomed;
-	bool        _hasGivenNick;
-	bool        _hasGivenUser;
-	bool        _hasGivenPassword;
-	bool        _isPolled;
+  private:
+	   int         _fd;
+	   bool        _server_op;
+	   std::string _modes;
+	   std::string _cap;
+	   std::string _nick;
+	   std::string _user;
+	   std::string _realuser;
+	   std::string _hostname;
+	   bool        _hasBeenWelcomed;
+	   bool        _hasGivenNick;
+	   bool        _hasGivenUser;
+	   bool        _hasGivenPassword;
+	   bool        _isPolled;
+     bool        _isBot;
+     bool        _invisible;
 };
 
 // std::map<std::string, Client> users;
