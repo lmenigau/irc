@@ -77,6 +77,7 @@ void user_mode( Client&     c,
 	                 modes.c_str() ) );
 }
 
+//The Client should be Operator to use modes
 void channel_mode( Client&     c,
                    std::string target,
                    std::string modes,
@@ -88,6 +89,13 @@ void channel_mode( Client&     c,
 	}
 	try {
 		ircserv::getChannels().at( target );
+		Channel *channel = find_channel(target);
+		if (operation == '+')
+			channel->addModes(modes);
+		else if (operation == '-')
+			channel->removeModes(modes);
+		//else
+			//channel->callModes(modes)
 	} catch ( std::exception& e ) {
 		c.reply( format( ":ircserv.localhost 403 %s :No such channel\r\n",
 		                 target.c_str() ) );
@@ -102,9 +110,10 @@ void channel_mode( Client&     c,
 void mode( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
-	std::string modes;
+	std::string modes = args->back();
 	char        operation = modes[0];
-	modes.erase( 0, 1 );
+	if (operation == '+' || operation == '-')
+		modes.erase( 0, 1 );
 	std::string target = args->front();
 	if ( isUser( target ) ) {
 		modes = check_user_modes( args->back() );
