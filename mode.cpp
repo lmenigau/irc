@@ -6,6 +6,15 @@
 #define USERMODE "ioRZBT"
 #define CHANNELMODE "imRMsuUntbfklqahv"
 
+//Modes string should not overexceed 3 letter
+//Some modes are not combinables : like k is ok with i / t but not o or l
+// o is ok with i / t not k or l
+// Conclusion : l k o are not possible together i and t are okay with all
+
+// Ban whould be alone / Same for voice, maybe ok with i / t but lazy ..
+
+//its possible to have +o-v etc .. 3 instruction max
+
 static bool is_valid_user_mode( char mode ) {
 	return ( mode == 'i' || mode == 'o' || mode == 'R' || mode == 'Z' ||
 	         mode == 'B' || mode == 'T' );
