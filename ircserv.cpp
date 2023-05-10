@@ -3,6 +3,8 @@
 #include "ostream.hpp"
 #include "parsing.hpp"
 #include "utils.hpp"
+#include "signal.hpp"
+#include <csignal>
 #include <cerrno>
 
 #define MAX_PORT 65535
@@ -134,6 +136,7 @@ void ircserv::start( void ) {
 	logger( "INFO", "server started successfuly" );
 	//int b = 0;
 	_clients.reserve(1024);
+	signal(SIGINT, interupt_handler);
 	for ( ;; ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
@@ -143,6 +146,14 @@ void ircserv::start( void ) {
 		}
 		//b++;
 	}
+}
+
+void	ircserv::stop(void ) {
+	close( _tcp6_socket );
+	close( _pollfd );
+	forEach(_clients, close_client);
+	_clients.clear();
+	_channels.clear();
 }
 
 int ircserv::getPollfd( void ) {

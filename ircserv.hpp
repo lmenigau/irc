@@ -47,6 +47,7 @@ class ircserv {
    public:
 	static void initialisation( char* pass, char* port );
 	static void start( void );
+	static void stop( void );
 	//  static std::vector<Client>::iterator getClientFromVector(int fd);
 
 	static bool failed( void );
