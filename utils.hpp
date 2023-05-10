@@ -8,6 +8,16 @@
 #include "client.hpp"
 #include "typedef.hpp"
 
+typedef enum err {
+	MODE,
+	FLAG
+}	t_err_type;
+
+typedef enum type {
+	CHANNEL,
+	USER
+}	t_type;
+
 std::string format( std::string format, ... );
 std::string format( std::string format, va_list va_args );
 void        logger( std::string level, std::string format, ... );

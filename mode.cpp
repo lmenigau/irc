@@ -3,9 +3,6 @@
 #include <map>
 #include <list>
 
-#define USERMODE "ioRZBT"
-#define CHANNELMODE "imRMsuUntbfklqahv"
-
 //Modes string should not overexceed 3 letter
 //Some modes are not combinables : like k is ok with i / t but not o or l
 // o is ok with i / t not k or l
@@ -16,50 +13,106 @@
 //its possible to have +o-v etc .. 3 instruction max
 
 static bool is_valid_user_mode( char mode ) {
-	return ( mode == 'i' || mode == 'o' || mode == 'R' || mode == 'Z' ||
-	         mode == 'B' || mode == 'T' );
+	return ( mode == 'i' || mode == 'o' || mode == 'B');
 }
 
 static bool is_valid_channel_mode( char mode ) {
-	return ( mode == 'i' || mode == 'm' || mode == 'R' || mode == 'M' ||
-	         mode == 's' || mode == 'u' || mode == 'U' || mode == 'n' ||
-	         mode == 't' || mode == 'b' || mode == 'f' || mode == 'k' ||
-	         mode == 'l' || mode == 'q' || mode == 'a' || mode == 'h' ||
-	         mode == 'v' );
+	return ( mode == 'i' || mode == 't' || mode == 'b' || mode == 'k' || mode == 'l' || mode == 'v' || mode == 'o' || mode == 'v');
 }
 
-static std::string check_user_modes( std::string modes ) {
-	std::string ret;
+static bool search_mode(std::string str, std::string letter, bool &res)
+{
+	int		pos;
 
-	if ( modes[0] == '+' )
-		ret += '+';
-	else if ( modes[0] == '-' )
-		ret += '-';
-	else
-		return ( ret );
-	for ( size_t i = 1; i < modes.length(); i++ ) {
-		if ( is_valid_user_mode( modes[i] ) ) {
-			ret += modes[i];
-		}
+	if (str[0] != '+' && str[0] != 'b' && str[0] != '-')
+		return (false);
+	if (str.find(letter) != std::string::npos)
+	{
+		if (res)
+			return (false);
+		res = true;
+		pos = str.find(letter);
+		if (str.find(letter, pos + 1) != std::string::npos)
+			return (false);
 	}
-	return ret;
+	return (true);
 }
 
-static std::string check_channel_modes( std::string modes ) {
-	std::string ret;
-
-	if ( modes[0] == '+' )
-		ret += '+';
-	else if ( modes[0] == '-' )
-		ret += '-';
-	else
-		return ( ret );
-	for ( size_t i = 1; i < modes.length(); i++ ) {
-		if ( is_valid_channel_mode( modes[i] ) ) {
-			ret += modes[i];
+static bool check_char_modes (std::string str, t_type type, t_err_type &err_type)
+{
+	for (std::string::iterator it = str.begin() + 1; it != str.end(); it++)
+	{
+		if ((type == USER && !is_valid_user_mode(*it)) || (type == CHANNEL && !is_valid_channel_mode(*it)))
+		{
+			err_type = FLAG;
+			return (false);
 		}
 	}
-	return ret;
+	return (true);
+}
+
+static bool check_user_modes( std::vector<std::string> modes, t_err_type &err_type) {
+	bool	b = false;
+	bool	o = false;
+	bool	i = false;
+
+	for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++) {
+		if (!check_char_modes(*it, USER, err_type))
+			return (false);
+		if (!search_mode(*it, "b", b))
+			return (false);
+		if (!search_mode(*it, "i", i))
+			return (false);
+		if (!search_mode(*it, "o", o))
+			return (false);
+	}
+	if (b && o)
+		return (false);
+	return (true);
+}
+
+static bool check_channel_modes( std::vector<std::string> modes, t_err_type &err_type ) {
+	bool i = false;
+	bool t = false;
+	bool b = false;
+	bool k = false;
+	bool l = false;
+	bool o = false;
+	bool v = false;
+
+	if (modes.front().find("b") != std::string::npos && modes.front()[0] == 'b' && modes.size() > 1)
+		return (false);
+
+	for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++) {
+		if (!check_char_modes(*it, CHANNEL, err_type))
+			return (false);
+		if (!search_mode(*it, "t", t))
+			return (false);
+		if (!search_mode(*it, "b", b))
+			return (false);
+		if (!search_mode(*it, "o", o))
+			return (false);
+		if (!search_mode(*it, "i", i))
+			return (false);
+		if (!search_mode(*it, "k", k))
+			return (false);
+		if (!search_mode(*it, "v", v))
+			return (false);
+		if (!search_mode(*it, "l", l))
+			return (false);
+	}
+	if (i && (b || v || l))
+		return (false);
+	//We are not handling special case with +o
+	if (o && (t || b || i || k || v || l))
+		return (false);
+	if (b && (k || v || l || t))
+		return (false);
+	if (t && (v || l))
+		return (false);
+	if (l && v)
+		return (false);
+	return (true);
 }
 
 void user_mode( Client&     c,
@@ -116,20 +169,58 @@ void channel_mode( Client&     c,
 	(void) operation;
 }
 
+void	fill_from_string(std::string str, std::vector<std::string> &modes)
+{
+	int			i = 0;
+	int			pos = 0;
+	bool		start = true;
+
+	for (std::string::iterator it = str.begin(); it != str.end(); it++)
+	{
+		if (*it == '-' || *it == '+')
+		{
+			if (!start)
+			{
+				modes.push_back(str.substr(pos, i - pos));
+				pos = i;
+			}
+			else
+				start = false;
+		}
+		i++;
+	}
+	modes.push_back(str.substr(pos, i - pos));
+}
+
+
 void mode( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
-	std::string modes = args->back();
-	char        operation = modes[0];
-	if (operation == '+' || operation == '-')
-		modes.erase( 0, 1 );
+	std::vector<std::string> modes;
 	std::string target = args->front();
+	t_err_type err_type = MODE;
+
+	fill_from_string(args->back(), modes);
 	if ( isUser( target ) ) {
-		modes = check_user_modes( args->back() );
-		user_mode( c, target, modes, operation );
+		if (!check_user_modes( modes, err_type ))
+		{
+			if (err_type == MODE)
+				c.reply( format(":ircserv.localhost 472 %s :is unknow mode char to me\r\n", args->front().c_str()));
+			else if (err_type == FLAG)
+				c.reply(":ircserv.localhost 501 :Unknown MODE flag\r\n");
+			return ;
+		}
+		//user_mode( c, target, modes, operation );
 	}
 	if ( isChannel( target ) ) {
-		modes = check_channel_modes( args->back() );
-		channel_mode( c, target, modes, operation );
+		if (!check_channel_modes(modes, err_type))
+		{
+			if (err_type == MODE)
+				c.reply( format(":ircserv.localhost 472 %s :is unknow mode char to me\r\n", args->front().c_str()));
+			else if (err_type == FLAG)
+				c.reply(":ircserv.localhost 501 :Unknown MODE flag\r\n");
+			return ;
+		}
+		//channel_mode( c, target, modes, operation );
 	}
 }
