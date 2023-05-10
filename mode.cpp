@@ -128,7 +128,7 @@ static bool check_channel_modes( std::vector<std::string> modes, t_err_type &err
 void user_mode( Client&     c,
                 std::list <std::string> *args,
                 std::vector<std::string> modes) {
-	if ( target != c.getNick() ) {
+	if ( args->front() != c.getNick() ) {
 		c.reply(
 		    ":ircserv.localhost 502 :Cant change mode for other users\r\n" );
 		return;
@@ -152,12 +152,12 @@ void channel_mode( Client&     c,
                    std::vector<std::string> modes) {
 	if ( modes.empty() ) {
 		c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
-		                 c.getUser().c_str(), target.c_str() ) );
+		                 c.getUser().c_str(), args->front().c_str() ) );
 		return;
 	}
 	try {
-		ircserv::getChannels().at( target );
-		Channel *channel = find_channel(target);
+		ircserv::getChannels().at( args->front() );
+		Channel *channel = find_channel(args->front());
 		for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
 		{
 			if ((*it)[0] == '+')
@@ -165,7 +165,7 @@ void channel_mode( Client&     c,
 			else if ((*it)[0] == '-')
 				channel->removeModes( *it );
 			c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
-	    	             c.getUser().c_str(), target.c_str(), (*it).c_str() ) );
+	    	             c.getUser().c_str(), args->front().c_str(), (*it).c_str() ) );
 			logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 			        (*it).c_str() );
 		}
@@ -173,7 +173,7 @@ void channel_mode( Client&     c,
 			//channel->callModes(modes)
 	} catch ( std::exception& e ) {
 		c.reply( format( ":ircserv.localhost 403 %s :No such channel\r\n",
-		                 target.c_str() ) );
+		                 args->front().c_str() ) );
 	}
 }
 
@@ -204,6 +204,7 @@ void mode( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
 	std::vector<std::string> modes;
+	std::cout << args->front() << " " << args->back() << std::endl;
 	std::string target = args->front();
 	t_err_type err_type = MODE;
 
@@ -217,7 +218,7 @@ void mode( std::list<std::string>* args, Client& c ) {
 				c.reply(":ircserv.localhost 501 :Unknown MODE flag\r\n");
 			return ;
 		}
-		user_mode( c, target, modes);
+		user_mode( c, args, modes);
 	}
 	if ( isChannel( target ) ) {
 		if (!check_channel_modes(modes, err_type))
@@ -228,6 +229,6 @@ void mode( std::list<std::string>* args, Client& c ) {
 				c.reply(":ircserv.localhost 501 :Unknown MODE flag\r\n");
 			return ;
 		}
-		channel_mode( c, target, modes);
+		channel_mode( c, args, modes);
 	}
 }

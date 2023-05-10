@@ -1,0 +1,83 @@
+<< CAP LS
+<< PASS 1
+<< NICK hanako
+<< USER hanako hanako 1 :hanako
+>> CAP * LS :multi-prefix
+<< CAP REQ :multi-prefix
+>> :hanako!ip6-localhost NICK hanako
+>> :ircserv.localhost 001 hanako :Welcome to the FT_IRC server hanako[!hanako@ip6-localhost]
+<< MODE hanako +i
+>> :ircserv.localhost 002 hanako :Your host is FT_IRC running version 0.0.1dev
+>> :ircserv.localhost 003 hanako :This server was created idk like now ?
+>> :ircserv.localhost 004 hanako :FT_IRC 0.0.1dev ia i
+>> CAP * LS :multi-prefix
+<< CAP END
+>> :ircserv.localhost 221 hanako +i
+>> CAP * LS :multi-prefix
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> lag pong
+<< JOIN #bruh
+>> :ircserve.localhost 332 hanako #bruh :
+>> :hanako!ip6-localhost JOIN #bruh
+>> :ircserv.localhost 353 hanako = #bruh :@hanako 
+>> :ircserv.localhost 353 hanako = #bruh :@hanako 
+>> :ircserv.localhost 366 hanako #bruh :End of NAMES list
+<< MODE #bruh
+>> :ircserv.localhost 501 :Unknown MODE flag
+<< MODE #bruh +#ahah +tk key
+>> :ircserv.localhost 501 :Unknown MODE flag
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> lag pong
+<< CAP LS
+<< PASS 1
+<< NICK hanako
+<< USER hanako hanako 1 :hanako
+>> CAP * LS :multi-prefix
+<< CAP REQ :multi-prefix
+>> :hanako!ip6-localhost NICK hanako
+>> :ircserv.localhost 001 hanako :Welcome to the FT_IRC server hanako[!hanako@ip6-localhost]
+<< MODE hanako +i
+>> :ircserv.localhost 002 hanako :Your host is FT_IRC running version 0.0.1dev
+>> :ircserv.localhost 003 hanako :This server was created idk like now ?
+>> :ircserv.localhost 004 hanako :FT_IRC 0.0.1dev ia i
+>> CAP * LS :multi-prefix
+<< CAP END
+>> :ircserv.localhost 221 hanako +i
+>> CAP * LS :multi-prefix
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> lag pong
+<< JOIN #bruh
+>> :ircserve.localhost 332 hanako #bruh :
+>> :hanako!ip6-localhost JOIN #bruh
+>> :ircserv.localhost 353 hanako = #bruh :@hanako 
+>> :ircserv.localhost 353 hanako = #bruh :@hanako 
+>> :ircserv.localhost 366 hanako #bruh :End of NAMES list
+<< MODE #bruh
+>> :ircserv.localhost 501 :Unknown MODE flag
+<< MODE #bruh +#ahah +tk key
+>> :ircserv.localhost 501 :Unknown MODE flag
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> lag pong
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> FAILED mode channel: chanquery abort
+<< MODE #bruh
+--> lag pong
+>> :ircserv.localhost 501 :Unknown MODE flag
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> lag pong
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> FAILED mode channel: chanquery abort
+<< WHO #bruh
+--> lag pong
+<< MODE #bruh,#test +tk key
+>> :ircserv.localhost 501 :Unknown MODE flag
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> lag pong

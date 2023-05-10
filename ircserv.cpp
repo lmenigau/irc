@@ -70,6 +70,8 @@ void ircserv::process_events( epoll_event& ev ) {
 			len = read( c->getFd(), buf, 512 );
 			if ( len < 0 ) {
 				logger("WARNING", strerror(errno));
+				close(c->getFd());
+				logger( "INFO", "deleted: %d", c->getFd() );
 				return ;
 			}
 			if ( len == 0 ) {
