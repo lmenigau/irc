@@ -122,3 +122,8 @@ void welcome( Client* client ) {
 	            client->getNick().c_str() ) );
 	client->setHasBeenWelcomed( true );
 }
+
+void	close_client( Client &client ) {
+	client.reply( ":ircserv.localhost QUIT :Connection closed\r\n" );
+	close(client.getFd());
+}
