@@ -17,7 +17,7 @@ static bool is_valid_user_mode( char mode ) {
 }
 
 static bool is_valid_channel_mode( char mode ) {
-	return ( mode == 'i' || mode == 't' || mode == 'b' || mode == 'k' || mode == 'l' || mode == 'v' || mode == 'o' || mode == 'v');
+	return ( mode == 'i' || mode == 't' || mode == 'b' || mode == 'k' || mode == 'l' || mode == 'o');
 }
 
 static bool search_mode(std::string str, std::string letter, bool &res)
@@ -83,7 +83,6 @@ static bool check_channel_modes( std::vector<std::string> modes, t_err_type &err
 	bool k = false;
 	bool l = false;
 	bool o = false;
-	bool v = false;
 
 	if (modes.front().find("b") != std::string::npos && modes.front()[0] == 'b' && modes.size() > 1)
 		return (false);
@@ -101,23 +100,19 @@ static bool check_channel_modes( std::vector<std::string> modes, t_err_type &err
 			return (false);
 		if (!search_mode(*it, "k", k))
 			return (false);
-		if (!search_mode(*it, "v", v))
-			return (false);
 		if (!search_mode(*it, "l", l))
 			return (false);
 	}
-	if (i && (b || v || l))
+	if (i && (b || l))
 		return (false);
 	//We are not handling special case with +o
-	if (o && (t || b || i || k || v || l))
+	if (o && (t || b || i || k || l))
 		return (false);
-	if (b && (k || v || l || t))
+	if (b && (k || l || t))
 		return (false);
-	if (t && (v || l))
+	if (t && l)
 		return (false);
-	if (l && v)
-		return (false);
-	if (!i && !t && !b && !k && !l && !o && !v)
+	if (!i && !t && !b && !k && !l && !o)
 	{
 		err_type = FLAG;
 		return (false);
@@ -150,6 +145,7 @@ void user_mode( Client&     c,
 void channel_mode( Client&     c,
                    std::list <std::string> *args,
                    std::vector<std::string> modes) {
+	//Should be inside a loop on args->front() !
 	if ( modes.empty() ) {
 		c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
 		                 c.getUser().c_str(), args->front().c_str() ) );
@@ -160,6 +156,7 @@ void channel_mode( Client&     c,
 		Channel *channel = find_channel(args->front());
 		for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
 		{
+			//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
 			if ((*it)[0] == '+')
 				channel->addModes( *it );
 			else if ((*it)[0] == '-')
