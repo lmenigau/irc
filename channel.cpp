@@ -167,6 +167,8 @@ void Channel::m_operator(Client &c, std::string args, t_ope operation)
 	while (i != args.size())
 	{
 		target = getTarget(i, args);
+		if (target.empty())
+			continue ;
 		if (!findClients(target))
 		{
 			//reply
@@ -174,6 +176,10 @@ void Channel::m_operator(Client &c, std::string args, t_ope operation)
 		}
 		if (operation == ADD)
 		{
+				std::cout << "Nice" << std::endl;
+			//	c.reply(":ircserv.localhost 501 :Unknown MODE flag\r\n");
+			//	c.reply( format( ":ircserv.localhost 324 %s %s +o\r\n",
+	    	//             	c.getUser().c_str(), target.c_str() ));
 			_ops.push_back(find_client(target));
 			//send msg
 		}
@@ -185,7 +191,6 @@ void Channel::m_operator(Client &c, std::string args, t_ope operation)
 			//reply
 		}
 	}
-	(void) c;
 	(void) args;
 }
 
@@ -214,6 +219,8 @@ void Channel::m_ban(Client &c, std::string args, t_ope operation)
 	while (i != args.size())
 	{
 		target = getTarget(i, args);
+		if (target.empty())
+			continue ;
 		if (!findClients(target))
 		{
 			//reply
@@ -288,4 +295,3 @@ void	Channel::handleModes( Client &c, std::string modes, std::string args)
 		}
 	}
 }
-

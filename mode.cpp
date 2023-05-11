@@ -122,12 +122,13 @@ static bool check_channel_modes( std::vector<std::string> modes, t_err_type &err
 
 void user_mode( Client&     c,
                 std::list <std::string> *args,
-                std::vector<std::string> modes) {
-	if ( args->front() != c.getNick() ) {
+                std::vector<std::string> modes, std::string target) {
+	if ( target != c.getNick() ) {
 		c.reply(
 		    ":ircserv.localhost 502 :Cant change mode for other users\r\n" );
 		return;
 	}
+	(void) args;
 	for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
 	{
 		if ((*it)[0] == '+')
@@ -145,42 +146,38 @@ void user_mode( Client&     c,
 
 void channel_mode( Client&     c,
                    std::list <std::string> *args,
-                   std::vector<std::string> modes) {
+                   std::vector<std::string> modes, std::string target_str) {
 
 	std::string target;
 	size_t	i = 0;
 
 	while (i != args->front().size())
 	{
-			target = getTarget(i, args->front());
+			target = getTarget(i, target_str);
 			if (target.empty())
 				continue ;
 		if ( modes.empty() ) {
 			c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
-		                 	c.getUser().c_str(), args->front().c_str() ) );
+		                 	c.getUser().c_str(), target.c_str() ) );
 			return;
 		}
 		try {
 			ircserv::getChannels().at( target );
-			Channel *channel = find_channel(target);
-			for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
-			{
-				//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
-				if ((*it)[0] == '+')
-					channel->addModes( *it );
-				else if ((*it)[0] == '-')
-					channel->removeModes( *it );
-				c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
-	    	             	c.getUser().c_str(), target.c_str(), (*it).c_str() ) );
-				logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
-			        	(*it).c_str() );
-			}
 			//else
 				//channel->callModes(modes)
 		} catch ( std::exception& e ) {
 			c.reply( format( ":ircserv.localhost 403 %s :No such channel\r\n",
 		                 	target.c_str() ) );
+			return ;
 		}
+			Channel *channel = find_channel(target);
+			for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
+			{
+				//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
+				channel->handleModes(c, *it, args->back());
+				logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
+			        	(*it).c_str() );
+			}
 	}
 }
 
@@ -208,34 +205,34 @@ void	fill_from_string(std::string str, std::vector<std::string> &modes)
 }
 
 void mode( std::list<std::string>* args, Client& c ) {
-	if ( args->empty() )
+	if ( args->empty() || args->size() == 1 )
 		return;
 	std::vector<std::string> modes;
-	std::cout << args->front() << " " << args->back() << std::endl;
 	std::string target = args->front();
 	t_err_type err_type = MODE;
+	args->pop_front();
 
-	fill_from_string(args->back(), modes);
+	fill_from_string(args->front(), modes);
 	if ( isUser( target ) ) {
 		if (!check_user_modes( modes, err_type ))
 		{
 			if (err_type == MODE)
-				c.reply( format(":ircserv.localhost 472 %s :is unknow mode char to me\r\n", args->front().c_str()));
+				c.reply( format(":ircserv.localhost 472 %s :is unknow mode char to me\r\n", target.c_str()));
 			else if (err_type == FLAG)
 				c.reply(":ircserv.localhost 501 :Unknown MODE flag\r\n");
 			return ;
 		}
-		user_mode( c, args, modes);
+		user_mode( c, args, modes, target);
 	}
 	if ( isChannel( target ) ) {
 		if (!check_channel_modes(modes, err_type))
 		{
 			if (err_type == MODE)
-				c.reply( format(":ircserv.localhost 472 %s :is unknow mode char to me\r\n", args->front().c_str()));
+				c.reply( format(":ircserv.localhost 472 %s :is unknow mode char to me\r\n", target.c_str()));
 			else if (err_type == FLAG)
 				c.reply(":ircserv.localhost 501 :Unknown MODE flag\r\n");
 			return ;
 		}
-		channel_mode( c, args, modes);
+		channel_mode( c, args, modes, target);
 	}
 }
