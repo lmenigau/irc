@@ -23,9 +23,7 @@ static bool is_valid_channel_mode( char mode ) {
 static bool search_mode(std::string str, std::string letter, bool &res)
 {
 	int		pos;
-
-	if (str[0] != '+' && str[0] != 'b' && str[0] != '-')
-		return (false);
+if (str[0] != '+' && str[0] != 'b' && str[0] != '-') return (false);
 	if (str.find(letter) != std::string::npos)
 	{
 		if (res)
@@ -137,6 +135,8 @@ void user_mode( Client&     c,
 			c.removeModes( *it );
 	c.reply( format( ":ircserv.localhost 221 %s %s\r\n", c.getUser().c_str(),
 	                (*it).c_str() ) );
+	c.reply (format ("%s!%s@%s MODE %s :%s", c.getUser().c_str(), c.getNick().c_str(), c.getHostname().c_str(), c.getNick().c_str(), modes[0].c_str()));
+//	c.reply (format( "%s!%s@%s" //the client // MODE // channel
 	logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 	        (*it).c_str() );
 	}
@@ -170,14 +170,14 @@ void channel_mode( Client&     c,
 		                 	target.c_str() ) );
 			return ;
 		}
-			Channel *channel = find_channel(target);
-			for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
-			{
-				//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
-				channel->handleModes(c, *it, args->back());
-				logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
-			        	(*it).c_str() );
-			}
+		Channel *channel = find_channel(target);
+		for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
+		{
+			//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
+			channel->handleModes(c, *it, args->back());
+			logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
+		        	(*it).c_str() );
+		}
 	}
 }
 
