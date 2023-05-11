@@ -142,35 +142,45 @@ void user_mode( Client&     c,
 }
 
 //The Client should be Operator to use modes
+
 void channel_mode( Client&     c,
                    std::list <std::string> *args,
                    std::vector<std::string> modes) {
-	//Should be inside a loop on args->front() !
-	if ( modes.empty() ) {
-		c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
-		                 c.getUser().c_str(), args->front().c_str() ) );
-		return;
-	}
-	try {
-		ircserv::getChannels().at( args->front() );
-		Channel *channel = find_channel(args->front());
-		for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
-		{
-			//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
-			if ((*it)[0] == '+')
-				channel->addModes( *it );
-			else if ((*it)[0] == '-')
-				channel->removeModes( *it );
-			c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
-	    	             c.getUser().c_str(), args->front().c_str(), (*it).c_str() ) );
-			logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
-			        (*it).c_str() );
+
+	std::string target;
+	size_t	i = 0;
+
+	while (i != args->front().size())
+	{
+			target = getTarget(i, args->front());
+			if (target.empty())
+				continue ;
+		if ( modes.empty() ) {
+			c.reply( format( ":ircserv.localhost 324 %s %s +\r\n",
+		                 	c.getUser().c_str(), args->front().c_str() ) );
+			return;
 		}
-		//else
-			//channel->callModes(modes)
-	} catch ( std::exception& e ) {
-		c.reply( format( ":ircserv.localhost 403 %s :No such channel\r\n",
-		                 args->front().c_str() ) );
+		try {
+			ircserv::getChannels().at( target );
+			Channel *channel = find_channel(target);
+			for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
+			{
+				//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
+				if ((*it)[0] == '+')
+					channel->addModes( *it );
+				else if ((*it)[0] == '-')
+					channel->removeModes( *it );
+				c.reply( format( ":ircserv.localhost 324 %s %s +%s\r\n",
+	    	             	c.getUser().c_str(), target.c_str(), (*it).c_str() ) );
+				logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
+			        	(*it).c_str() );
+			}
+			//else
+				//channel->callModes(modes)
+		} catch ( std::exception& e ) {
+			c.reply( format( ":ircserv.localhost 403 %s :No such channel\r\n",
+		                 	target.c_str() ) );
+		}
 	}
 }
 

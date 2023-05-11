@@ -6,6 +6,12 @@
 #include "client.hpp"
 #include "typedef.hpp"
 
+typedef enum mode_operation {
+	ADD,
+	SUB,
+	NONE
+}	t_ope;
+
 class Channel {
    private:
 	t_vector_client_ptr             _clients;
@@ -14,13 +20,18 @@ class Channel {
 	std::string                    _topic;
 	std::string                    _password;
 	t_vector_client_ptr           _ops;
-	t_vector_client_ptr           _halfops;
-	t_vector_client_ptr          _voiced;
-	t_vector_client_ptr          _founder;
-	std::vector<std::string>     _banned;
+	t_vector_client_ptr				    _banned;
 	std::string                  _key;
 	bool                         _invite_only;
-	//	int                            _limit;
+	bool												 _topic_op;
+	int                            _limit;
+
+	void m_topic(Client &c, std::string args, t_ope operation);
+	void m_ban(Client &c, std::string args, t_ope operation);
+	void m_operator(Client &c, std::string args, t_ope operation);
+	void m_invite(Client &c, std::string args, t_ope operation);
+	void m_key(Client &c, std::string args, t_ope operation);
+	void m_limit(Client &c, std::string args, t_ope operation);
 
    public:
 	Channel();
@@ -41,6 +52,7 @@ std::string getTopic(void);
 	std::string removeModes( std::string );
 	t_vector_client_ptr &getOps(void);
 	std::string getModes( void );
+	void handleModes( Client &c, std::string modes, std::string args);
 
 
 	void                            setModes( std::string );

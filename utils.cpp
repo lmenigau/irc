@@ -122,3 +122,22 @@ void welcome( Client* client ) {
 	            client->getNick().c_str() ) );
 	client->setHasBeenWelcomed( true );
 }
+
+std::string getTarget(size_t &pos, std::string str)
+{
+	std::size_t	pos_comma;
+	std::string res;
+
+	pos_comma = str.find(",", pos);
+	if ( pos_comma != std::string::npos)
+	{
+		res = str.substr(pos, pos_comma - pos);
+		pos = pos_comma + 1;
+	}
+	else
+	{
+		res = str.substr(pos);
+		pos = str.size();
+	}
+	return (res);
+}

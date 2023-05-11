@@ -28,5 +28,6 @@ void        remove_backslash_r( std::string& c );
 Client*     find_client( std::string );
 Channel*    find_channel( std::string );
 void        welcome( Client* );
-void	display_elem(t_map_channel::iterator channel);
+std::string getTarget(size_t &pos, std::string str);
+
 #endif
