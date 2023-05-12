@@ -151,7 +151,7 @@ void channel_mode( Client  &c,
 	std::string target;
 	size_t	i = 0;
 
-	while (i != args->front().size())
+	while (i != target_str.size())
 	{
 			target = getTarget(i, target_str);
 			if (target.empty())
@@ -211,7 +211,7 @@ void mode( std::list<std::string>* args, Client &c ) {
 	if ( args->empty())
 		return;
 	if (args->size() == 1 )
-		return (c.reply(format("ircserv.locahost 324 %s +Cnt\r\n", args->front().c_str())));
+		return (c.reply(format("ircserv.localhost 324 %s +Cnt\r\n", args->front().c_str())));
 	std::vector<std::string> modes;
 	std::string target = args->front();
 	t_err_type err_type = MODE;

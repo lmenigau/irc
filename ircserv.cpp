@@ -95,7 +95,7 @@ void ircserv::process_events( epoll_event& ev ) {
 					c->buf.erase( 0, pos + 1 );
 				else
 					break ;
-				//logger( "DEBUG", "buf after mdr : %s", c->buf.c_str() );
+	//			logger( "DEBUG", "buf after mdr : %s", c->buf.c_str() );
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {

@@ -23,9 +23,9 @@ void Channel::addClient( Client &client ) {
 	_clients.push_back( &client );
 }
 
-Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name), 
+Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name),
 									_topic(a._topic), _password(a._password), _ops(a._ops), _banned(a._banned), _key(a._key), _invite_only(a._invite_only)
-{}									
+{}
 
 void Channel::removeClient( Client& rclient ) {
 	t_vector_client_ptr::iterator it = _clients.begin();
@@ -178,9 +178,8 @@ void Channel::m_operator(Client &c, std::string args, t_ope operation)
 		t_vector_client_ptr::iterator it = std::find(_ops.begin(), _ops.end(), find_client(target));
 		if (operation == ADD)
 		{
-			std::cout << "test" << std::endl;
 			find_client(target)->reply( format (":%s!%s@%s MODE %s: +o %s\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str(), target.c_str()));
-			if (it != _ops.end())
+			if (it == _ops.end())
 				_ops.push_back(find_client(target));
 			c.reply( format (":%s!%s@%s MODE %s: +o %s\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str(), target.c_str()));
 		}
@@ -246,21 +245,20 @@ void Channel::m_ban(Client &c, std::string args, t_ope operation)
 		t_vector_client_ptr::iterator it = std::find(_banned.begin(), _banned.end(), find_client(target));
 		if (operation == ADD)
 		{
-			if (it != _banned.end())
+			if (it == _banned.end())
 				_banned.push_back(find_client(target));
-			find_client(target)->reply( format( ":ircserv.localhost 324 %s %s +b %s\r\n",
-	    		c.getNick().c_str(), _name.c_str() , target.c_str()));
-			c.reply( format (":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str()));
+			find_client(target)->reply( format (":%s!%s@%s MODE %s %s :+b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str(), target.c_str()));
+			c.reply( format (":%s!%s@%s MODE %s %s :+b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str(), target.c_str()));
+			reply_ban_list(c);
 		}
 		else
 		{
 			if (it != _banned.end())
 			{
 				_banned.erase(it);
-				find_client(target)->reply( format( ":ircserv.localhost 324 %s %s -b %s\r\n",
-	    			c.getNick().c_str(), _name.c_str() , target.c_str()));
+				find_client(target)->reply( format (":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str()));
 				c.reply( format (":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str()));
-				return ;
+				return (reply_ban_list(c));
 			}
 				c.reply( format(":irevserv.localhost 441 %s %s :They aren't not banned on that channel\r\n", target.c_str(), _name.c_str()));
 		}
@@ -282,7 +280,6 @@ void	Channel::handleModes( Client &c, std::string modes, std::string args)
 {
 		t_ope operation;
 
-		std::cout << c.getFd() << std::endl;
 		if (modes[0] == '+')
 			operation = ADD;
 		else if (modes[0] == '-')
