@@ -1,0 +1,41 @@
+<< CAP LS
+<< PASS 1
+<< NICK hanako
+<< USER hanako hanako 1 :hanako
+>> CAP * LS :multi-prefix
+<< CAP REQ :multi-prefix
+>> :hanako!ip6-localhost NICK hanako
+>> :ircserv.localhost 001 hanako :Welcome to the FT_IRC server hanako[!hanako@ip6-localhost]
+<< MODE hanako +i
+>> :ircserv.localhost 002 hanako :Your host is FT_IRC running version 0.0.1dev
+>> :ircserv.localhost 003 hanako :This server was created idk like now ?
+>> :ircserv.localhost 004 hanako :FT_IRC 0.0.1dev ia i
+>> CAP * LS :multi-prefix
+<< CAP END
+>> :ircserv.localhost 221 hanako +i
+>> hanako!hanako@ip6-localhost MODE hanako :+iCAP * LS :multi-prefix
+<< PING ircserv.localhost
+>> PONG ircserv.localhost
+--> lag pong
+<< JOIN #t
+>> :ircserve.localhost 332 hanako #t :
+>> :hanako!ip6-localhost JOIN #t
+>> :ircserv.localhost 353 hanako = #t :@hanako 
+>> :ircserv.localhost 353 hanako = #t :@hanako 
+>> :ircserv.localhost 366 hanako #t :End of NAMES list
+<< MODE #t
+>> ircserv.locahost 324 #t +Cnt
+<< NICK a
+>> :hanako!ip6-localhost NICK a
+<< MODE #t +o a
+>> :ircserv.localhost 324 a #t +o a
+--> chanquery mode
+<< WHO #t
+<< JOIN #nice
+>> :ircserve.localhost 332 a #nice :
+>> :a!ip6-localhost JOIN #nice
+>> :ircserv.localhost 353 a = #nice :@a 
+>> :ircserv.localhost 353 a = #nice :@a 
+>> :ircserv.localhost 366 hanako #nice :End of NAMES list
+<< MODE #nice +o a
+<< PING ircserv.localhost

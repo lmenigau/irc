@@ -144,7 +144,7 @@ void user_mode( Client&     c,
 
 //The Client should be Operator to use modes
 
-void channel_mode( Client&     c,
+void channel_mode( Client  &c,
                    std::list <std::string> *args,
                    std::vector<std::string> modes, std::string target_str) {
 
@@ -174,6 +174,9 @@ void channel_mode( Client&     c,
 		for (std::vector<std::string>::iterator it = modes.begin(); it != modes.end(); it++)
 		{
 			//Maybe a method of channel like handle_mode, taking the string of mode + args->back() which could parse string of mode and call function depending on it
+			//(void) channel;
+				//c.reply( format( ":ircserv.localhost 324 %s %s +o %s\r\n",
+	    	             	// c.getNick().c_str(), target.c_str() , args->back().c_str()));
 			channel->handleModes(c, *it, args->back());
 			logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
 		        	(*it).c_str() );
@@ -204,9 +207,11 @@ void	fill_from_string(std::string str, std::vector<std::string> &modes)
 	modes.push_back(str.substr(pos, i - pos));
 }
 
-void mode( std::list<std::string>* args, Client& c ) {
-	if ( args->empty() || args->size() == 1 )
+void mode( std::list<std::string>* args, Client &c ) {
+	if ( args->empty())
 		return;
+	if (args->size() == 1 )
+		return (c.reply(format("ircserv.locahost 324 %s +Cnt\r\n", args->front().c_str())));
 	std::vector<std::string> modes;
 	std::string target = args->front();
 	t_err_type err_type = MODE;

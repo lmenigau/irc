@@ -26,7 +26,6 @@ class Channel {
 	bool												 _topic_op;
 	int                            _limit;
 
-	void reply_ban_list(Client &c);
 	void m_topic(Client &c, std::string args, t_ope operation);
 	void m_ban(Client &c, std::string args, t_ope operation);
 	void m_operator(Client &c, std::string args, t_ope operation);
@@ -35,6 +34,7 @@ class Channel {
 	void m_limit(Client &c, std::string args, t_ope operation);
 
    public:
+	void reply_ban_list(Client &c);
 	Channel();
 	Channel( std::string );
 	Channel( Client& creator, const std::string& name );
