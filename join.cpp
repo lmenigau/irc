@@ -36,7 +36,8 @@ void join( std::list<std::string>* args, Client& c ) {
 	t_map_channel::iterator it;
 
 	if (args->front().c_str()[0] != '#')
-	{ c.reply( format( ":ircserv.localhost 403 %s : No such channel\n\r", args->front().c_str()));
+	{
+		c.reply( format( ":ircserv.localhost 403 %s : No such channel\n\r", args->front().c_str()));
 		return ;
 	}
 	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
@@ -46,6 +47,14 @@ void join( std::list<std::string>* args, Client& c ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
 	} else
+	{
+		if  (!it->second.getKey().empty() && args->back() != it->second.getKey())
+			return (c.reply(format(":ircserv.localhost 475 %s :cannot join channel (+k)\r\n", args->front().c_str())));
+		else if (it->second.isBanned(&c))
+			return (c.reply(format(":ircserv.localhost 474 %s :Cannot join channel (+b)\r\n", args->front().c_str())));
+		else if (it->second.getInviteMode() && !it->second.isInvited(&c))
+			return (c.reply(format(":ircserv.localhost 473 %s :Cannot join channel (+i)\r\n", args->front().c_str())));
+
 		ircserv::getChannels()
 		    .find( args->front() )
 		    ->second.getClients()
@@ -57,5 +66,6 @@ void join( std::list<std::string>* args, Client& c ) {
 	reply_to_join(args->front(), c, it);
 	c.reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
 	                 c.getUser().c_str(), args->front().c_str() ) );
+	}
 //	c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }

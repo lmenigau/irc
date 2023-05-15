@@ -141,3 +141,18 @@ std::string getTarget(size_t &pos, std::string str)
 	}
 	return (res);
 }
+
+bool	isValidPositiveNumber(std::string args)
+{
+	long long buff;
+
+	for (std::string::iterator it = args.begin(); it != args.end(); it++)
+	{
+			if (!(std::isdigit(*it)))
+				return (false);
+	}
+	buff = std::atol(args.c_str());
+	if (buff < INT_MIN || buff > INT_MAX || buff < 0)
+		return (false);
+	return (true);
+}

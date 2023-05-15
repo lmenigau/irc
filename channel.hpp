@@ -21,6 +21,7 @@ class Channel {
 	std::string                    _password;
 	t_vector_client_ptr           _ops;
 	t_vector_client_ptr				    _banned;
+	t_vector_client_ptr			 _invited;
 	std::string                  _key;
 	bool                         _invite_only;
 	bool												 _topic_op;
@@ -40,7 +41,11 @@ class Channel {
 	Channel( Client& creator, const std::string& name );
 	Channel( const Channel &a);
 	~Channel();
+	std::string &getKey(void);
 	void addClient( Client & );
+	bool isInvited( Client *c);
+	bool isBanned( Client *c );
+	void inviteUser( Client & );
 	void removeClient( Client& );
 	void changeModes( int );
   bool isOps(Client &c);
@@ -48,6 +53,7 @@ bool	findClients( const std::string &nick );
 bool	topicSet(void);
 void	setTopic(const std::string &topic);
 std::string getTopic(void);
+	bool	getInviteMode(void);
 
 	std::string addModes( std::string );
 	std::string removeModes( std::string );

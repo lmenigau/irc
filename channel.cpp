@@ -46,6 +46,11 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
+void	Channel::inviteUser( Client &c )
+{
+	_invited.push_back(&c);
+}
+
 bool	Channel::isOps(Client &c)
 {
 	for (t_vector_client_ptr::iterator it = _ops.begin(); it != _ops.end(); it++)
@@ -142,12 +147,11 @@ bool	Channel::findClients( const std::string &nick )
 
 void Channel::m_key(Client &c, std::string args, t_ope operation)
 {
-		if (operation == ADD)
-			_key = args;
-		else
-			_key = "";
 	(void) c;
-	(void) args;
+	if (operation == ADD)
+		_key = args;
+	else
+		_key = "";
 }
 
 void Channel::m_invite(Client &c, std::string args, t_ope operation)
@@ -201,11 +205,8 @@ void Channel::m_operator(Client &c, std::string args, t_ope operation)
 void Channel::m_limit(Client &c, std::string args, t_ope operation)
 {
 		(void) c;
-		if (operation == ADD)
-		{
-			//Check args is well a number
+		if (operation == ADD && isValidPositiveNumber(args))
 			_limit = std::atoi(args.c_str());
-		}
 		else
 			_limit = 0;
 }
@@ -316,4 +317,28 @@ void	Channel::handleModes( Client &c, std::string modes, std::string args)
 				break ;
 		}
 	}
+}
+
+bool	Channel::getInviteMode(void)
+{
+	return _invite_only;
+}
+
+std::string &Channel::getKey(void)
+{
+	return _key;
+}
+
+bool Channel::isInvited( Client *c)
+{
+	if (std::find(_invited.begin(), _invited.end(), c) != _invited.end())
+		return (true);
+	return (false);
+}
+
+bool	Channel::isBanned( Client *c)
+{
+	if (std::find(_banned.begin(), _banned.end(), c) != _banned.end())
+		return (true);
+	return (false);
 }

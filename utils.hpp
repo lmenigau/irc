@@ -6,6 +6,7 @@
 #include <string>
 #include "channel.hpp"
 #include "client.hpp"
+#include <limits.h>
 #include "typedef.hpp"
 
 typedef enum err {
@@ -29,5 +30,6 @@ Client*     find_client( std::string );
 Channel*    find_channel( std::string );
 void        welcome( Client* );
 std::string getTarget(size_t &pos, std::string str);
+bool		isValidPositiveNumber(std::string args);
 
 #endif

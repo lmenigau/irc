@@ -31,6 +31,7 @@ void  invite( std::list<std::string> *args, Client &c)
 		{
 			c.reply( format (":ircserv.localhost 341 %s %s %s\r\n", c.getNick().c_str(), args->front().c_str(), args->back().c_str()));
 			client_target->reply( format(":%s!~%s@%s INVITE %s %s\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), args->front().c_str(), args->back().c_str()));
+			channel_target->inviteUser(*client_target);
 		}
 		args->pop_front();
 	}
