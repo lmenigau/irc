@@ -252,3 +252,11 @@ std::string Client::removeModes( std::string modes ) {
 	}
 	return ( _modes );
 }
+
+void	Client::setIsOper( bool b ) {
+	_isOper = b;
+}
+
+bool	Client::isOper( void ) {
+	return _isOper;
+}

@@ -47,7 +47,7 @@ class Client {
 	void setRealUser( std::string );
 	void setHostname( struct sockaddr_in6& addr );
 	void setHasBeenWelcomed( bool );
-
+	void setIsOper( bool );
 	// state accessors ?
 
 	bool isPolled( void );
@@ -56,6 +56,7 @@ class Client {
 	bool hasGivenPassword( void );
 	bool isRegistered( void );
 	bool hasBeenWelcomed( void );
+	bool isOper( void );
 
    private:
 	int         _fd;
@@ -70,6 +71,7 @@ class Client {
 	bool        _hasGivenUser;
 	bool        _hasGivenPassword;
 	bool        _isPolled;
+	bool		_isOper;
 };
 
 // std::map<std::string, Client> users;
