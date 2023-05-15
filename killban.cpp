@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include "client.hpp"
 
-//TODO: add rpls and make some verification about how this command work !
+//TODO: add RPLs and make some verification about how this command work !
 
 void	killban(std::list<std::string> *args, Client& c){
 	if (!c.isOper())
