@@ -29,6 +29,16 @@ void        remove_backslash_r( std::string& c );
 Client*     find_client( std::string );
 Channel*    find_channel( std::string );
 void        welcome( Client* );
+void        close_client(Client &client);
+
+template <typename T>
+void forEach(std::vector<T> &vec, void (*f)(T &)) {
+    typename std::vector<T>::iterator it = vec.begin();
+    while (it != vec.end()) {
+        f(*it);
+        it++;
+    }
+}
 std::string getTarget(size_t &pos, std::string str);
 bool		isValidPositiveNumber(std::string args);
 

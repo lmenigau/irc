@@ -20,6 +20,7 @@ SRC = channel.cpp\
 		pass.cpp\
 		privmsg.cpp \
 		quit.cpp \
+		signal.cpp \
 		topic.cpp \
 		user.cpp \
 		utils.cpp \

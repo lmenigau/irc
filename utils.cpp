@@ -123,6 +123,10 @@ void welcome( Client* client ) {
 	client->setHasBeenWelcomed( true );
 }
 
+void	close_client( Client &client ) {
+	client.reply( ":ircserv.localhost QUIT :Connection closed\r\n" );
+	close(client.getFd());
+}
 std::string getTarget(size_t &pos, std::string str)
 {
 	std::size_t	pos_comma;
