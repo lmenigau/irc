@@ -40,15 +40,18 @@ void    topic(std::list <std::string> * args, Client &c)
 		it = channels.find(args->front());
 		if (it != channels.end())
 		{
-			if (it->second.isOps(c))
+			if (it->second.findClients(c.getNick()))
 			{
-				//Should sennd to all clients the new topic !
-				ircserv::getChannels().find(args->front())->second.setTopic(args->back());
-				std::cout << "TOPIC :: " << ircserv::getChannels().find(args->front())->second.getTopic() << std::endl;
-				return (it->second.sendAll(format(":%s~!u@%s TOPIC %s :%s\r\n", c.getNick().c_str(), c.getHostname().c_str(), args->front().c_str(), args->back().c_str())));
+				if (it->second.isOps(c) || !it->second.getInviteMode())
+				{
+					//Should sennd to all clients the new topic !
+					ircserv::getChannels().find(args->front())->second.setTopic(args->back());
+//					std::cout << "TOPIC :: " << ircserv::getChannels().find(args->front())->second.getTopic() << std::endl;
+					return (it->second.sendAll(format(":%s~!u@%s TOPIC %s :%s\r\n", c.getNick().c_str(), c.getHostname().c_str(), args->front().c_str(), args->back().c_str())));
+				}
 			}
 			else
-				return (c.reply(format(":ircserv.localhost 442 %s :You're not on that channel\r\n", args->front().c_str())));
+				return (c.reply(format(":ircserv.localhost 482 %s :You're not channel operator\r\n", args->front().c_str())));
 		}
 		else
 			return (c.reply(format(":ircserv.localhost 403 %s :No such channel\r\n", args->front().c_str())));

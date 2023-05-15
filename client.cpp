@@ -21,8 +21,10 @@ Client::Client() {
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	_server_op        = false;
+	_isBot						= false;
+	_invisible				= false;
 	buf.reserve( 512 );
-
 }
 
 Client::Client(Client const &a)
@@ -42,6 +44,9 @@ Client::Client(Client const &a)
 	_hasGivenPassword = a._hasGivenPassword;
 	_isPolled         = a._isPolled;
 	_hasBeenWelcomed  = a._hasBeenWelcomed;
+	_server_op        = a._server_op;
+	_isBot						= a._isBot;
+	_invisible				= a._invisible;
 }
 
 void Client::reply( std::string const& str ) {
@@ -67,6 +72,9 @@ Client::Client( int fd ) {
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	_server_op        = false;
+	_isBot						= false;
+	_invisible				= false;
 	buf.reserve( 512 );
 }
 
@@ -85,6 +93,9 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 	_hasGivenPassword = false;
 	_isPolled         = false;
 	_hasBeenWelcomed  = false;
+	_server_op        = false;
+	_isBot						= false;
+	_invisible				= false;
 	buf.reserve( 512 );
 }
 
@@ -178,6 +189,39 @@ void Client::setFd( int fd ) {
 	_fd = fd;
 }
 
+bool	Client::isServerOp ( void ) {
+	return (_server_op);
+}
+
+void	Client::setOp ( void ) {
+	_server_op = true;
+}
+
+void Client::setInvisible (void)
+{
+	_invisible = true;
+}
+
+void Client::setBot (void )
+{
+	_isBot = true;
+}
+
+void Client::unsetInvisible(void)
+{
+	_invisible = false;
+}
+
+void Client::unsetBot(void)
+{
+	_isBot = false;
+}
+
+void Client::unsetOp(void)
+{
+	_server_op = false;
+}
+
 void Client::setHasBeenWelcomed( bool f ) {
 	_hasBeenWelcomed = f;
 }
@@ -238,6 +282,12 @@ std::string Client::addModes( std::string modes ) {
 		if ( _modes.find( modes[i] ) != std::string::npos )
 			continue;
 		_modes.append( 1, modes[i] );
+		if (modes[i] == 'B')
+			setBot();
+		else if (modes[i] == 'i')
+			setInvisible();
+		else if (modes[i] == 'o')
+			setOp();
 	}
 	return ( _modes );
 }

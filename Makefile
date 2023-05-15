@@ -14,6 +14,7 @@ SRC = channel.cpp\
 		mode.cpp\
 		notice.cpp \
 		nick.cpp \
+		oper.cpp \
 		ostream.cpp\
 		parsing.cpp\
 		pass.cpp\

@@ -127,3 +127,36 @@ void	close_client( Client &client ) {
 	client.reply( ":ircserv.localhost QUIT :Connection closed\r\n" );
 	close(client.getFd());
 }
+std::string getTarget(size_t &pos, std::string str)
+{
+	std::size_t	pos_comma;
+	std::string res;
+
+	pos_comma = str.find(",", pos);
+	if ( pos_comma != std::string::npos)
+	{
+		res = str.substr(pos, pos_comma - pos);
+		pos = pos_comma + 1;
+	}
+	else
+	{
+		res = str.substr(pos);
+		pos = str.size();
+	}
+	return (res);
+}
+
+bool	isValidPositiveNumber(std::string args)
+{
+	long long buff;
+
+	for (std::string::iterator it = args.begin(); it != args.end(); it++)
+	{
+			if (!(std::isdigit(*it)))
+				return (false);
+	}
+	buff = std::atol(args.c_str());
+	if (buff < INT_MIN || buff > INT_MAX || buff < 0)
+		return (false);
+	return (true);
+}

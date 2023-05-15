@@ -6,7 +6,18 @@
 #include <string>
 #include "channel.hpp"
 #include "client.hpp"
+#include <limits.h>
 #include "typedef.hpp"
+
+typedef enum err {
+	MODE,
+	FLAG
+}	t_err_type;
+
+typedef enum type {
+	CHANNEL,
+	USER
+}	t_type;
 
 std::string format( std::string format, ... );
 std::string format( std::string format, va_list va_args );
@@ -18,7 +29,6 @@ void        remove_backslash_r( std::string& c );
 Client*     find_client( std::string );
 Channel*    find_channel( std::string );
 void        welcome( Client* );
-void        display_elem(t_map_channel::iterator channel);
 void        close_client(Client &client);
 
 template <typename T>
@@ -29,4 +39,7 @@ void forEach(std::vector<T> &vec, void (*f)(T &)) {
         it++;
     }
 }
+std::string getTarget(size_t &pos, std::string str);
+bool		isValidPositiveNumber(std::string args);
+
 #endif

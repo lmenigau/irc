@@ -21,6 +21,7 @@ void mode( std::list<std::string>* args, Client& c );
 void topic(std::list <std::string>* args, Client& c);
 void notice(std::list <std::string> *args, Client &c);
 void invite(std::list <std::string> *args, Client &c);
+void oper(std::list <std::string> *args, Client &c);
 
 void nick_notregistered( std::list<std::string>* args, Client& c );
 

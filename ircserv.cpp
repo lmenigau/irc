@@ -72,6 +72,8 @@ void ircserv::process_events( epoll_event& ev ) {
 			len = read( c->getFd(), buf, 512 );
 			if ( len < 0 ) {
 				logger("WARNING", strerror(errno));
+				close(c->getFd());
+				logger( "INFO", "deleted: %d", c->getFd() );
 				return ;
 			}
 			if ( len == 0 ) {
@@ -95,7 +97,7 @@ void ircserv::process_events( epoll_event& ev ) {
 					c->buf.erase( 0, pos + 1 );
 				else
 					break ;
-				//logger( "DEBUG", "buf after mdr : %s", c->buf.c_str() );
+	//			logger( "DEBUG", "buf after mdr : %s", c->buf.c_str() );
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
