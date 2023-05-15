@@ -15,11 +15,12 @@ void  invite( std::list<std::string> *args, Client &c)
 		return ;
 	}
 	Channel *channel_target = find_channel(args->back());
+	std::cout << channel_target << std::endl;
 	if (!channel_target)
 		return (c.reply( format(":ircserv.localhost 403 %s :No such channel\r\n", args->back().c_str())));
 	if (!channel_target->findClients(c.getNick()))
 		return (c.reply( format(":ircserv.localhost 442 %s :You're not on that channel\r\n", args->back().c_str())));
-	//Priviliges part : depending on modes, not done for the moment
+	//Priviliges part : depending on modes, not done for the moment SETUP LIKE NEED TO BE OP CHANNEL ANY WAY
 	while (args->size() != 1)
 	{
 		Client *client_target = find_client(args->front());
@@ -31,7 +32,7 @@ void  invite( std::list<std::string> *args, Client &c)
 		{
 			c.reply( format (":ircserv.localhost 341 %s %s %s\r\n", c.getNick().c_str(), args->front().c_str(), args->back().c_str()));
 			client_target->reply( format(":%s!~%s@%s INVITE %s %s\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), args->front().c_str(), args->back().c_str()));
-			channel_target->inviteUser(*client_target);
+			channel_target->inviteUser(client_target);
 		}
 		args->pop_front();
 	}

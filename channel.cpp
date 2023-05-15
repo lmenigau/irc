@@ -19,7 +19,9 @@ Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 }
 
 void Channel::addClient( Client &client ) {
+	std::cout << client.getNick() << " added" << std::endl;
 	_clients.push_back( &client );
+	std::cout << "cize " <<_clients.size() << std::endl;
 }
 
 Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name),
@@ -45,9 +47,10 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
-void	Channel::inviteUser( Client &c )
+void	Channel::inviteUser( Client *c )
 {
-	_invited.push_back(&c);
+	std::cout << "NAme inivting :" << _name << std::endl;
+	_invited.push_back(c);
 }
 
 bool	Channel::isOps(Client &c)
@@ -137,8 +140,12 @@ bool	Channel::findClients( const std::string &nick )
 	t_vector_client_ptr::iterator it = this->_clients.begin();
 	//std::cout << "clients : " << _clients << "\n";
 	for ( ; it != this->_clients.end(); it++ ) {
+		std::cout << " size " << _clients.size() << " it " <<  (*it)->getNick() << " nick :" << nick << std::endl;
 		if (( *it )->getNick() == nick)
+			{
+				std::cout << "Nice" <<std::endl;
 			return (true);
+			}
 	}
 	return (false);
 }
@@ -218,7 +225,6 @@ void Channel::reply_ban_list(Client &c)
 		reply = format(":ircserv.locahost 367 %s %s ", c.getNick().c_str(), _name.c_str());
 		for (t_vector_client_ptr::iterator it = _banned.begin(); it != _banned.end(); it++)
 			reply.append((*it)->getNick() + "!" + (*it)->getUser() + "@" + (*it)->getHostname() + " ");
-		reply.append(":Banned users\r\n");
 		c.reply(reply);
 	}
 	c.reply(":irvserv.localhost 368 :End of channel ban list\r\n");
@@ -337,6 +343,7 @@ std::string &Channel::getKey(void)
 
 bool Channel::isInvited( Client *c)
 {
+	std::cout << "size :" << _invited.size() << "name :" << _name << std::endl;
 	if (std::find(_invited.begin(), _invited.end(), c) != _invited.end())
 		return (true);
 	return (false);
@@ -348,4 +355,3 @@ bool	Channel::isBanned( Client *c)
 		return (true);
 	return (false);
 }
-

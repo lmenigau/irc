@@ -45,7 +45,7 @@ class Channel {
 	void addClient( Client & );
 	bool isInvited( Client *c);
 	bool isBanned( Client *c );
-	void inviteUser( Client & );
+	void inviteUser( Client * );
 	void removeClient( Client& );
 	void changeModes( int );
   bool isOps(Client &c);
