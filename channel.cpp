@@ -21,6 +21,7 @@ Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 void Channel::addClient( Client &client ) {
 	std::cout << client.getNick() << " added" << std::endl;
 	_clients.push_back( &client );
+	std::cout << "cize " <<_clients.size() << std::endl;
 }
 
 Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name),
@@ -30,7 +31,7 @@ Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _na
 void Channel::removeClient( Client& rclient ) {
 	t_vector_client_ptr::iterator it = _clients.begin();
 	while ( it != _clients.end() ) {
-		if ( ( *it )->getFd() == rclient.getFd() ) {
+		if ( ( *it )->getNick() == rclient.getNick() ) {
 			_clients.erase( it );
 			return;
 		}
@@ -138,9 +139,12 @@ bool	Channel::findClients( const std::string &nick )
 	t_vector_client_ptr::iterator it = this->_clients.begin();
 	//std::cout << "clients : " << _clients << "\n";
 	for ( ; it != this->_clients.end(); it++ ) {
-	//	std::cout << "it " <<  (*it)->getNick() << " nick :" << nick << std::endl;
+		std::cout << " size " << _clients.size() << " it " <<  (*it)->getNick() << " nick :" << nick << std::endl;
 		if (( *it )->getNick() == nick)
+			{
+				std::cout << "Nice" <<std::endl;
 			return (true);
+			}
 	}
 	return (false);
 }
@@ -281,6 +285,12 @@ void	Channel::handleModes( Client &c, std::string modes, std::string args)
 {
 		t_ope operation;
 
+	if (!isOps(c))
+	{
+		c.reply(format(":ircserv.localhost 482 %s :You're not cahnnel operator\r\n", _name.c_str()));
+		return ;
+	}
+
 		if (modes[0] == '+')
 			operation = ADD;
 		else if (modes[0] == '-')
@@ -342,3 +352,4 @@ bool	Channel::isBanned( Client *c)
 		return (true);
 	return (false);
 }
+

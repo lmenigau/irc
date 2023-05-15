@@ -20,7 +20,6 @@ static void reply_to_join(const std::string &channel_name, Client &c,
 	}
 	reply.append("\r\n");
 	c.reply(reply);
-	c.reply(reply);
 }
 
 static void reply_topic(t_map_channel::iterator it, Client &c)
@@ -55,17 +54,15 @@ void join( std::list<std::string>* args, Client& c ) {
 		else if (it->second.getInviteMode() && !it->second.isInvited(&c))
 			return (c.reply(format(":ircserv.localhost 473 %s :Cannot join channel (+i)\r\n", args->front().c_str())));
 
-		ircserv::getChannels()
-		    .find( args->front() )
-		    ->second.getClients()
-		    .push_back(&c);
+		ircserv::getChannels()[args->front()].addClient(c);
+	}
 	reply_topic(it, c);
-	it->second.sendAll( format( ":%s!%s JOIN %s\r\n", c.getNick().c_str(),
-	                            c.getHostname().c_str(),
+	it->second.sendAll( format( ":%s!%s@%s JOIN %s\r\n", c.getNick().c_str(),
+	                            c.getUser().c_str(),
+															c.getHostname().c_str(),
 	                            args->front().c_str() ) );
 	reply_to_join(args->front(), c, it);
 	c.reply( format( ":ircserv.localhost 366 %s %s :End of NAMES list\r\n",
 	                 c.getUser().c_str(), args->front().c_str() ) );
-	}
 //	c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }
