@@ -7,11 +7,11 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-#define COMMAND_COUNT 12
+#define COMMAND_COUNT 14
 
 void capls( std::list<std::string>* args, Client& c ) {
-	(void) c;
 	(void) args;
+	c.reply(format("CAP * LS :multi-prefix\r\n"));
 }
 
 std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
@@ -39,10 +39,12 @@ void pong( std::list<std::string>* args, Client &c) {
  */
 
 void not_registered( std::list<std::string>* args, Client& c ) {
-	std::string commands[3] = { "PASS", "USER", "NICK" };
-	void ( *handlers[3] )( std::list<std::string>*, Client& c ) = {
-	    pass, user, nick_notregistered };
-	for ( size_t i = 0; i < 3; i++ ) {
+	size_t i = 0;
+	
+	std::string commands[4] = { "PASS", "USER", "NICK", "CAP" };
+	void ( *handlers[4] )( std::list<std::string>*, Client& c ) = {
+	    pass, user, nick_notregistered, capls };
+	for ( ; i < 4; i++ ) {
 		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
@@ -50,6 +52,9 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 			handlers[i]( args, c );
 			break;
 		}
+	}
+	if (i == 4){
+		c.reply( format( ":ircserv.localhost 451 * :You have not registered\r\n" ) );
 	}
 	if ( c.isRegistered() && !c.hasBeenWelcomed() &&
 	     authorize_setting_name( c.getNick(), c ) ) {
@@ -76,10 +81,12 @@ void handler( std::list<std::string>* args, Client& c ) {
 	}
 	std::string commands[COMMAND_COUNT] = {
 	    "PASS", "USER", "NICK", "JOIN",  "PRIVMSG", "CAPLS",
-	    "CAP",  "PING", "MODE", "WHOIS", "QUIT",    "PART" };
+	    "CAP",  "PING", "MODE", "WHOIS", "QUIT",    "PART",
+		"TOPIC", "NOTICE"};
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client& c ) = {
 	    &pass,  &user, &nick, &join,  &privmsg, &capls,
-	    &capls, &pong, &mode, &whois, &quit,    &part };
+	    &capls, &pong, &mode, &whois, &quit,    &part,
+		&topic, &notice };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
