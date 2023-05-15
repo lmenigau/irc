@@ -46,7 +46,7 @@ void    topic(std::list <std::string> * args, Client &c)
 				{
 					//Should sennd to all clients the new topic !
 					ircserv::getChannels().find(args->front())->second.setTopic(args->back());
-					std::cout << "TOPIC :: " << ircserv::getChannels().find(args->front())->second.getTopic() << std::endl;
+//					std::cout << "TOPIC :: " << ircserv::getChannels().find(args->front())->second.getTopic() << std::endl;
 					return (it->second.sendAll(format(":%s~!u@%s TOPIC %s :%s\r\n", c.getNick().c_str(), c.getHostname().c_str(), args->front().c_str(), args->back().c_str())));
 				}
 			}

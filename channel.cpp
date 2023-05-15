@@ -19,9 +19,7 @@ Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 }
 
 void Channel::addClient( Client &client ) {
-	std::cout << client.getNick() << " added" << std::endl;
 	_clients.push_back( &client );
-	std::cout << "cize " <<_clients.size() << std::endl;
 }
 
 Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name),
@@ -139,12 +137,8 @@ bool	Channel::findClients( const std::string &nick )
 	t_vector_client_ptr::iterator it = this->_clients.begin();
 	//std::cout << "clients : " << _clients << "\n";
 	for ( ; it != this->_clients.end(); it++ ) {
-		std::cout << " size " << _clients.size() << " it " <<  (*it)->getNick() << " nick :" << nick << std::endl;
 		if (( *it )->getNick() == nick)
-			{
-				std::cout << "Nice" <<std::endl;
 			return (true);
-			}
 	}
 	return (false);
 }
@@ -255,6 +249,7 @@ void Channel::m_ban(Client &c, std::string args, t_ope operation)
 			find_client(target)->reply( format (":%s!%s@%s MODE %s %s :+b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str(), target.c_str()));
 			c.reply( format (":%s!%s@%s MODE %s %s :+b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str(), target.c_str()));
 			reply_ban_list(c);
+			reply_ban_list(*find_client(target));
 		}
 		else
 		{
@@ -263,6 +258,7 @@ void Channel::m_ban(Client &c, std::string args, t_ope operation)
 				_banned.erase(it);
 				find_client(target)->reply( format (":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str()));
 				c.reply( format (":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(), c.getUser().c_str(), c.getHostname().c_str(), _name.c_str()));
+				reply_ban_list(*find_client(target));
 				return (reply_ban_list(c));
 			}
 				c.reply( format(":irevserv.localhost 441 %s %s :They aren't not banned on that channel\r\n", target.c_str(), _name.c_str()));

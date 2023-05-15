@@ -11,20 +11,20 @@ void part( std::list<std::string>* args, Client& c ) {
 			if (channel->findClients(c.getNick()))
 			{
 				if ( args->size() == 1 )
-					channel->sendAll(
-				    	format( ":%s!%s@%s PART %s\r\n", c.getNick().c_str(),
-				            	c.getUser().c_str(), c.getHostname().c_str(),
-				            	target.c_str() ) );
+				{
+				 channel->sendAll(
+				  	format( ":%s!%s@%s PART %s\r\n", c.getNick().c_str(),
+				       	c.getUser().c_str(), c.getHostname().c_str(),
+				       	target.c_str() ) );
+				}
 				else
-					channel->sendAll(
+				{
+				 channel->sendAll(
 				    	format( ":%s!%s@%s PART %s :%s\r\n", c.getNick().c_str(),
 				            	c.getUser().c_str(), c.getHostname().c_str(),
 				            	target.c_str(), args->back().c_str() ) );
-				c.reply(
-				    	format (":%s!%s@%s PART %s :%s\r\n", c.getNick().c_str(),
-				            	c.getUser().c_str(), c.getHostname().c_str(),
-				            	target.c_str(), args->back().c_str()));
 				channel->removeClient( c );
+				}
 			}
 			else
 				c.reply(format(":ircserv.locahost 442 %s :You're not on that channel\r\n", target.c_str()));

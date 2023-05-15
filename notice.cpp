@@ -26,6 +26,8 @@ void	notice_channel(std::list <std::string> * args, Client &c)
 	t_map_channel           channels = ircserv::getChannels();
 
 	Channel* channel = find_channel( args->front() );
+	if (!channel->findClients(c.getNick()) || channel->isBanned(&c))
+		return ;
 	if ( channel )
 		channel->sendAll(
 		    format( ":%s!%s NOTICE %s :%s\r\n", c.getNick().c_str(),
