@@ -35,8 +35,4 @@ void  invite( std::list<std::string> *args, Client &c)
 		}
 		args->pop_front();
 	}
-	for (t_map_channel::iterator it=ircserv::getChannels().begin(); it != ircserv::getChannels().end(); it++)
-	{
-			std::cout << "List :" << &(it->second) << std::endl;
-	}
 }

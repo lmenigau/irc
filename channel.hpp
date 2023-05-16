@@ -48,6 +48,7 @@ class Channel {
 	void inviteUser( Client * );
 	void removeClient( Client& );
 	void changeModes( int );
+	bool isFull(void);
   bool isOps(Client &c);
 bool	findClients( const std::string &nick );
 bool	topicSet(void);
