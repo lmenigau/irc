@@ -51,7 +51,7 @@ void join( std::list<std::string>* args, Client& c ) {
 			return (c.reply(format(":ircserv.localhost 475 %s :cannot join channel (+k)\r\n", args->front().c_str())));
 		else if (it->second.isBanned(&c))
 			return (c.reply(format(":ircserv.localhost 474 %s :Cannot join channel (+b)\r\n", args->front().c_str())));
-		else if (it->second.getInviteMode() && !channels.find(args->front())->second.isInvited(&c))
+		else if (it->second.getInviteMode() && !ircserv::getChannels().at(args->front()).isInvited(&c))
 			return (c.reply(format(":ircserv.localhost 473 %s :Cannot join channel (+i)\r\n", args->front().c_str())));
 
 		ircserv::getChannels()[args->front()].addClient(c);

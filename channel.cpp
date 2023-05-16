@@ -19,9 +19,7 @@ Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
 }
 
 void Channel::addClient( Client &client ) {
-	std::cout << client.getNick() << " added" << std::endl;
 	_clients.push_back( &client );
-	std::cout << "cize " <<_clients.size() << std::endl;
 }
 
 Channel::Channel(const Channel &a) : _clients(a._clients), _modes(a._modes), _name(a._name),
@@ -49,7 +47,6 @@ void Channel::changeModes( int n_mode ) {
 
 void	Channel::inviteUser( Client *c )
 {
-	std::cout << "NAme inivting :" << _name << std::endl;
 	_invited.push_back(c);
 }
 
@@ -140,12 +137,8 @@ bool	Channel::findClients( const std::string &nick )
 	t_vector_client_ptr::iterator it = this->_clients.begin();
 	//std::cout << "clients : " << _clients << "\n";
 	for ( ; it != this->_clients.end(); it++ ) {
-		std::cout << " size " << _clients.size() << " it " <<  (*it)->getNick() << " nick :" << nick << std::endl;
 		if (( *it )->getNick() == nick)
-			{
-				std::cout << "Nice" <<std::endl;
 			return (true);
-			}
 	}
 	return (false);
 }
@@ -343,7 +336,6 @@ std::string &Channel::getKey(void)
 
 bool Channel::isInvited( Client *c)
 {
-	std::cout << "size :" << _invited.size() << "name :" << _name << std::endl;
 	if (std::find(_invited.begin(), _invited.end(), c) != _invited.end())
 		return (true);
 	return (false);

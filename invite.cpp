@@ -15,7 +15,6 @@ void  invite( std::list<std::string> *args, Client &c)
 		return ;
 	}
 	Channel *channel_target = find_channel(args->back());
-	std::cout << channel_target << std::endl;
 	if (!channel_target)
 		return (c.reply( format(":ircserv.localhost 403 %s :No such channel\r\n", args->back().c_str())));
 	if (!channel_target->findClients(c.getNick()))
@@ -35,5 +34,9 @@ void  invite( std::list<std::string> *args, Client &c)
 			channel_target->inviteUser(client_target);
 		}
 		args->pop_front();
+	}
+	for (t_map_channel::iterator it=ircserv::getChannels().begin(); it != ircserv::getChannels().end(); it++)
+	{
+			std::cout << "List :" << &(it->second) << std::endl;
 	}
 }
