@@ -11,6 +11,7 @@ SRC = channel.cpp\
 		leave.cpp\
 		logger.cpp\
 		main.cpp\
+		messageBuilder.cpp\
 		mode.cpp\
 		notice.cpp \
 		nick.cpp \
