@@ -6,7 +6,7 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-void quit( std::list<std::string>* args, Client &c ) {
+void quit( std::list<std::string>* args, Client& c ) {
 	(void) args;
 	if ( !c.hasGivenUser() || !c.hasGivenNick() )
 		return;

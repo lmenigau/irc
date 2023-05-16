@@ -23,7 +23,7 @@ std::string get_realname( std::list<std::string>* args ) {
 	return ( trim( res ) );
 }
 
-void user( std::list<std::string>* args, Client &c) {
+void user( std::list<std::string>* args, Client& c ) {
 	std::string username;
 
 	if ( args->empty() ) {

@@ -4,7 +4,7 @@
 #include "utils.hpp"
 int main( int ac, char** av ) {
 	if ( ac != 3 ) {
-		logger("INFO", "usage : ./ircserv <port> <password>");
+		logger( "INFO", "usage : ./ircserv <port> <password>" );
 		return ( 1 );
 	}
 	ircserv::initialisation( av[2], av[1] );
