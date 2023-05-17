@@ -25,7 +25,7 @@ void topic( std::list<std::string>* args, Client& c ) {
 			                 .find( args->front() )
 			                 ->second.getTopic()
 			          << std::endl;
-			if ( it->second.topicSet() ) {
+			if ( it->second.hasTopic() ) {
 				c.reply( format( ":ircserv.localhost 332 %s %s :%s\r\n",
 				                 c.getNick().c_str(), args->front().c_str(),
 				                 it->second.getTopic().c_str() ) );

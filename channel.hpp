@@ -46,7 +46,7 @@ class Channel {
 	void         changeModes( int );
 	bool         isOps( Client& c );
 	bool         findClients( const std::string& nick );
-	bool         topicSet( void );
+	bool         hasTopic( void );
 	void         setTopic( const std::string& topic );
 	std::string  getTopic( void );
 	bool         getInviteMode( void );

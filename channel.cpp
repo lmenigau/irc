@@ -82,7 +82,7 @@ void Channel::setTopic( const std::string& topic ) {
 	_topic = topic;
 }
 
-bool Channel::topicSet( void ) {
+bool Channel::hasTopic( void ) {
 	if ( !_topic.empty() )
 		return ( true );
 	return ( false );

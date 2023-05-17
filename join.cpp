@@ -22,10 +22,11 @@ static void reply_to_join( const std::string&      channel_name,
 }
 
 static void reply_topic( t_map_channel::iterator it, Client& c ) {
-	if ( it->second.topicSet() )
-		c.reply( format( ":ircserve.localhost 332 %s %s :%s\r\n",
-		                 c.getNick().c_str(), it->first.c_str(),
-		                 it->second.getTopic().c_str() ) );
+	MessageBuilder mb;
+	if ( it->second.hasTopic() )
+		c.reply( mb << ircserv::getServername() << " 332 " << c.getNick()
+		            << " " << it->first << " :" << it->second.getTopic()
+		            << "\r\n" );
 	else
 		c.reply( format( ":ircserve.localhost 332 %s %s :\r\n",
 		                 c.getNick().c_str(), it->first.c_str() ) );
