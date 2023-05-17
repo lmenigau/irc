@@ -50,6 +50,7 @@ class Channel {
 	void         setTopic( const std::string& topic );
 	std::string  getTopic( void );
 	bool         getInviteMode( void );
+	bool         isFull(void);
 
 	std::string          addModes( std::string );
 	std::string          removeModes( std::string );

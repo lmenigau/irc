@@ -47,18 +47,6 @@ void join( std::list<std::string>* args, Client& c ) {
 	if ( it == channels.end() ) {
 		ircserv::addChannel( args->front(), c );
 		it = ircserv::getChannels().find( args->front() );
-<<<<<<< HEAD
-	} else
-	{
-		if  (!it->second.getKey().empty() && args->back() != it->second.getKey())
-			return (c.reply(format(":ircserv.localhost 475 %s :cannot join channel (+k)\r\n", args->front().c_str())));
-		else if (it->second.isBanned(&c))
-			return (c.reply(format(":ircserv.localhost 474 %s :Cannot join channel (+b)\r\n", args->front().c_str())));
-		else if (it->second.getInviteMode() && !ircserv::getChannels().at(args->front()).isInvited(&c))
-			return (c.reply(format(":ircserv.localhost 473 %s :Cannot join channel (+i)\r\n", args->front().c_str())));
-		else if (it->second.isFull())
-			return (c.reply(format(":ircserv.localhost 471 %s :Cannot join channel (+l)\r\n", args->front().c_str())));
-=======
 	} else {
 		if ( !it->second.getKey().empty() &&
 		     args->back() != it->second.getKey() )
@@ -73,7 +61,10 @@ void join( std::list<std::string>* args, Client& c ) {
 			return ( c.reply( mb << ircserv::getServername() << " 473 "
 			                     << args->front()
 			                     << " :Cannot join channel (+i)\r\n" ) ); // 473 
->>>>>>> master
+		else if (it->second.isFull())
+			return ( c.reply( mb << ircserv::getServername() << " 471 "
+			                     << args->front()
+			                     << " :Cannot join channel (+l)\r\n" ) ); // 471
 
 		ircserv::getChannels()[args->front()].addClient( c );
 	}
