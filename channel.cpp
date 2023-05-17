@@ -261,10 +261,9 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 			// reply_ban_list( *client );
 
 			//? not sure those rpl are necessary tho
-			c.reply( format( ":%s!%s@%s MODE %s %s :+b\r\n",
-			                 c.getNick().c_str(), c.getUser().c_str(),
-			                 c.getHostname().c_str(), _name.c_str(),
-			                 target.c_str() ) );
+			c.reply( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
+			            << c.getHostname() << " MODE " << _name << target
+			            << " :+b\r\n" );
 
 			reply_ban_list( c );
 		} else {
@@ -281,9 +280,9 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 			// 						_name.c_str() ) );
 
 			//?same here
-			c.reply( format( ":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(),
-			                 c.getUser().c_str(), c.getHostname().c_str(),
-			                 _name.c_str() ) );
+			c.reply( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
+			            << c.getHostname() << " MODE " << _name << target
+			            << " :-b\r\n" );
 			reply_ban_list( c );
 			// return ( reply_ban_list( c ) ); <- ???
 		}
@@ -300,11 +299,12 @@ void Channel::m_topic( Client& c, std::string args, t_ope operation ) {
 }
 
 void Channel::handleModes( Client& c, std::string modes, std::string args ) {
-	t_ope operation;
+	t_ope          operation;
 	MessageBuilder mb;
 
 	if ( !isOps( c ) ) {
-		c.reply( mb << ircserv::getServername() << " 482 " << c.getNick() << " :You're not cahnnel operator\r\n");
+		c.reply( mb << ircserv::getServername() << " 482 " << c.getNick()
+		            << " :You're not cahnnel operator\r\n" );
 		return;
 	}
 
