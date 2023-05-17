@@ -67,9 +67,6 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 		welcome( &c );
 	} else if ( c.isRegistered() ) {
 		c.setHasGivenNick( false );
-		c.reply( format(
-		    ":ircserv.localhost 433 * %s : Nickname is already in use\r\n",
-		    c.getNick().c_str() ) );
 		c.reply( mb << ircserv::getServername() << " 433 " << c.getNick()
 		            << " : Nickname is already in use\r\n" );
 	}
