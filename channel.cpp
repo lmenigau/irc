@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include "client.hpp"
+#include "ircserv.hpp"
+#include "messageBuilder.hpp"
 #include "ostream.hpp"
 #include "typedef.hpp"
 #include "utils.hpp"
@@ -160,125 +162,130 @@ void Channel::m_invite( Client& c, std::string args, t_ope operation ) {
 }
 
 void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
-	(void) c;
-	size_t      i = 0;
-	std::string target;
-	while ( i != args.size() ) {
+	std::string    target;
+	MessageBuilder mb;
+	Client*        client;
+
+	for ( size_t i = 0; i != args.size(); i++ ) {
+		mb.clear();
 		target = getTarget( i, args );
 		if ( target.empty() )
 			continue;
-		if ( !findClients( target ) ) {
-			c.reply(
-			    format( ":irevserv.localhost 441 %s %s :They aren't on that "
-			            "channel\r\n",
-			            target.c_str(), _name.c_str() ) );
+		client = find_client( target );
+		if ( !client ) {
+			c.reply( mb << ircserv::getServername() << " 441 " << c.getNick()
+			            << " " << target
+			            << " :They aren't on that channel\r\n" );
 			continue;
 		}
 		t_vector_client_ptr::iterator it =
-		    std::find( _ops.begin(), _ops.end(), find_client( target ) );
+		    std::find( _ops.begin(), _ops.end(), client );
 		if ( operation == ADD ) {
-			find_client( target )->reply(
-			    format( ":%s!%s@%s MODE %s: +o %s\r\n", c.getNick().c_str(),
-			            c.getUser().c_str(), c.getHostname().c_str(),
-			            _name.c_str(), target.c_str() ) );
+			client->reply( mb << c.getNick() << " MODE " << _name << " +o "
+			                  << target << "\r\n" );
 			if ( it == _ops.end() )
-				_ops.push_back( find_client( target ) );
-			c.reply( format( ":%s!%s@%s MODE %s: +o %s\r\n",
-			                 c.getNick().c_str(), c.getUser().c_str(),
-			                 c.getHostname().c_str(), _name.c_str(),
-			                 target.c_str() ) );
+				_ops.push_back( client );
+			c.reply( mb << ircserv::getServername() << " 324 " << c.getNick()
+			            << " " << _name << " +o " << target << "\r\n" );
 		} else {
-			if ( it != _ops.end() ) {
-				_ops.erase( it );
-				find_client( target )->reply( format(
-				    ":ircserv.localhost 324 %s %s -o %s\r\n",
-				    c.getNick().c_str(), _name.c_str(), target.c_str() ) );
-				c.reply( format( ":%s!%s@%s MODE %s: -o\r\n",
-				                 c.getNick().c_str(), c.getUser().c_str(),
-				                 c.getHostname().c_str(), _name.c_str() ) );
-				return;
+			if ( it == _ops.end() ) {
+				c.reply( mb << ircserv::getServername() << " 441 " << target
+				            << " " << _name
+				            << " :They aren't not op on that channel\r\n" );
+				continue;
 			}
-			c.reply(
-			    format( ":irevserv.localhost 441 %s %s :They aren't not op on "
-			            "that channel\r\n",
-			            target.c_str(), _name.c_str() ) );
+			_ops.erase( it );
+			client->reply( mb << c.getNick() << " MODE " << _name << " -o "
+			                  << target << "\r\n" );
+			c.reply( mb << ircserv::getServername() << " 324 " << c.getNick()
+			            << " " << _name << " -o " << target << "\r\n" );
 		}
 	}
 }
 
 void Channel::m_limit( Client& c, std::string args, t_ope operation ) {
-	(void) c;
+	MessageBuilder mb;
+
 	if ( operation == ADD && isValidPositiveNumber( args ) )
 		_limit = std::atoi( args.c_str() );
 	else
 		_limit = 0;
+	c.reply( mb << ircserv::getServername() << " 324 " << c.getNick() << " "
+	            << _name << " +l " << args << "\r\n" );
 }
 
 void Channel::reply_ban_list( Client& c ) {
-	std::string reply;
+	MessageBuilder mb;
 
-	if ( _banned.size() > 0 ) {
-		reply = format( ":ircserv.locahost 367 %s %s ", c.getNick().c_str(),
-		                _name.c_str() );
-		for ( t_vector_client_ptr::iterator it = _banned.begin();
-		      it != _banned.end(); it++ )
-			reply.append( ( *it )->getNick() + "!" + ( *it )->getUser() + "@" +
-			              ( *it )->getHostname() + " " );
-		reply.append( ":Banned users\r\n" );
-		c.reply( reply );
+	if ( _banned.size() <= 0 ) {
+		c.reply( ":irvserv.localhost 368 :End of channel ban list\r\n" );
+		return;
 	}
-	c.reply( ":irvserv.localhost 368 :End of channel ban list\r\n" );
+
+	mb << ":ircserv.locahost 367 " << c.getNick() << " " << _name;
+	for ( t_vector_client_ptr::iterator it = _banned.begin();
+	      it != _banned.end(); it++ )
+		mb << ( *it )->getNick() << "!" << ( *it )->getUser() << "@"
+		   << ( *it )->getHostname() << " ";
+	mb << ":Banned users\r\n";
+	c.reply( mb );
 }
 
 void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 	if ( operation == NONE )
 		return ( reply_ban_list( c ) );
-	size_t      i = 0;
-	std::string target;
+	std::string    target;
+	Client*        client;
+	MessageBuilder mb;
 
-	while ( i != args.size() ) {
+	for ( size_t i = 0; i != args.size(); i++ ) {
+		mb.clear();
 		target = getTarget( i, args );
 		if ( target.empty() )
 			continue;
+		client = find_client( target );
 		if ( !findClients( target ) ) {
-			c.reply(
-			    format( ":irevserv.localhost 441 %s %s :They aren't on that "
-			            "channel\r\n",
-			            target.c_str(), _name.c_str() ) );
+			c.reply( mb << ircserv::getServername() << " 441 " << target << " "
+			            << _name << " :is not on that channel\r\n" );
 			continue;
 		}
 		t_vector_client_ptr::iterator it =
-		    std::find( _banned.begin(), _banned.end(), find_client( target ) );
+		    std::find( _banned.begin(), _banned.end(), client );
 		if ( operation == ADD ) {
 			if ( it == _banned.end() )
-				_banned.push_back( find_client( target ) );
-			find_client( target )->reply(
-			    format( ":%s!%s@%s MODE %s %s :+b\r\n", c.getNick().c_str(),
-			            c.getUser().c_str(), c.getHostname().c_str(),
-			            _name.c_str(), target.c_str() ) );
+				_banned.push_back( client );
+			// client->reply( format( ":%s!%s@%s MODE %s %s :+b\r\n",
+			//                        c.getNick().c_str(), c.getUser().c_str(),
+			//                        c.getHostname().c_str(), _name.c_str(),
+			//                        target.c_str() ) );
+			// reply_ban_list( *client );
+
+			//? not sure those rpl are necessary tho
 			c.reply( format( ":%s!%s@%s MODE %s %s :+b\r\n",
 			                 c.getNick().c_str(), c.getUser().c_str(),
 			                 c.getHostname().c_str(), _name.c_str(),
 			                 target.c_str() ) );
+
 			reply_ban_list( c );
-			reply_ban_list( *find_client( target ) );
 		} else {
-			if ( it != _banned.end() ) {
-				_banned.erase( it );
-				find_client( target )->reply(
-				    format( ":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(),
-				            c.getUser().c_str(), c.getHostname().c_str(),
-				            _name.c_str() ) );
-				c.reply( format( ":%s!%s@%s MODE %s: -b\r\n",
-				                 c.getNick().c_str(), c.getUser().c_str(),
-				                 c.getHostname().c_str(), _name.c_str() ) );
-				reply_ban_list( *find_client( target ) );
-				return ( reply_ban_list( c ) );
+			if ( it == _banned.end() ) {
+				c.reply( mb << ircserv::getServername() << " 441 " << target
+				            << " " << _name
+				            << " :They aren't not banned on that channel\r\n" );
+				continue;
 			}
-			c.reply(
-			    format( ":irevserv.localhost 441 %s %s :They aren't not banned "
-			            "on that channel\r\n",
-			            target.c_str(), _name.c_str() ) );
+			_banned.erase( it );
+			// client->reply( format( ":%s!%s@%s MODE %s: -b\r\n",
+			// 						c.getNick().c_str(), c.getUser().c_str(),
+			// 						c.getHostname().c_str(),
+			// 						_name.c_str() ) );
+
+			//?same here
+			c.reply( format( ":%s!%s@%s MODE %s: -b\r\n", c.getNick().c_str(),
+			                 c.getUser().c_str(), c.getHostname().c_str(),
+			                 _name.c_str() ) );
+			reply_ban_list( c );
+			// return ( reply_ban_list( c ) ); <- ???
 		}
 	}
 }
@@ -294,11 +301,10 @@ void Channel::m_topic( Client& c, std::string args, t_ope operation ) {
 
 void Channel::handleModes( Client& c, std::string modes, std::string args ) {
 	t_ope operation;
+	MessageBuilder mb;
 
 	if ( !isOps( c ) ) {
-		c.reply( format(
-		    ":ircserv.localhost 482 %s :You're not cahnnel operator\r\n",
-		    _name.c_str() ) );
+		c.reply( mb << ircserv::getServername() << " 482 " << c.getNick() << " :You're not cahnnel operator\r\n");
 		return;
 	}
 
