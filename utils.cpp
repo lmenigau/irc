@@ -7,7 +7,6 @@
 #include "client.hpp"
 #include "ircserv.hpp"
 
-
 void remove_backslash_r( std::string& c ) {
 	size_t idx = c.find( '\r' );
 	if ( idx != std::string::npos )
@@ -90,7 +89,7 @@ Client* find_client( std::string nick ) {
 	for ( t_client_array::iterator it = ircserv::getClients().begin();
 	      it != ircserv::getClients().end(); it++ ) {
 		if ( it->getNick() == nick )
-			return ( &(*it) );
+			return ( &( *it ) );
 	}
 	return ( NULL );
 }
@@ -123,40 +122,34 @@ void welcome( Client* client ) {
 	client->setHasBeenWelcomed( true );
 }
 
-void	close_client( Client &client ) {
+void close_client( Client& client ) {
 	client.reply( ":ircserv.localhost QUIT :Connection closed\r\n" );
-	close(client.getFd());
+	close( client.getFd() );
 }
-std::string getTarget(size_t &pos, std::string str)
-{
-	std::size_t	pos_comma;
+std::string getTarget( size_t& pos, std::string str ) {
+	std::size_t pos_comma;
 	std::string res;
 
-	pos_comma = str.find(",", pos);
-	if ( pos_comma != std::string::npos)
-	{
-		res = str.substr(pos, pos_comma - pos);
+	pos_comma = str.find( ",", pos );
+	if ( pos_comma != std::string::npos ) {
+		res = str.substr( pos, pos_comma - pos );
 		pos = pos_comma + 1;
-	}
-	else
-	{
-		res = str.substr(pos);
+	} else {
+		res = str.substr( pos );
 		pos = str.size();
 	}
-	return (res);
+	return ( res );
 }
 
-bool	isValidPositiveNumber(std::string args)
-{
+bool isValidPositiveNumber( std::string args ) {
 	long long buff;
 
-	for (std::string::iterator it = args.begin(); it != args.end(); it++)
-	{
-			if (!(std::isdigit(*it)))
-				return (false);
+	for ( std::string::iterator it = args.begin(); it != args.end(); it++ ) {
+		if ( !( std::isdigit( *it ) ) )
+			return ( false );
 	}
-	buff = std::atol(args.c_str());
-	if (buff < INT_MIN || buff > INT_MAX || buff < 0)
-		return (false);
-	return (true);
+	buff = std::atol( args.c_str() );
+	if ( buff < INT_MIN || buff > INT_MAX || buff < 0 )
+		return ( false );
+	return ( true );
 }

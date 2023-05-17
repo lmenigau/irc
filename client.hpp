@@ -13,8 +13,8 @@ class Client {
 	std::string out;
 
 	Client( int );
-	Client( int fd, sockaddr_in6 &addr);
-	Client(const Client &a);
+	Client( int fd, sockaddr_in6& addr );
+	Client( const Client& a );
 	~Client( void );
 	Client( void );
 
@@ -32,14 +32,14 @@ class Client {
 	std::string getRealUser( void );
 	std::string getHostname( void );
 	std::string getModes( void );
-	bool        isServerOp ( void );
-	void        setOp ( void );
-  void        unsetOp(void);
-  void        unsetInvisible (void);
-  void        unsetBot(void);
+	bool        isServerOp( void );
+	void        setOp( void );
+	void        unsetOp( void );
+	void        unsetInvisible( void );
+	void        unsetBot( void );
 
 	// setters
- 
+
 	void setCap( std::string );
 	void setNick( std::string );
 	void setHasGivenPassword( bool );
@@ -53,14 +53,14 @@ class Client {
 	void setHostname( struct sockaddr_in6& addr );
 	void setHasBeenWelcomed( bool );
 	void setIsOper( bool );
-  void setInvisible( void );
-  void setBot (void);
+	void setInvisible( void );
+	void setBot( void );
 
 	// state accessors ?
 
 	bool isPolled( void );
-  bool isBot (void );
-  bool isInvisble ( void );
+	bool isBot( void );
+	bool isInvisble( void );
 	bool hasGivenNick( void );
 	bool hasGivenUser( void );
 	bool hasGivenPassword( void );
@@ -68,23 +68,23 @@ class Client {
 	bool hasBeenWelcomed( void );
 	bool isOper( void );
 
-  private:
-	   int         _fd;
-	   bool        _server_op;
-	   std::string _modes;
-	   std::string _cap;
-	   std::string _nick;
-	   std::string _user;
-	   std::string _realuser;
-	   std::string _hostname;
-	   bool        _hasBeenWelcomed;
-	   bool        _hasGivenNick;
-	   bool        _hasGivenUser;
-	   bool        _hasGivenPassword;
-	   bool        _isPolled;
-     bool        _isBot;
-	 	bool		_isOper;
-     bool        _invisible;
+   private:
+	int         _fd;
+	bool        _server_op;
+	std::string _modes;
+	std::string _cap;
+	std::string _nick;
+	std::string _user;
+	std::string _realuser;
+	std::string _hostname;
+	bool        _hasBeenWelcomed;
+	bool        _hasGivenNick;
+	bool        _hasGivenUser;
+	bool        _hasGivenPassword;
+	bool        _isPolled;
+	bool        _isBot;
+	bool        _isOper;
+	bool        _invisible;
 };
 
 // std::map<std::string, Client> users;

@@ -29,9 +29,8 @@
 #include "typedef.hpp"
 
 class ircserv {
-  
    private:
-   	static t_client_array _clients;
+	static t_client_array _clients;
 	ircserv();
 	static int           _port;
 	static bool          _failed;
@@ -52,11 +51,11 @@ class ircserv {
 
 	static bool failed( void );
 
-	static int            getPollfd( void );
-	static std::string    getPassword( void );
-	static t_map_channel& getChannels( void );
-	static std::string    getServername( void );
-	static t_client_array &getClients( void );
+	static int             getPollfd( void );
+	static std::string     getPassword( void );
+	static t_map_channel&  getChannels( void );
+	static std::string     getServername( void );
+	static t_client_array& getClients( void );
 
 	static void addChannel( std::string&, Client& );
 	static void removeChannel( std::string );
