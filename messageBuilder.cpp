@@ -78,3 +78,5 @@ std::ostream& operator<<( std::ostream& os, MessageBuilder& m ) {
 	os << m.getBuff();
 	return ( os );
 }
+
+MessageBuilder::operator std::string() { return ( buff ); }

@@ -33,6 +33,7 @@ class MessageBuilder{
 		MessageBuilder& operator<<(const MessageBuilder &);
 		MessageBuilder& operator<<(const int);
 		MessageBuilder& operator<<(const unsigned int);
+		operator std::string();
 };
 
 std::ostream &operator<<(std::ostream &o, MessageBuilder &m);
