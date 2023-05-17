@@ -26,7 +26,7 @@ std::ostream& operator<<( std::ostream& os, std::list<std::string> arg ) {
 
 void pong( std::list<std::string>* args, Client& c ) {
 	MessageBuilder mb;
-	c.reply( mb << ircserv::getServername() << " PONG " << args->back()
+	c.reply( mb << ":" << ircserv::getServername() << " PONG " << args->back()
 	            << "\r\n" );
 }
 
@@ -56,7 +56,7 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 		}
 	}
 	if ( i == 4 ) {
-		c.reply( mb << ircserv::getServername()
+		c.reply( mb << ":" << ircserv::getServername()
 		            << " 451 * :You are not registered\r\n" );
 		return;
 	}
@@ -67,9 +67,8 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 		welcome( &c );
 	} else if ( c.isRegistered() ) {
 		c.setHasGivenNick( false );
-		c.reply( format ("%s 433 * %s :Nickname is already in use\r\n", ircserv::getServername().c_str(), c.getNick().c_str()));
-				//mb << ircserv::getServername() << " 433 * " << c.getNick()
-		           // << " : Nickname is already in use\r\n" );
+			c.reply(	mb << ":" << ircserv::getServername() << " 433 * " << c.getNick()
+		            << " : Nickname is already in use\r\n" );
 	}
 }
 
@@ -77,7 +76,7 @@ void handler( std::list<std::string>* args, Client& c ) {
 	MessageBuilder mb;
 
 	if ( args->size() == 1 ) {
-		c.reply( mb << ircserv::getServername() << " 461 " << args->front()
+		c.reply( mb <<  ":" << ircserv::getServername() << " 461 " << args->front()
 		            << " :Not enough parameters\r\n" );
 		return;
 	}
