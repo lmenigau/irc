@@ -6,6 +6,7 @@
 #include "channel.hpp"
 #include "client.hpp"
 #include "ircserv.hpp"
+#include "messageBuilder.hpp"
 
 void remove_backslash_r( std::string& c ) {
 	size_t idx = c.find( '\r' );
@@ -103,27 +104,33 @@ Channel* find_channel( std::string name ) {
 }
 
 void welcome( Client* client ) {
-	client->reply(
-	    format( ":ircserv.localhost 001 %s :Welcome to the FT_IRC "
-	            "server %s[!%s@%s]\r\n",
-	            client->getNick().c_str(), client->getNick().c_str(),
-	            client->getUser().c_str(), client->getHostname().c_str() ) );
-	client->reply(
-	    format( ":ircserv.localhost 002 %s :Your host is FT_IRC running "
-	            "version 0.0.1dev\r\n",
-	            client->getNick().c_str() ) );
-	client->reply(
-	    format( ":ircserv.localhost 003 %s :This server was created idk "
-	            "like now ?\r\n",
-	            client->getNick().c_str() ) );
-	client->reply(
-	    format( ":ircserv.localhost 004 %s :FT_IRC 0.0.1dev ia i\r\n",
-	            client->getNick().c_str() ) );
+	MessageBuilder mb;
+
+	client->reply( mb << ':' << ircserv::getServername() << " 001 " << client->getNick() << " :Welcome to the "
+	                                                   "FT_IRC server "
+	                                                   << client->getNick()
+	                                                   << "!" << client->getUser()
+	                                                   << "@"
+	                                                   << client->getHostname()
+	                                                   << "\r\n" );
+													   mb.clear();
+	client->reply( mb << ':' << ircserv::getServername() << " 002 " << client->getNick()
+	                  << "Your host is FT_IRC running version 0.0.1dev\r\n" );
+					  mb.clear();
+	client->reply( mb << ':' << ircserv::getServername() << " 003 " << client->getNick()
+	                  << "This server was created idk like now ?\r\n" );
+					  mb.clear();
+	client->reply( mb << ':' << ircserv::getServername() << " 004 " << client->getNick()
+	                  << "FT_IRC 0.0.1dev ia i\r\n" ); 
+					  mb.clear();
 	client->setHasBeenWelcomed( true );
 }
 
 void close_client( Client& client ) {
-	client.reply( ":ircserv.localhost QUIT :Connection closed\r\n" );
+	MessageBuilder mb;
+	if ( client.getNick() != "" )
+		ircserv::removeClient( client );
+	client.reply( mb << ':' << ircserv::getServername() << "QUIT :Connection closed\r\n" );
 	close( client.getFd() );
 }
 std::string getTarget( size_t& pos, std::string str ) {
