@@ -56,6 +56,15 @@ void Client::reply( std::string const& str ) {
 	out += str;
 }
 
+void Client::reply( MessageBuilder &mb ) {
+	if ( !_isPolled ) {
+		epoll_event event = { EPOLLOUT | EPOLLIN, { .ptr = this } };
+		epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_MOD, _fd, &event );
+	}
+	out += mb;
+	mb.clear();
+}
+
 Client::Client( int fd ) {
 	_fd               = fd;
 	start             = 0;
