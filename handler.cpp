@@ -67,8 +67,8 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 		welcome( &c );
 	} else if ( c.isRegistered() ) {
 		c.setHasGivenNick( false );
-			c.reply(	mb << ":" << ircserv::getServername() << " 433 * " << c.getNick()
-		            << " : Nickname is already in use\r\n" );
+		c.reply( mb << ":" << ircserv::getServername() << " 433 * "
+		            << c.getNick() << " : Nickname is already in use\r\n" );
 	}
 }
 
@@ -76,8 +76,8 @@ void handler( std::list<std::string>* args, Client& c ) {
 	MessageBuilder mb;
 
 	if ( args->size() == 1 ) {
-		c.reply( mb <<  ":" << ircserv::getServername() << " 461 " << args->front()
-		            << " :Not enough parameters\r\n" );
+		c.reply( mb << ":" << ircserv::getServername() << " 461 "
+		            << args->front() << " :Not enough parameters\r\n" );
 		return;
 	}
 	if ( !c.isRegistered() ) {
@@ -100,5 +100,5 @@ void handler( std::list<std::string>* args, Client& c ) {
 			return;
 		}
 	}
-	logger( "WARNING", mb << args->front() << "COMMAND DO NOT EXIST (YET?)" );
+	logger( "WARNING", mb << args->front() << " COMMAND DO NOT EXIST (YET?)" );
 }

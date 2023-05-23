@@ -56,7 +56,7 @@ void Client::reply( std::string const& str ) {
 	out += str;
 }
 
-void Client::reply( MessageBuilder &mb ) {
+void Client::reply( MessageBuilder& mb ) {
 	if ( !_isPolled ) {
 		epoll_event event = { EPOLLOUT | EPOLLIN, { .ptr = this } };
 		epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_MOD, _fd, &event );
@@ -108,6 +108,7 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 }
 
 Client::~Client( void ) {
+	epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, _fd, NULL );
 	/*
 	std::map<std::string, Channel> channel_map = ircserv::getChannels();
 
@@ -133,7 +134,7 @@ Client::~Client( void ) {
 
 	//! PLEASE DO NOT CHANGE ANYTHING HERE IF WE WANT THIS TO WORK AS NOW !
 	//? making the destructor close the fd or removing it from vector will reset
-	//the connection and lose the client !
+	// the connection and lose the client !
 	// * we will close the fd at the moment needed in the main loop or in
 	// commands
 	// * merci de comprendre la situation ! :)

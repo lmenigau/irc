@@ -146,7 +146,7 @@ void user_mode( Client&                  c,
 		mb.clear();
 		//	c.reply (format( "%s!%s@%s" //the client // MODE // channel
 		logger( "DEBUG",
-		        mb << "user " << c.getUser() << "has now mode " << ( *it ) );
+		        mb << "user " << c.getUser() << " has now mode " << ( *it ) );
 	}
 }
 
@@ -191,7 +191,8 @@ void channel_mode( Client&                  c,
 			// ":ircserv.localhost 324 %s %s +o %s\r\n",
 			//  c.getNick().c_str(), target.c_str() , args->back().c_str()));
 			channel->handleModes( c, *it, args->back() );
-			logger( "DEBUG", mb << "channel " << target << " has now mode " << ( *it ) );
+			logger( "DEBUG",
+			        mb << "channel " << target << " has now mode " << ( *it ) );
 		}
 	}
 }

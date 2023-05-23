@@ -1,8 +1,8 @@
 #include "ircserv.hpp"
-#include "messageBuilder.hpp"
 #include <cerrno>
 #include <csignal>
 #include "handler.hpp"
+#include "messageBuilder.hpp"
 #include "ostream.hpp"
 #include "parsing.hpp"
 #include "signal.hpp"
@@ -14,9 +14,9 @@ int            ircserv::_port   = 0;
 bool           ircserv::_failed = false;
 std::string    ircserv::_password;
 t_client_array ircserv::_clients;
-std::string ircserv::_servername = "ircserv.localhost";  //! pls do not change
-int         ircserv::_pollfd;
-int         ircserv::_tcp6_socket;
+std::string   ircserv::_servername = "ircserv.localhost";  //! pls do not change
+int           ircserv::_pollfd;
+int           ircserv::_tcp6_socket;
 t_map_channel ircserv::_channels;
 
 void ircserv::initialisation( char* pass, char* port ) {
@@ -61,9 +61,9 @@ void ircserv::accept_client( epoll_event& ev ) {
 }
 
 void ircserv::process_events( epoll_event& ev ) {
-	char    buf[512];
-	Client* c;
-	ssize_t len;
+	char           buf[512];
+	Client*        c;
+	ssize_t        len;
 	MessageBuilder mb;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
@@ -82,6 +82,7 @@ void ircserv::process_events( epoll_event& ev ) {
 				logger( "INFO", mb << "deleted: " << c->getFd() );
 				c->buf.clear();
 				ircserv::removeClient( *c );
+				close( c->getFd() );
 				return;
 			}
 			c->buf.append( buf, len );
@@ -99,7 +100,8 @@ void ircserv::process_events( epoll_event& ev ) {
 					c->buf.erase( 0, pos + 1 );
 				else
 					break;
-				//			logger( "DEBUG", "buf after mdr : %s", c->buf.c_str()
+				//			logger( "DEBUG", "buf after mdr : %s",
+				//c->buf.c_str()
 				//);
 			}
 		}
