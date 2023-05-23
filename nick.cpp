@@ -11,6 +11,7 @@
 #include "irc.hpp"
 #include "ircserv.hpp"
 #include "utils.hpp"
+#include "messageBuilder.hpp"
 
 bool authorize_setting_name( const std::string& name, Client& c ) {
 	for ( t_client_array::iterator it = ircserv::getClients().begin();
@@ -23,35 +24,33 @@ bool authorize_setting_name( const std::string& name, Client& c ) {
 
 void nick( std::list<std::string>* args, Client& c ) {
 	std::string buff;
-
+	MessageBuilder mb;
 	// for ( std::list<std::string>::iterator it = args->begin();
 	//       it != args->end(); it++ ) {
 	// 	std::cout << "sent :" << *it << std::endl;
 	// }
 	if ( args->empty() || args->front() == "" ) {
-		c.reply( format(
-		    ":ircserv.localhost 431 *  NICK: Not enough parameters\r\n" ) );
+		c.reply( mb << ":" << ircserv::getServername() << " 431 * NICK :Not enough parameters\r\n" );
 	} else if ( !authorize_setting_name( args->front(), c ) &&
 	            c.isRegistered() ) {
 		logger(
 		    "INFO",
 		    "User %s tried to change nickname to %s but it's already taken.",
 		    c.getUser().c_str(), args->front().c_str() );
-		c.reply( format(
-		    ":ircserv.localhost 433 * %s : Nickname is already in use\r\n",
-		    c.getUser().c_str() ) );
+		c.reply( mb << ":" << ircserv::getServername() << " 433 * "
+		             << c.getNick() << " :Nickname is already in use\r\n" );
 	} else if ( c.hasGivenNick() ) {
 		buff = c.getNick();
 		c.setNick( args->front() );
-		c.reply( format( ":%s!%s NICK %s\r\n", buff.c_str(),
-		                 c.getHostname().c_str(), c.getNick().c_str() ) );
+		c.reply( mb << ":" << buff << "!~" << c.getUser() << "@"
+		             << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
 		logger( "INFO", "User %s nickname change to %s.", c.getUser().c_str(),
 		        c.getNick().c_str() );
 	} else {
 		buff = c.getNick();
 		c.setNick( args->front() );
-		c.reply( format( ":%s!%s NICK %s\r\n", buff.c_str(),
-		                 c.getHostname().c_str(), c.getNick().c_str() ) );
+		c.reply( mb << ':' << buff << "!" << c.getUser() << "@"
+		             << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
 		c.setHasGivenNick( true );
 		logger( "INFO", "User %s nickname change to %s.", c.getUser().c_str(),
 		        c.getNick().c_str() );

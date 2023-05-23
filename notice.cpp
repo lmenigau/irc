@@ -6,30 +6,31 @@
 #include "irc.hpp"
 #include "ircserv.hpp"
 #include "utils.hpp"
+#include "messageBuilder.hpp"
 
 static void notice_client( std::list<std::string>* args, Client& c ) {
 	Client* target = find_client( args->front() );
+	MessageBuilder mb;
+
 	if ( target ) {
 		args->front();
-		target->reply( format( ":%s!~%s PRIVMSG %s: %s\r\n",
-		                       c.getNick().c_str(),
-		                       ( c.getUser() + "@" + c.getHostname() ).c_str(),
-		                       args->front().c_str(), args->back().c_str() ) );
+		target->reply( mb << ':' << c.getNick() << "!" << c.getUser() << "@"
+		                  << c.getHostname() << " NOTICE " << args->front()
+		                  << " :" << args->back() << "\r\n" );
 	}
 }
 
 void notice_channel( std::list<std::string>* args, Client& c ) {
 	t_map_channel channels = ircserv::getChannels();
+	MessageBuilder mb;
 
 	Channel* channel = find_channel( args->front() );
 	if ( !channel->findClients( c.getNick() ) || channel->isBanned( &c ) )
 		return;
 	if ( channel )
-		channel->sendAll(
-		    format( ":%s!%s NOTICE %s :%s\r\n", c.getNick().c_str(),
-		            ( c.getUser() + "@" + c.getHostname() ).c_str(),
-		            args->front().c_str(), args->back().c_str() ),
-		    c );
+		channel->sendAll( mb << ':' << c.getNick() << '!' << c.getUser()
+		                     << '@' << c.getHostname() << " NOTICE "
+		                     << args->front() << " :" << args->back() << "\r\n", c );
 }
 
 void notice( std::list<std::string>* args, Client& c ) {

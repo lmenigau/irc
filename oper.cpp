@@ -6,6 +6,7 @@
 #include "irc.hpp"
 #include "ircserv.hpp"
 #include "utils.hpp"
+#include "messageBuilder.hpp"
 #define PASSWORD "pass"
 /*
 //Same as #chan +o #nick
@@ -21,23 +22,25 @@ args->front().c_str())));
 }*/
 
 static void oper_on_serv( std::list<std::string>* args, Client& c ) {
+	MessageBuilder mb;
 	if ( c.isServerOp() )
-		return ( c.reply( format(
-		    ":ircserv.localhost 381 %s :You are already an IRC operator\r\n",
-		    c.getNick().c_str() ) ) );
+		return ( c.reply( mb << ":ircserv.localhost 381 " << c.getNick()
+		                  << " :You are already an IRC operator\r\n" ) );
 	if ( args->back() == PASSWORD ) {
 		c.setOp();
-		return ( c.reply( format(
-		    ":ircserv.localhost 381 %s :You now are an IRC operator \r\n",
-		    c.getNick().c_str() ) ) );
+		return ( c.reply( mb << ':'
+		                  << "ircserv.localhost 381 " << c.getNick()
+		                  << " :You now are an IRC operator\r\n" ) );
 	} else
-		return ( c.reply( ":ircserv.locahost 464 :Password incorrect \r\n" ) );
+		return ( c.reply( mb << ':' << ircserv::getServername()
+		                  << " 464 :Password incorrect\r\n" ) );
 }
 
 void oper( std::list<std::string>* args, Client& c ) {
+	MessageBuilder mb;
 	if ( args->size() != 2 )
-		return c.reply(
-		    ":ircserv.locahost 461 OPER :Not enough parameters\r\n" );
+		return c.reply( mb << ':' << ircserv::getServername()
+		                 << " 461 OPER :Not enough parameters\r\n" );
 	// if (args->front().c_str()[0] == '#')
 	//	oper_on_channel(args, c);
 	// else
