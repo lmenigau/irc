@@ -32,15 +32,15 @@ void user( std::list<std::string>* args, Client& c ) {
 		return;
 	} else if ( !c.hasGivenPassword() ) {
 		c.reply( mb << ':' << ircserv::getServername() << " 464 :Password Incorrect" );
-		logger( "ERROR", "client %d did not give password !", c.getFd() );
+		mb.clear();
+		logger( "ERROR", mb << "client " << c.getFd() << " did not give password !");
 		close( c.getFd() );
 		return;
 	} else if ( c.hasGivenUser() ) {
 		c.reply( mb << ":ircserv.localhost * 462: You may not reregister\r\n" );
 		return;
 	} else {
-		logger( "INFO", "client %d has username %s", c.getFd(),
-		        args->front().c_str() );
+		logger( "INFO", mb << "client " << c.getFd() << " has username " << args->front() );
 		c.setHasGivenUser( true );
 		c.setUser( args->front() );
 		// Checker la command 0 *: (real name)

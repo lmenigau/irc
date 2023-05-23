@@ -8,14 +8,14 @@
 #include "channel.hpp"
 #include "client.hpp"
 #include "typedef.hpp"
+#include "messageBuilder.hpp"
 
 typedef enum err { MODE, FLAG } t_err_type;
 
 typedef enum type { CHANNEL, USER } t_type;
 
-std::string format( std::string format, ... );
-std::string format( std::string format, va_list va_args );
-void        logger( std::string level, std::string format, ... );
+void        logger( std::string level, std::string string );
+void        logger( std::string level, MessageBuilder mb );
 bool        isUser( std::string str );
 bool        isChannel( std::string str );
 std::string trim( const std::string& s );
