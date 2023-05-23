@@ -60,7 +60,7 @@ void join( std::list<std::string>* args, Client& c ) {
 			                  << ":" << ircserv::getServername() << " 474 "
 			                  << args->front()
 			                  << " :Cannot join channel (+b)\r\n" ) );  // 474
-		else if ( it->second.getInviteMode() && !it->second.isInvited( &c ) )
+		else if ( it->second.getInviteMode() && !ircserv::getChannels().at(args->front()).isInvited( &c ) )
 			return ( c.reply( mb
 			                  << ":" << ircserv::getServername() << " 473 "
 			                  << args->front()

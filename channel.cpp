@@ -364,7 +364,7 @@ bool Channel::isBanned( Client* c ) {
 
 bool	Channel::isFull(void)
 {
-	if ((int) _clients.size() > _limit)
+	if ((int) _clients.size() > _limit && _limit > 0)
 		return (true);
 	return (false);
 }
