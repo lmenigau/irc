@@ -1,8 +1,8 @@
 #include <list>
 #include <map>
 #include "ircserv.hpp"
-#include "utils.hpp"
 #include "messageBuilder.hpp"
+#include "utils.hpp"
 // Modes string should not overexceed 3 letter
 // Some modes are not combinables : like k is ok with i / t but not o or l
 //  o is ok with i / t not k or l
@@ -128,7 +128,7 @@ void user_mode( Client&                  c,
 	MessageBuilder mb;
 	if ( target != c.getNick() ) {
 		c.reply( mb << ':' << ircserv::getServername() << " 502 " << c.getNick()
-		             << " :Cant change mode for other users\r\n" ); 
+		            << " :Cant change mode for other users\r\n" );
 		return;
 	}
 	(void) args;
@@ -138,15 +138,15 @@ void user_mode( Client&                  c,
 			c.addModes( *it );
 		else if ( ( *it )[0] == '-' )
 			c.removeModes( *it );
-		c.reply( mb << ':' << ircserv::getServername() << " 221 "
-		             << c.getNick() << " " << ( *it ) << "\r\n" );
+		c.reply( mb << ':' << ircserv::getServername() << " 221 " << c.getNick()
+		            << " " << ( *it ) << "\r\n" );
 		mb.clear();
-		c.reply( mb << ':' << ircserv::getServername() << " 324 "
-		             << c.getNick() << " " << c.getNick() << " "
-		             << c.getModes() << "\r\n" ); 
+		c.reply( mb << ':' << ircserv::getServername() << " 324 " << c.getNick()
+		            << " " << c.getNick() << " " << c.getModes() << "\r\n" );
+		mb.clear();
 		//	c.reply (format( "%s!%s@%s" //the client // MODE // channel
-		logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
-		        ( *it ).c_str() );
+		logger( "DEBUG",
+		        mb << "user " << c.getUser() << "has now mode " << ( *it ) );
 	}
 }
 
@@ -156,8 +156,8 @@ void channel_mode( Client&                  c,
                    std::list<std::string>*  args,
                    std::vector<std::string> modes,
                    std::string              target_str ) {
-	std::string target;
-	size_t      i = 0;
+	std::string    target;
+	size_t         i = 0;
 	MessageBuilder mb;
 
 	while ( i != target_str.size() ) {
@@ -167,9 +167,9 @@ void channel_mode( Client&                  c,
 			continue;
 		if ( modes.empty() ) {
 			c.reply( mb << ':' << ircserv::getServername() << " 324 "
-			             << c.getNick() << " " << target << " "
-			             << ircserv::getChannels().at( target ).getModes()
-			             << "\r\n" );
+			            << c.getNick() << " " << target << " "
+			            << ircserv::getChannels().at( target ).getModes()
+			            << "\r\n" );
 			return;
 		}
 		try {
@@ -178,8 +178,8 @@ void channel_mode( Client&                  c,
 			// channel->callModes(modes)
 		} catch ( std::exception& e ) {
 			c.reply( mb << ':' << ircserv::getServername() << " 403 "
-			             << c.getNick() << " " << target
-			             << " :No such channel\r\n" );
+			            << c.getNick() << " " << target
+			            << " :No such channel\r\n" );
 			return;
 		}
 		Channel* channel = find_channel( target );
@@ -191,8 +191,7 @@ void channel_mode( Client&                  c,
 			// ":ircserv.localhost 324 %s %s +o %s\r\n",
 			//  c.getNick().c_str(), target.c_str() , args->back().c_str()));
 			channel->handleModes( c, *it, args->back() );
-			logger( "DEBUG", "user %s has now mode %s", c.getUser().c_str(),
-			        ( *it ).c_str() );
+			logger( "DEBUG", mb << "channel " << target << " has now mode " << ( *it ) );
 		}
 	}
 }
@@ -219,7 +218,7 @@ void mode( std::list<std::string>* args, Client& c ) {
 	std::vector<std::string> modes;
 	std::string              target   = args->front();
 	t_err_type               err_type = MODE;
-	MessageBuilder		  	 mb;
+	MessageBuilder           mb;
 	if ( args->empty() )
 		return;
 	if ( args->size() == 1 )
@@ -234,10 +233,10 @@ void mode( std::list<std::string>* args, Client& c ) {
 		if ( !check_user_modes( modes, err_type ) ) {
 			if ( err_type == MODE )
 				c.reply( mb << ':' << ircserv::getServername() << " 472 "
-				             << target << " :is unknow mode char to me\r\n" );
+				            << target << " :is unknow mode char to me\r\n" );
 			else if ( err_type == FLAG )
 				c.reply( mb << ':' << ircserv::getServername()
-				             << " 501 :Unknown MODE flag\r\n" );
+				            << " 501 :Unknown MODE flag\r\n" );
 			return;
 		}
 		user_mode( c, args, modes, target );
@@ -246,10 +245,10 @@ void mode( std::list<std::string>* args, Client& c ) {
 		if ( !check_channel_modes( modes, err_type ) ) {
 			if ( err_type == MODE )
 				c.reply( mb << ':' << ircserv::getServername() << " 472 "
-				             << target << " :is unknow mode char to me\r\n" );
+				            << target << " :is unknow mode char to me\r\n" );
 			else if ( err_type == FLAG )
 				c.reply( mb << ":" << ircserv::getServername() << " 501 "
-				             << target << ":Unknown MODE flag\r\n" );
+				            << target << ":Unknown MODE flag\r\n" );
 			return;
 		}
 		channel_mode( c, args, modes, target );

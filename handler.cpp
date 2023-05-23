@@ -100,6 +100,5 @@ void handler( std::list<std::string>* args, Client& c ) {
 			return;
 		}
 	}
-	logger( "WARNING", "%s COMMAND DO NOT EXIST (YET?)",
-	        args->front().c_str() );
+	logger( "WARNING", mb << args->front() << "COMMAND DO NOT EXIST (YET?)" );
 }

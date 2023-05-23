@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <map>
 #include <string>
+#include "messageBuilder.hpp"
 
 class Client {
    public:
@@ -21,6 +22,7 @@ class Client {
 	// methods
 
 	void        reply( std::string const& str );
+	void        reply( MessageBuilder &mb );
 	std::string addModes( std::string );
 	std::string removeModes( std::string );
 	// getters

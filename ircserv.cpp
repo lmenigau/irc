@@ -1,4 +1,5 @@
 #include "ircserv.hpp"
+#include "messageBuilder.hpp"
 #include <cerrno>
 #include <csignal>
 #include "handler.hpp"
@@ -63,6 +64,7 @@ void ircserv::process_events( epoll_event& ev ) {
 	char    buf[512];
 	Client* c;
 	ssize_t len;
+	MessageBuilder mb;
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
 			accept_client( ev );
@@ -73,11 +75,11 @@ void ircserv::process_events( epoll_event& ev ) {
 			if ( len < 0 ) {
 				logger( "WARNING", strerror( errno ) );
 				close( c->getFd() );
-				logger( "INFO", "deleted: %d", c->getFd() );
+				logger( "INFO", mb << "deleted: " << c->getFd() );
 				return;
 			}
 			if ( len == 0 ) {
-				logger( "INFO", "deleted: %d", c->getFd() );
+				logger( "INFO", mb << "deleted: " << c->getFd() );
 				c->buf.clear();
 				ircserv::removeClient( *c );
 				return;

@@ -11,8 +11,7 @@ void pass( std::list<std::string>* args, Client& c ) {
 		return;
 	}
 	if ( args->front().compare( ircserv::getPassword() ) != 0 ) {
-		logger( "ERROR", "client %d : wrong password (%s)!", c.getFd(),
-		        args->front().c_str() );
+		logger( "ERROR", mb << "client " << c.getFd() << " : wrong password (" << args->front() << ")!");
 		close( c.getFd() );
 		return;
 	}

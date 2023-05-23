@@ -41,8 +41,8 @@ void join( std::list<std::string>* args, Client& c ) {
 		            << " :No such channel\r\n" ); 
 		return;
 	}
-	logger( "INFO", "%s joined channel %s", c.getNick().c_str(),
-	        args->front().c_str() );
+	logger( "INFO", mb << c.getNick() << " joined channel " << args->front() );
+	mb.clear();
 	it = channels.find( args->front() );
 	if ( it == channels.end() ) {
 		ircserv::addChannel( args->front(), c );

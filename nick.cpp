@@ -35,8 +35,8 @@ void nick( std::list<std::string>* args, Client& c ) {
 	            c.isRegistered() ) {
 		logger(
 		    "INFO",
-		    "User %s tried to change nickname to %s but it's already taken.",
-		    c.getUser().c_str(), args->front().c_str() );
+		    mb << "User " << c.getUser() << " tried to change nickname to " << args->front() << " but it's already taken.");
+			mb.clear();
 		c.reply( mb << ":" << ircserv::getServername() << " 433 * "
 		             << c.getNick() << " :Nickname is already in use\r\n" );
 	} else if ( c.hasGivenNick() ) {
@@ -44,16 +44,16 @@ void nick( std::list<std::string>* args, Client& c ) {
 		c.setNick( args->front() );
 		c.reply( mb << ":" << buff << "!~" << c.getUser() << "@"
 		             << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
-		logger( "INFO", "User %s nickname change to %s.", c.getUser().c_str(),
-		        c.getNick().c_str() );
+		mb.clear();
+		logger( "INFO",  mb << "User " << c.getUser() << " nickname change to " << c.getNick() << "." );
 	} else {
 		buff = c.getNick();
 		c.setNick( args->front() );
 		c.reply( mb << ':' << buff << "!" << c.getUser() << "@"
 		             << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
 		c.setHasGivenNick( true );
-		logger( "INFO", "User %s nickname change to %s.", c.getUser().c_str(),
-		        c.getNick().c_str() );
+		mb.clear();
+		logger( "INFO",  mb << "User " << c.getUser() << " nickname change to " << c.getNick() << "." );
 	}
 }
 

@@ -36,6 +36,8 @@ Channel::Channel( const Channel& a )
 
 void Channel::removeClient( Client& rclient ) {
 	t_vector_client_ptr::iterator it = _clients.begin();
+	MessageBuilder                mb;
+
 	while ( it != _clients.end() ) {
 		if ( ( *it )->getNick() == rclient.getNick() ) {
 			_clients.erase( it );
@@ -43,8 +45,8 @@ void Channel::removeClient( Client& rclient ) {
 		}
 		it++;
 	}
-	logger( "ERROR", "user %s not found in channel %s !",
-	        rclient.getUser().c_str(), _name.c_str() );
+	logger( "ERROR", mb << "user " << rclient.getUser()
+	                    << " not found in channel " << _name << " !" );
 }
 
 void Channel::changeModes( int n_mode ) {
