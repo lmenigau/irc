@@ -11,8 +11,8 @@ typedef enum mode_operation { ADD, SUB, NONE } t_ope;
 class Channel {
    private:
 	t_vector_client_ptr _clients;
-	std::string         _modes;
 	std::string         _name;
+	std::string         _modes;
 	std::string         _topic;
 	std::string         _password;
 	t_vector_client_ptr _ops;
@@ -52,6 +52,7 @@ class Channel {
 	std::string  getTopic( void );
 	bool         getInviteMode( void );
 	bool         isFull(void);
+	void         reply_334( Client& c );
 
 	std::string          addModes( std::string );
 	std::string          removeModes( std::string );

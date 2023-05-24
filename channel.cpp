@@ -11,9 +11,9 @@
 Channel::~Channel() {}
 Channel::Channel( void ) {}
 
-Channel::Channel( std::string name ) : _name( name ) {}
+Channel::Channel( std::string name ) : _name( name ), _modes(""), _limit(0) {}
 
-Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
+Channel::Channel( Client& creator, const std::string& name ) : _name( name ), _modes(""), _limit(0){
 	_ops.push_back( &creator );
 	_clients.push_back( &creator );
 	_invite_only = false;
@@ -25,8 +25,8 @@ void Channel::addClient( Client& client ) {
 
 Channel::Channel( const Channel& a )
     : _clients( a._clients ),
-      _modes( a._modes ),
       _name( a._name ),
+      _modes( a._modes ),
       _topic( a._topic ),
       _password( a._password ),
       _ops( a._ops ),
@@ -96,10 +96,14 @@ std::string Channel::getTopic( void ) {
 }
 
 std::string Channel::addModes( std::string modes ) {
+	int	j;
+
+	j = 0;
 	for ( size_t i = 0; i < modes.size(); i++ ) {
-		if ( _modes.find( modes[i] ) != std::string::npos )
+		if ( _modes.find( modes[j] ) != std::string::npos )
 			continue;
-		_modes.insert( modes.end(), modes[i] );
+		_modes.insert( _modes.end(), modes[j] );
+		j = i;
 	}
 	return ( _modes );
 }
@@ -124,7 +128,8 @@ void Channel::sendAll( std::string msg ) {
 	// std::cout << "clients : " << _clients <<
 	t_vector_client_ptr::iterator it = _clients.begin();
 	for ( ; it != _clients.end(); it++ ) {
-		( *it )->reply( msg );
+		if (!isBanned(*it))
+			( *it )->reply( msg );
 	}
 }
 
@@ -159,18 +164,40 @@ bool Channel::findClients( const std::string& nick ) {
 
 void Channel::m_key( Client& c, std::string args, t_ope operation ) {
 	(void) c;
+	MessageBuilder mb;
+
 	if ( operation == ADD )
+	{
 		_key = args;
+		addModes("k");
+		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
+			<< " +k " << args << "\r\n" );
+	}
 	else
+	{
+		removeModes("k");
+		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
+			<< " -k " << "\r\n" );
 		_key = "";
+	}
 }
 
 void Channel::m_invite( Client& c, std::string args, t_ope operation ) {
+	MessageBuilder mb;
 	if ( operation == ADD )
+	{
+		addModes("i");
+		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
+			<< " +i " << "\r\n" );
 		_invite_only = true;
+	}
 	else
+	{
+		removeModes("i");
+		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
+			<< " -i " << "\r\n" );
 		_invite_only = false;
-	(void) c;
+	}
 	(void) args;
 }
 
@@ -199,9 +226,7 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 			                  << " +o " << target << "\r\n" );
 			if ( it == _ops.end() )
 				_ops.push_back( client );
-//			c.reply( mb << ":" << ircserv::getServername() << " 324 "
-//			            << c.getNick() << " " << _name << " +o " << target
-//			            << "\r\n" );
+			addModes("o");
 		} else {
 			if ( it == _ops.end() ) {
 				c.reply( mb << ":" << ircserv::getServername() << " 441 "
@@ -210,11 +235,9 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 				continue;
 			}
 			_ops.erase( it );
+			removeModes("o");
 			this->sendAll( mb << ":" << c.getNick() << " MODE " << _name
 			                  << " -o " << target << "\r\n" );
-	//		c.reply( mb << ":" << ircserv::getServername() << " 324 "
-	//		            << c.getNick() << " " << _name << " -o " << target
-	//		            << "\r\n" );
 		}
 	}
 }
@@ -222,13 +245,24 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 void Channel::m_limit( Client& c, std::string args, t_ope operation ) {
 	MessageBuilder mb;
 
+	_limit = 0;
 	if ( operation == ADD && isValidPositiveNumber( args ) )
+	{
 		_limit = std::atoi( args.c_str() );
+		sendAll( mb << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << "MODE" << _name << " +l " << _limit<< "\r\n");
+		addModes("l");
+	}
 	else
+	{
 		_limit = 0;
-	c.reply( mb << ircserv::getServername() << " 324 " << c.getNick() << " "
-	            << _name << " +l " << args << "\r\n" );
+		reply_334(c);
+	}
+	if (operation == SUB)
+	{
+		sendAll( mb << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << "MODE" << _name << " -l \r\n");
+		removeModes("l");
 }
+	}
 
 void Channel::reply_ban_list( Client& c ) {
 	MessageBuilder mb;
@@ -239,6 +273,7 @@ void Channel::reply_ban_list( Client& c ) {
 		mb << ( *it )->getNick() << "!" << ( *it )->getUser() << "@"
 		   << ( *it )->getHostname() << " ";
 	//	mb << ":Banned users\r\n";
+	mb << "\r\n";
 	c.reply( mb );
 	return ( c.reply( ":irvserv.localhost 368 :End of channel ban list\r\n" ) );
 }
@@ -249,8 +284,10 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 	std::string    target;
 	Client*        client;
 	MessageBuilder mb;
+	size_t         i = 0;
 
-	for ( size_t i = 0; i != args.size(); i++ ) {
+	while (i != args.size())
+	{
 		target = getTarget( i, args );
 		if ( target.empty() )
 			continue;
@@ -277,6 +314,7 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 			            << " :+b\r\n" );
 
 			reply_ban_list( c );
+			addModes("b");
 		} else {
 			if ( it == _banned.end() ) {
 				c.reply( mb << ":" << ircserv::getServername() << " 441 "
@@ -285,6 +323,7 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 				continue;
 			}
 			_banned.erase( it );
+			removeModes("b");
 			// client->reply( format( ":%s!%s@%s MODE %s: -b\r\n",
 			// 						c.getNick().c_str(), c.getUser().c_str(),
 			// 						c.getHostname().c_str(),
@@ -300,12 +339,30 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 	}
 }
 
+void Channel::reply_334( Client& c )
+{
+	MessageBuilder mb;
+
+	if (!_modes.empty())
+		c.reply( mb << ircserv::getServername() << " 324 " << c.getNick() << " "
+			<< _name << " +" << _modes <<  "\r\n" );
+}
+
 void Channel::m_topic( Client& c, std::string args, t_ope operation ) {
+	MessageBuilder mb;
+
 	if ( operation == ADD )
+	{
 		_topic_op = true;
+		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
+			<< " +t " << "\r\n" );
+	}
 	else
+	{
 		_topic_op = false;
-	(void) c;
+		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
+			<< " -t " << "\r\n" );
+	}
 	(void) args;
 }
 
