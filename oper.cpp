@@ -34,7 +34,7 @@ static void oper_on_serv( std::list<std::string>* args, Client& c ) {
 		                  << " :You now are an IRC operator\r\n" );
 		c.addModes("o");
 		c.reply( mb << ':' << ircserv::getServername() << " 221 " << c.getNick()
-		            << " " << c.getNick() << " " << c.getModes() << "\r\n" );
+		            << " " << c.getModes() << "\r\n" );
 	} else
 		return ( c.reply( mb << ':' << ircserv::getServername()
 		                  << " 464 :Password incorrect\r\n" ) );
