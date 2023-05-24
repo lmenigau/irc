@@ -61,7 +61,7 @@ void Client::reply( MessageBuilder& mb ) {
 		epoll_event event = { EPOLLOUT | EPOLLIN, { .ptr = this } };
 		epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_MOD, _fd, &event );
 	}
-	out += mb;
+	out += mb.getBuff();
 	mb.clear();
 }
 
