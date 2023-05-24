@@ -50,7 +50,7 @@ class Channel {
 	void         setTopic( const std::string& topic );
 	std::string  getTopic( void );
 	bool         getInviteMode( void );
-	bool         isFull(void);
+	bool         isFull( void );
 
 	std::string          addModes( std::string );
 	std::string          removeModes( std::string );
@@ -60,8 +60,8 @@ class Channel {
 
 	void                 setModes( std::string );
 	t_vector_client_ptr& getClients( void );
-	void                 sendAll( MessageBuilder & );
-	void                 sendAll( MessageBuilder &, Client& );
+	void                 sendAll( MessageBuilder& );
+	void                 sendAll( MessageBuilder&, Client& );
 	void                 sendAll( std::string msg );
 	void                 sendAll( std::string msg, Client& );
 };
