@@ -7,6 +7,7 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 #include "messageBuilder.hpp"
+#include "ircserv.hpp"
 #define PASSWORD "pass"
 /*
 //Same as #chan +o #nick
@@ -28,9 +29,12 @@ static void oper_on_serv( std::list<std::string>* args, Client& c ) {
 		                  << " :You are already an IRC operator\r\n" ) );
 	if ( args->back() == PASSWORD ) {
 		c.setOp();
-		return ( c.reply( mb << ':'
+		c.reply( mb << ':'
 		                  << "ircserv.localhost 381 " << c.getNick()
-		                  << " :You now are an IRC operator\r\n" ) );
+		                  << " :You now are an IRC operator\r\n" );
+		c.addModes("o");
+		c.reply( mb << ':' << ircserv::getServername() << " 324 " << c.getNick()
+		            << " " << c.getNick() << " " << c.getModes() << "\r\n" );
 	} else
 		return ( c.reply( mb << ':' << ircserv::getServername()
 		                  << " 464 :Password incorrect\r\n" ) );
