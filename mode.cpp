@@ -141,9 +141,6 @@ void user_mode( Client&                  c,
 		c.reply( mb << ':' << ircserv::getServername() << " 221 " << c.getNick()
 		            << " " << ( *it ) << "\r\n" );
 
-		c.reply( mb << ':' << ircserv::getServername() << " 324 " << c.getNick()
-		            << " " << c.getNick() << " " << c.getModes() << "\r\n" );
-
 		//	c.reply (format( "%s!%s@%s" //the client // MODE // channel
 		logger( "DEBUG",
 		        mb << "user " << c.getUser() << " has now mode " << ( *it ) );
