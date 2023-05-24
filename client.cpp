@@ -108,6 +108,7 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 }
 
 Client::~Client( void ) {
+	std::cout << "RIP\n";
 	epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, _fd, NULL );
 	/*
 	std::map<std::string, Channel> channel_map = ircserv::getChannels();
@@ -130,7 +131,6 @@ Client::~Client( void ) {
 	// 		break;
 	// 	}
 	// }
-	// close( _fd );
 
 	//! PLEASE DO NOT CHANGE ANYTHING HERE IF WE WANT THIS TO WORK AS NOW !
 	//? making the destructor close the fd or removing it from vector will reset

@@ -62,8 +62,8 @@ class Channel {
 
 	void                 setModes( std::string );
 	t_vector_client_ptr& getClients( void );
-	void                 sendAll( MessageBuilder & );
-	void                 sendAll( MessageBuilder &, Client& );
+	void                 sendAll( MessageBuilder& );
+	void                 sendAll( MessageBuilder&, Client& );
 	void                 sendAll( std::string msg );
 	void                 sendAll( std::string msg, Client& );
 };

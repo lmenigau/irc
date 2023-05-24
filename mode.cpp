@@ -190,6 +190,7 @@ void channel_mode( Client&                  c,
 			logger( "DEBUG",
 			        mb << "channel " << target << " has now mode " << ( *it ) );
 		}
+		i++;
 	}
 }
 

@@ -101,7 +101,7 @@ std::string getTarget( size_t& pos, std::string str ) {
 		pos = pos_comma + 1;
 	} else {
 		res = str.substr( pos );
-		pos = str.size();
+		pos = res.size();
 	}
 	return ( res );
 }
