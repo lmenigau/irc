@@ -53,23 +53,23 @@ void join( std::list<std::string>* args, Client& c ) {
 		     args->back() != it->second.getKey() )
 			return ( c.reply( mb
 			                  << ":" << ircserv::getServername() << " 475 "
-			                  << args->front()
+			                  << c.getNick() << " " << args->front()
 			                  << " :Cannot join channel (+k)\r\n" ) );  // 475
 		else if ( it->second.isBanned( &c ) )
 			return ( c.reply( mb
 			                  << ":" << ircserv::getServername() << " 474 "
-			                  << args->front()
+			                  << c.getNick() << " " << args->front()
 			                  << " :Cannot join channel (+b)\r\n" ) );  // 474
 		else if ( it->second.getInviteMode() &&
 		          !ircserv::getChannels().at( args->front() ).isInvited( &c ) )
 			return ( c.reply( mb
 			                  << ":" << ircserv::getServername() << " 473 "
-			                  << args->front()
+			                  << c.getNick() << " " << args->front()
 			                  << " :Cannot join channel (+i)\r\n" ) );  // 473
 		else if ( it->second.isFull() )
 			return ( c.reply( mb
 			                  << ":" << ircserv::getServername() << " 471 "
-			                  << args->front()
+			                  << c.getNick() << " " << args->front()
 			                  << " :Cannot join channel (+l)\r\n" ) );  // 471
 
 		ircserv::getChannels()[args->front()].addClient( c );

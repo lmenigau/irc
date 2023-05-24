@@ -45,6 +45,7 @@ class Channel {
 	void         removeClient( Client& );
 	void         changeModes( int );
 	bool         isOps( Client& c );
+	bool         topicRight(void);
 	bool         findClients( const std::string& nick );
 	bool         hasTopic( void );
 	void         setTopic( const std::string& topic );

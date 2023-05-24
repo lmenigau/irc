@@ -380,3 +380,8 @@ bool Channel::isFull( void ) {
 		return ( true );
 	return ( false );
 }
+
+bool         Channel::topicRight(void)
+{
+	return (_topic_op);
+}

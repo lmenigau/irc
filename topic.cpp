@@ -44,7 +44,7 @@ void topic( std::list<std::string>* args, Client& c ) {
 		it = channels.find( args->front() );
 		if ( it != channels.end() ) {
 			if ( it->second.findClients( c.getNick() ) ) {
-				if ( it->second.isOps( c ) || !it->second.getInviteMode() ) {
+				if ( it->second.isOps( c ) || !it->second.topicRight() ) {
 					// Should sennd to all clients the new topic !
 					ircserv::getChannels()
 					    .find( args->front() )

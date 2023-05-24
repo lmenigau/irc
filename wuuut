@@ -1,0 +1,56 @@
+<< CAP LS
+<< PASS 1
+<< NICK odessein
+<< USER odessein odessein 1 :Orson DESSEIN
+>> CAP * LS :multi-prefix
+<< CAP REQ :multi-prefix
+>> :ircserv.localhost 433 * odessein : Nickname is already in use
+<< NICK odessein_
+>> CAP * LS :multi-prefix
+<< CAP END
+>> odessein!ip6-localhost NICK odessein_
+>> :ircserv.localhost 001 odessein_ :Welcome to the FT_IRC server odessein_!odessein@ip6-localhost
+<< MODE odessein_ +i
+<< WHOIS odessein
+>> :ircserv.localhost 002 odessein_ Your host is FT_IRC running version 0.0.1dev
+>> :ircserv.localhost 003 odessein_ This server was created idk like now ?
+>> :ircserv.localhost 004 odessein_ FT_IRC 0.0.1dev ia i
+>> CAP * LS :multi-prefix
+>> :ircserv.localhost 221 odessein_ +i
+<< PING ircserv.localhost
+>> :ircserv.localhost PONG ircserv.localhost
+--> lag pong
+<< NICK a
+>> :odessein_!~odessein@ip6-localhost NICK a
+>> :b!~ip6-localhost INVITE a #test
+<< JOIN #test
+>> :ircserv.localhost 331 a #test :No topic is set
+>> :ircserv.localhost 353 a = #test :@b 
+>> :ircserv.localhost 366 a #test :End of NAMES list
+<< MODE #test
+>> :ircserv.localhost 324 a #test 
+--> FAILED whois
+--> chanquery mode
+<< WHO #test
+<< PING ircserv.localhost
+>> :ircserv.localhost PONG ircserv.localhost
+--> lag pong
+<< TOPIC #test :rahahah
+<< TOPIC #test :niiiiiiiiice
+>> :b TOPIC #test :niiice
+<< PING ircserv.localhost
+>> :ircserv.localhost PONG ircserv.localhost
+--> FAILED who: chanquery abort
+<< WHO #test
+--> lag pong
+>> :b TOPIC #test :new
+<< TOPIC #test :bruh
+<< PING ircserv.localhost
+>> :ircserv.localhost PONG ircserv.localhost
+--> lag pong
+<< PING ircserv.localhost
+>> :ircserv.localhost PONG ircserv.localhost
+--> FAILED who: chanquery abort
+<< MODE #test b
+--> lag pong
+>> :ircserv.localhost 482 a :You're not channel operator
