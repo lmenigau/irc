@@ -4,8 +4,8 @@
 #include "client.hpp"
 #include "irc.hpp"
 #include "ircserv.hpp"
-#include "utils.hpp"
 #include "messageBuilder.hpp"
+#include "utils.hpp"
 
 static bool if_nick_set( const std::string& name ) {
 	for ( t_client_array::iterator it = ircserv::getClients().begin();
@@ -30,24 +30,36 @@ void whois( std::list<std::string>* args, Client& c ) {
 		return;
 	return;
 	if ( if_nick_set( args->front() ) ) {
-		c.reply( mb << ':' << ircserv::getServername() << " 307 " << c.getNick() << " : has identified for this nick\r\n" );
-		mb.clear();
-		c.reply( mb << ':' << ircserv::getServername() << " 311 " << c.getNick() << " " << c.getUser() << " " << c.getHostname() << " * :" << c.getRealUser() << "\r\n" );
-		mb.clear();
+		c.reply( mb << ':' << ircserv::getServername() << " 307 " << c.getNick()
+		            << " : has identified for this nick\r\n" );
+
+		c.reply( mb << ':' << ircserv::getServername() << " 311 " << c.getNick()
+		            << " " << c.getUser() << " " << c.getHostname()
+		            << " * :" << c.getRealUser() << "\r\n" );
+
 		// May need a function get serverHost
-		c.reply( mb << ':' << ircserv::getServername() << " 312 " << c.getNick() << " " << ircserv::getServername() << " :Our IRC Server, the best ofc\r\n" );
-		mb.clear();
+		c.reply( mb << ':' << ircserv::getServername() << " 312 " << c.getNick()
+		            << " " << ircserv::getServername()
+		            << " :Our IRC Server, the best ofc\r\n" );
+
 		// If operator :
-		c.reply( mb << ':' << ircserv::getServername() << " 313 " << c.getNick() << " :is an IRC operator\r\n" );
-		mb.clear();
+		c.reply( mb << ':' << ircserv::getServername() << " 313 " << c.getNick()
+		            << " :is an IRC operator\r\n" );
+
 		// Varible of time to konw from how long the client is connected and
 		// since when he finished
-		c.reply( mb << ':' << ircserv::getServername() << " 317 " << c.getNick() << " " << "1" << " :seconds idle, signon time\r\n" );
-		mb.clear();
-		c.reply( mb << ':' << ircserv::getServername() << " 330 " << c.getNick() << " " << c.getUser() << " :is logged in as\r\n" );
-		mb.clear();
-		c.reply( mb << ':' << ircserv::getServername() << " 671 " << c.getNick() << " :is using a secure connection\r\n" );
-		mb.clear();
-		c.reply( mb << ':' << ircserv::getServername() << " 318 " << c.getNick() << " :End of /WHOIS list.\r\n" );
+		c.reply( mb << ':' << ircserv::getServername() << " 317 " << c.getNick()
+		            << " "
+		            << "1"
+		            << " :seconds idle, signon time\r\n" );
+
+		c.reply( mb << ':' << ircserv::getServername() << " 330 " << c.getNick()
+		            << " " << c.getUser() << " :is logged in as\r\n" );
+
+		c.reply( mb << ':' << ircserv::getServername() << " 671 " << c.getNick()
+		            << " :is using a secure connection\r\n" );
+
+		c.reply( mb << ':' << ircserv::getServername() << " 318 " << c.getNick()
+		            << " :End of /WHOIS list.\r\n" );
 	}
 }

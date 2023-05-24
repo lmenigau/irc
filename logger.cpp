@@ -44,7 +44,7 @@ void logger( std::string level, std::string string ) {
 	_warning( mb << level << " is not a valid level !" );
 }
 
-void logger( std::string level, MessageBuilder &mb ) {
+void logger( std::string level, MessageBuilder& mb ) {
 	logger( level, mb.getBuff() );
 	mb.clear();
 }

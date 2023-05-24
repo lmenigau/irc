@@ -114,6 +114,11 @@ std::string Channel::removeModes( std::string modes ) {
 	return ( _modes );
 }
 
+void	Channel::sendAll(MessageBuilder &mb){
+	sendAll(mb.getBuff());
+	mb.clear();
+}
+
 void Channel::sendAll( std::string msg ) {
 	// std::cout << "clients : " << _clients <<
 	t_vector_client_ptr::iterator it = _clients.begin();
@@ -124,6 +129,11 @@ void Channel::sendAll( std::string msg ) {
 
 t_vector_client_ptr& Channel::getOps( void ) {
 	return ( _ops );
+}
+
+void Channel::sendAll( MessageBuilder &mb, Client& c) {
+	sendAll(mb.getBuff(), c);
+	mb.clear();
 }
 
 void Channel::sendAll( std::string msg, Client& c ) {
@@ -169,38 +179,39 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 	Client*        client;
 
 	for ( size_t i = 0; i != args.size(); i++ ) {
-		mb.clear();
 		target = getTarget( i, args );
 		if ( target.empty() )
 			continue;
 		client = find_client( target );
 		if ( !client ) {
-			c.reply( mb << ":" << ircserv::getServername() << " 441 " << c.getNick()
-			            << " " << target
+			c.reply( mb << ":" << ircserv::getServername() << " 441 "
+			            << c.getNick() << " " << target
 			            << " :They aren't on that channel\r\n" );
 			continue;
 		}
 		t_vector_client_ptr::iterator it =
 		    std::find( _ops.begin(), _ops.end(), client );
 		if ( operation == ADD ) {
-			client->reply( mb << ":" << c.getNick() << " MODE " << _name << " +o "
-			                  << target << "\r\n" );
+			client->reply( mb << ":" << c.getNick() << " MODE " << _name
+			                  << " +o " << target << "\r\n" );
 			if ( it == _ops.end() )
 				_ops.push_back( client );
-			c.reply( mb << ":" << ircserv::getServername() << " 324 " << c.getNick()
-			            << " " << _name << " +o " << target << "\r\n" );
+			c.reply( mb << ":" << ircserv::getServername() << " 324 "
+			            << c.getNick() << " " << _name << " +o " << target
+			            << "\r\n" );
 		} else {
 			if ( it == _ops.end() ) {
-				c.reply( mb << ":" << ircserv::getServername() << " 441 " << target
-				            << " " << _name
+				c.reply( mb << ":" << ircserv::getServername() << " 441 "
+				            << target << " " << _name
 				            << " :They aren't not op on that channel\r\n" );
 				continue;
 			}
 			_ops.erase( it );
-			client->reply( mb << ":" << c.getNick() << " MODE " << _name << " -o "
-			                  << target << "\r\n" );
-			c.reply( mb << ":" << ircserv::getServername() << " 324 " << c.getNick()
-			            << " " << _name << " -o " << target << "\r\n" );
+			client->reply( mb << ":" << c.getNick() << " MODE " << _name
+			                  << " -o " << target << "\r\n" );
+			c.reply( mb << ":" << ircserv::getServername() << " 324 "
+			            << c.getNick() << " " << _name << " -o " << target
+			            << "\r\n" );
 		}
 	}
 }
@@ -224,9 +235,9 @@ void Channel::reply_ban_list( Client& c ) {
 	      it != _banned.end(); it++ )
 		mb << ( *it )->getNick() << "!" << ( *it )->getUser() << "@"
 		   << ( *it )->getHostname() << " ";
-//	mb << ":Banned users\r\n";
+	//	mb << ":Banned users\r\n";
 	c.reply( mb );
-	return (c.reply( ":irvserv.localhost 368 :End of channel ban list\r\n" ));
+	return ( c.reply( ":irvserv.localhost 368 :End of channel ban list\r\n" ) );
 }
 
 void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
@@ -237,14 +248,13 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 	MessageBuilder mb;
 
 	for ( size_t i = 0; i != args.size(); i++ ) {
-		mb.clear();
 		target = getTarget( i, args );
 		if ( target.empty() )
 			continue;
 		client = find_client( target );
 		if ( !findClients( target ) ) {
-			c.reply( mb << ":" << ircserv::getServername() << " 441 " << target << " "
-			            << _name << " :is not on that channel\r\n" );
+			c.reply( mb << ":" << ircserv::getServername() << " 441 " << target
+			            << " " << _name << " :is not on that channel\r\n" );
 			continue;
 		}
 		t_vector_client_ptr::iterator it =
@@ -266,8 +276,8 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 			reply_ban_list( c );
 		} else {
 			if ( it == _banned.end() ) {
-				c.reply( mb << ":" << ircserv::getServername() << " 441 " << target
-				            << " " << _name
+				c.reply( mb << ":" << ircserv::getServername() << " 441 "
+				            << target << " " << _name
 				            << " :They aren't not banned on that channel\r\n" );
 				continue;
 			}
@@ -362,9 +372,8 @@ bool Channel::isBanned( Client* c ) {
 	return ( false );
 }
 
-bool	Channel::isFull(void)
-{
-	if ((int) _clients.size() > _limit && _limit > 0)
-		return (true);
-	return (false);
+bool Channel::isFull( void ) {
+	if ( (int) _clients.size() > _limit && _limit > 0 )
+		return ( true );
+	return ( false );
 }

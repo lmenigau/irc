@@ -140,10 +140,10 @@ void user_mode( Client&                  c,
 			c.removeModes( *it );
 		c.reply( mb << ':' << ircserv::getServername() << " 221 " << c.getNick()
 		            << " " << ( *it ) << "\r\n" );
-		mb.clear();
+
 		c.reply( mb << ':' << ircserv::getServername() << " 324 " << c.getNick()
 		            << " " << c.getNick() << " " << c.getModes() << "\r\n" );
-		mb.clear();
+
 		//	c.reply (format( "%s!%s@%s" //the client // MODE // channel
 		logger( "DEBUG",
 		        mb << "user " << c.getUser() << " has now mode " << ( *it ) );
@@ -161,7 +161,6 @@ void channel_mode( Client&                  c,
 	MessageBuilder mb;
 
 	while ( i != target_str.size() ) {
-		mb.clear();
 		target = getTarget( i, target_str );
 		if ( target.empty() )
 			continue;

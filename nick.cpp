@@ -10,8 +10,8 @@
 #include "client.hpp"
 #include "irc.hpp"
 #include "ircserv.hpp"
-#include "utils.hpp"
 #include "messageBuilder.hpp"
+#include "utils.hpp"
 
 bool authorize_setting_name( const std::string& name, Client& c ) {
 	for ( t_client_array::iterator it = ircserv::getClients().begin();
@@ -23,37 +23,40 @@ bool authorize_setting_name( const std::string& name, Client& c ) {
 }
 
 void nick( std::list<std::string>* args, Client& c ) {
-	std::string buff;
+	std::string    buff;
 	MessageBuilder mb;
 	// for ( std::list<std::string>::iterator it = args->begin();
 	//       it != args->end(); it++ ) {
 	// 	std::cout << "sent :" << *it << std::endl;
 	// }
 	if ( args->empty() || args->front() == "" ) {
-		c.reply( mb << ":" << ircserv::getServername() << " 431 * NICK :Not enough parameters\r\n" );
+		c.reply( mb << ":" << ircserv::getServername()
+		            << " 431 * NICK :Not enough parameters\r\n" );
 	} else if ( !authorize_setting_name( args->front(), c ) &&
 	            c.isRegistered() ) {
-		logger(
-		    "INFO",
-		    mb << "User " << c.getUser() << " tried to change nickname to " << args->front() << " but it's already taken.");
-			mb.clear();
+		logger( "INFO", mb << "User " << c.getUser()
+		                   << " tried to change nickname to " << args->front()
+		                   << " but it's already taken." );
+
 		c.reply( mb << ":" << ircserv::getServername() << " 433 * "
-		             << c.getNick() << " :Nickname is already in use\r\n" );
+		            << c.getNick() << " :Nickname is already in use\r\n" );
 	} else if ( c.hasGivenNick() ) {
 		buff = c.getNick();
 		c.setNick( args->front() );
 		c.reply( mb << ":" << buff << "!~" << c.getUser() << "@"
-		             << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
-		mb.clear();
-		logger( "INFO",  mb << "User " << c.getUser() << " nickname change to " << c.getNick() << "." );
+		            << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
+
+		logger( "INFO", mb << "User " << c.getUser() << " nickname change to "
+		                   << c.getNick() << "." );
 	} else {
 		buff = c.getNick();
 		c.setNick( args->front() );
 		c.reply( mb << ':' << buff << "!" << c.getUser() << "@"
-		             << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
+		            << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
 		c.setHasGivenNick( true );
-		mb.clear();
-		logger( "INFO",  mb << "User " << c.getUser() << " nickname change to " << c.getNick() << "." );
+
+		logger( "INFO", mb << "User " << c.getUser() << " nickname change to "
+		                   << c.getNick() << "." );
 	}
 }
 

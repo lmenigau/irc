@@ -67,18 +67,18 @@ void welcome( Client* client ) {
 	                     "FT_IRC server "
 	                  << client->getNick() << "!" << client->getUser() << "@"
 	                  << client->getHostname() << "\r\n" );
-	mb.clear();
+
 	client->reply( mb << ':' << ircserv::getServername() << " 002 "
 	                  << client->getNick()
 	                  << " Your host is FT_IRC running version 0.0.1dev\r\n" );
-	mb.clear();
+
 	client->reply( mb << ':' << ircserv::getServername() << " 003 "
 	                  << client->getNick()
 	                  << " This server was created idk like now ?\r\n" );
-	mb.clear();
+
 	client->reply( mb << ':' << ircserv::getServername() << " 004 "
 	                  << client->getNick() << " FT_IRC 0.0.1dev ia i\r\n" );
-	mb.clear();
+
 	client->setHasBeenWelcomed( true );
 }
 

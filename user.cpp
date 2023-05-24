@@ -4,8 +4,8 @@
 #include "client.hpp"
 #include "irc.hpp"
 #include "ircserv.hpp"
-#include "utils.hpp"
 #include "messageBuilder.hpp"
+#include "utils.hpp"
 // Function Parser
 
 std::string get_realname( std::list<std::string>* args ) {
@@ -24,23 +24,27 @@ std::string get_realname( std::list<std::string>* args ) {
 }
 
 void user( std::list<std::string>* args, Client& c ) {
-	std::string username;
+	std::string    username;
 	MessageBuilder mb;
 
 	if ( args->empty() ) {
-		c.reply( mb << ":ircserv.localhost * 461 USER: Not enough parameters\r\n" );
+		c.reply(
+		    mb << ":ircserv.localhost * 461 USER: Not enough parameters\r\n" );
 		return;
 	} else if ( !c.hasGivenPassword() ) {
-		c.reply( mb << ':' << ircserv::getServername() << " 464 :Password Incorrect" );
-		mb.clear();
-		logger( "ERROR", mb << "client " << c.getFd() << " did not give password !");
+		c.reply( mb << ':' << ircserv::getServername()
+		            << " 464 :Password Incorrect" );
+
+		logger( "ERROR",
+		        mb << "client " << c.getFd() << " did not give password !" );
 		close( c.getFd() );
 		return;
 	} else if ( c.hasGivenUser() ) {
 		c.reply( mb << ":ircserv.localhost * 462: You may not reregister\r\n" );
 		return;
 	} else {
-		logger( "INFO", mb << "client " << c.getFd() << " has username " << args->front() );
+		logger( "INFO", mb << "client " << c.getFd() << " has username "
+		                   << args->front() );
 		c.setHasGivenUser( true );
 		c.setUser( args->front() );
 		// Checker la command 0 *: (real name)

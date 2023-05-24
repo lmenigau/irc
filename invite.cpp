@@ -26,19 +26,18 @@ void invite( std::list<std::string>* args, Client& c ) {
 		                     << ":You're not on that channel\r\n" ) );
 	// Priviliges part : depending on modes, not done for the moment
 	while ( args->size() != 1 ) {
-		mb.clear();
 		Client* client_target = find_client( args->front() );
 		if ( !client_target )
-			c.reply( mb << ":" << ircserv::getServername() << " 401 " << args->front()
-			            << ":No such nick\r\n" );
+			c.reply( mb << ":" << ircserv::getServername() << " 401 "
+			            << args->front() << ":No such nick\r\n" );
 		else if ( channel_target->findClients( args->front() ) )
-			c.reply( mb << ":" << ircserv::getServername() << " 443 " << args->front()
-			            << ' ' << args->back()
+			c.reply( mb << ":" << ircserv::getServername() << " 443 "
+			            << args->front() << ' ' << args->back()
 			            << " :is already on channel\r\n" );
 		else {
-			c.reply( mb << ":" << ircserv::getServername() << " 341 " << c.getNick()
-			            << args->front() << args->back() );
-			mb.clear();
+			c.reply( mb << ":" << ircserv::getServername() << " 341 "
+			            << c.getNick() << args->front() << args->back() );
+
 			client_target->reply( mb << ":" << c.getNick() << "!~"
 			                         << c.getHostname() << " INVITE "
 			                         << args->front() << " " << args->back()
