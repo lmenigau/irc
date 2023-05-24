@@ -90,6 +90,7 @@ void close_client( Client& client ) {
 	                 << "QUIT :Connection closed\r\n" );
 	close( client.getFd() );
 }
+
 std::string getTarget( size_t& pos, std::string str ) {
 	std::size_t pos_comma;
 	std::string res;

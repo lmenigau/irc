@@ -32,7 +32,8 @@ Channel::Channel( const Channel& a )
       _ops( a._ops ),
       _banned( a._banned ),
       _key( a._key ),
-      _invite_only( a._invite_only ) {}
+      _invite_only( a._invite_only ) ,
+      _limit( a._limit) {}
 
 void Channel::removeClient( Client& rclient ) {
 	t_vector_client_ptr::iterator it = _clients.begin();
@@ -177,8 +178,10 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 	std::string    target;
 	MessageBuilder mb;
 	Client*        client;
+	size_t         i = 0;
 
-	for ( size_t i = 0; i != args.size(); i++ ) {
+	while (i != args.size())
+	{
 		target = getTarget( i, args );
 		if ( target.empty() )
 			continue;
@@ -192,13 +195,13 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 		t_vector_client_ptr::iterator it =
 		    std::find( _ops.begin(), _ops.end(), client );
 		if ( operation == ADD ) {
-			client->reply( mb << ":" << c.getNick() << " MODE " << _name
+			this->sendAll( mb << ":" << c.getNick() << "~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
 			                  << " +o " << target << "\r\n" );
 			if ( it == _ops.end() )
 				_ops.push_back( client );
-			c.reply( mb << ":" << ircserv::getServername() << " 324 "
-			            << c.getNick() << " " << _name << " +o " << target
-			            << "\r\n" );
+//			c.reply( mb << ":" << ircserv::getServername() << " 324 "
+//			            << c.getNick() << " " << _name << " +o " << target
+//			            << "\r\n" );
 		} else {
 			if ( it == _ops.end() ) {
 				c.reply( mb << ":" << ircserv::getServername() << " 441 "
@@ -207,11 +210,11 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 				continue;
 			}
 			_ops.erase( it );
-			client->reply( mb << ":" << c.getNick() << " MODE " << _name
+			this->sendAll( mb << ":" << c.getNick() << " MODE " << _name
 			                  << " -o " << target << "\r\n" );
-			c.reply( mb << ":" << ircserv::getServername() << " 324 "
-			            << c.getNick() << " " << _name << " -o " << target
-			            << "\r\n" );
+	//		c.reply( mb << ":" << ircserv::getServername() << " 324 "
+	//		            << c.getNick() << " " << _name << " -o " << target
+	//		            << "\r\n" );
 		}
 	}
 }
@@ -312,7 +315,7 @@ void Channel::handleModes( Client& c, std::string modes, std::string args ) {
 
 	if ( !isOps( c ) ) {
 		c.reply( mb << ":" << ircserv::getServername() << " 482 " << c.getNick()
-		            << " :You're not cahnnel operator\r\n" );
+		            << " :You're not channel operator\r\n" );
 		return;
 	}
 

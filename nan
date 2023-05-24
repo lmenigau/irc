@@ -1,0 +1,31 @@
+<< CAP LS
+<< PASS 1
+<< NICK odessein
+<< USER odessein odessein 1 :Orson DESSEIN
+>> CAP * LS :multi-prefix
+<< CAP REQ :multi-prefix
+>> odessein!ip6-localhost NICK odessein
+>> :ircserv.localhost 001 odessein :Welcome to the FT_IRC server odessein!odessein@ip6-localhost
+<< MODE odessein +i
+>> :ircserv.localhost 002 odessein Your host is FT_IRC running version 0.0.1dev
+>> :ircserv.localhost 003 odessein This server was created idk like now ?
+>> :ircserv.localhost 004 odessein FT_IRC 0.0.1dev ia i
+>> CAP * LS :multi-prefix
+<< CAP END
+>> :ircserv.localhost 221 odessein +i
+>> CAP * LS :multi-prefix
+<< PING ircserv.localhost
+>> :ircserv.localhost PONG ircserv.localhost
+--> lag pong
+<< NICK b
+>> :odessein!~odessein@ip6-localhost NICK b
+<< JOIN #n
+>> :ircserv.localhost 331 b #n :No topic is set
+>> :ircserv.localhost 353 b = #n :@a 
+>> :ircserv.localhost 366 b #n :End of NAMES list
+<< MODE #n
+>> :ircserv.localhost 324 b #n 
+--> chanquery mode
+<< WHO #n
+>> :a MODE #n +o b
+<< PRIVMSG #n :test
