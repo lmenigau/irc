@@ -57,6 +57,7 @@ class Client {
 	void setIsOper( bool );
 	void setInvisible( void );
 	void setBot( void );
+	void setDestroy( void );
 
 	// state accessors ?
 
@@ -69,6 +70,7 @@ class Client {
 	bool isRegistered( void );
 	bool hasBeenWelcomed( void );
 	bool isOper( void );
+	bool toDestroy( void );
 
    private:
 	int         _fd;
@@ -87,6 +89,7 @@ class Client {
 	bool        _isBot;
 	bool        _isOper;
 	bool        _invisible;
+	bool		_destroy;
 };
 
 // std::map<std::string, Client> users;

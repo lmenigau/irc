@@ -24,6 +24,7 @@ Client::Client() {
 	_server_op        = false;
 	_isBot            = false;
 	_invisible        = false;
+	_destroy          = false;
 	buf.reserve( 512 );
 }
 
@@ -46,6 +47,7 @@ Client::Client( Client const& a ) {
 	_server_op        = a._server_op;
 	_isBot            = a._isBot;
 	_invisible        = a._invisible;
+	_destroy          = a._destroy;
 }
 
 void Client::reply( std::string const& str ) {
@@ -83,6 +85,7 @@ Client::Client( int fd ) {
 	_server_op        = false;
 	_isBot            = false;
 	_invisible        = false;
+	_destroy          = false;
 	buf.reserve( 512 );
 }
 
@@ -104,11 +107,15 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 	_server_op        = false;
 	_isBot            = false;
 	_invisible        = false;
+	_destroy          = false;
 	buf.reserve( 512 );
 }
 
 Client::~Client( void ) {
+	if (!_destroy)
+		return ;
 	epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, _fd, NULL );
+	ircserv::removeClient(*this);
 	/*
 	std::map<std::string, Channel> channel_map = ircserv::getChannels();
 
@@ -134,9 +141,9 @@ Client::~Client( void ) {
 
 	//! PLEASE DO NOT CHANGE ANYTHING HERE IF WE WANT THIS TO WORK AS NOW !
 	//? making the destructor close the fd or removing it from vector will reset
-	// the connection and lose the client !
+	//? the connection and lose the client !
 	// * we will close the fd at the moment needed in the main loop or in
-	// commands
+	// * commands
 	// * merci de comprendre la situation ! :)
 
 	// logger("DEBUG", "destructor client called");
@@ -316,4 +323,12 @@ void Client::setIsOper( bool b ) {
 
 bool Client::isOper( void ) {
 	return _isOper;
+}
+
+void Client::setDestroy( void ) {
+	_destroy = true;
+}
+
+bool Client::toDestroy( void ) {
+	return _destroy;
 }
