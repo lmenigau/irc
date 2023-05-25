@@ -285,14 +285,13 @@ void Channel::m_limit( Client& c, std::string args, t_ope operation ) {
 void Channel::reply_ban_list( Client& c ) {
 	MessageBuilder mb;
 
-	mb << ":ircserv.locahost 367 " << c.getNick() << " " << _name;
 	for ( t_vector_client_ptr::iterator it = _banned.begin();
-	      it != _banned.end(); it++ )
-		mb << ( *it )->getNick() << "!" << ( *it )->getUser() << "@"
-		   << ( *it )->getHostname() << " ";
-	//	mb << ":Banned users\r\n";
-	mb << "\r\n";
+	      it != _banned.end(); it++ ) {
+	mb << ":ircserv.locahost 367 " << c.getNick() << " " << _name;
+		mb << " " << ( *it )->getNick() << "!" << "*@*";
+	mb << " " << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << "\r\n";
 	sendAll( mb );
+	}
 	(void) c;
 	sendAll(":irvserv.localhost 368 :End of channel ban list\r\n");
 }
@@ -319,12 +318,11 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 		t_vector_client_ptr::iterator it =
 		    std::find( _banned.begin(), _banned.end(), client );
 		if ( operation == ADD ) {
+			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
+			            << c.getHostname() << " MODE " << _name << " +b " 
+						<< target + "!*@*\r\n");
 			if ( it == _banned.end() )
 				_banned.push_back( client );
-			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
-			            << c.getHostname() << " MODE " << _name << target
-			            << " :+b\r\n" );
-
 			reply_ban_list( c );
 			addModes("b");
 	} else {
@@ -337,12 +335,11 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 			_banned.erase( it );
 			removeModes("b");
 			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
-			            << c.getHostname() << " MODE " << _name << target
-			            << " :-b\r\n" );
+			            << c.getHostname() << " MODE " << _name << " +b " 
+						<< target + "!*@*\r\n");
 			reply_ban_list( c );
 		}
 	}
-	std::cout << "OUT" << std::endl;
 }
 
 void Channel::reply_334( Client& c )
@@ -382,7 +379,9 @@ void Channel::handleModes( Client& c, std::string modes, std::string args ) {
 		return;
 	}
 
-	if ( modes[0] == '+' )
+	if (modes.size() >= 2 && modes[0] == '+' && modes[1] == 'b' && args.empty())
+		operation = NONE;
+	else if ( modes[0] == '+' )
 		operation = ADD;
 	else if ( modes[0] == '-' )
 		operation = SUB;

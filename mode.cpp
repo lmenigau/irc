@@ -186,11 +186,13 @@ void channel_mode( Client&                  c,
 			// function depending on it (void) channel; c.reply( format(
 			// ":ircserv.localhost 324 %s %s +o %s\r\n",
 			//  c.getNick().c_str(), target.c_str() , args->back().c_str()));
-			channel->handleModes( c, *it, args->back() );
+			if (args->size() <= 1)
+				channel->handleModes( c, *it, "" );
+			else
+				channel->handleModes( c, *it, args->back() );
 			logger( "DEBUG",
 			        mb << "channel " << target << " has now mode " << ( *it ) );
 		}
-		i++;
 	}
 }
 
