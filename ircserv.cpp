@@ -100,6 +100,7 @@ void ircserv::process_events( epoll_event& ev ) {
 				if ( args->front() == "QUIT" )
 					a = true;
 				handler( args, *c );
+				delete args;
 				if ( !a )
 					c->buf.erase( 0, pos + 1 );
 				else
