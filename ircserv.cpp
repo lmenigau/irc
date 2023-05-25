@@ -72,6 +72,11 @@ void ircserv::process_events( epoll_event& ev ) {
 		} else {
 			c   = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
+			if ( c->toDestroy() ) {
+				logger( "INFO", mb << "deleted: " << c->getFd() );
+				removeClient(*c);
+				return;
+			}
 			if ( len < 0 ) {
 				logger( "WARNING", strerror( errno ) );
 				logger( "INFO", mb << "deleted: " << c->getFd() );
@@ -80,6 +85,7 @@ void ircserv::process_events( epoll_event& ev ) {
 			if ( len == 0 ) {
 				logger( "INFO", mb << "deleted: " << c->getFd() );
 				c->buf.clear();
+				c->setDestroy();
 				ircserv::removeClient( *c );
 				return;
 			}
