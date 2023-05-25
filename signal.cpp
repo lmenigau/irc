@@ -2,11 +2,11 @@
 #include "ircserv.hpp"
 #include "utils.hpp"
 
-void interupt_handler( int signal ) {
-	if ( signal != SIGINT )
-		return;
-
-	logger( "WARNING", "INTERRUPT DETECTED" );
-	ircserv::stop();
-	exit( 0 );
+std::sig_atomic_t ircserv::is_signaled = false;
+void              interupt_handler( int signal ) {
+    if ( signal != SIGINT )
+        return;
+    ircserv::is_signaled = true;
+    logger( "WARNING", "INTERRUPT DETECTED" );
+    exit( 0 );
 }

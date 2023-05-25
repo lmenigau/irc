@@ -9,11 +9,12 @@
 #include "utils.hpp"
 
 Channel::~Channel() {}
-Channel::Channel( void ) {}
+Channel::Channel( void ) : _limit( 0 ) {}
 
-Channel::Channel( std::string name ) : _name( name ) {}
+Channel::Channel( std::string name ) : _name( name ), _limit( 0 ) {}
 
-Channel::Channel( Client& creator, const std::string& name ) : _name( name ) {
+Channel::Channel( Client& creator, const std::string& name )
+    : _name( name ), _limit( 0 ) {
 	_ops.push_back( &creator );
 	_clients.push_back( &creator );
 	_invite_only = false;
@@ -32,7 +33,8 @@ Channel::Channel( const Channel& a )
       _ops( a._ops ),
       _banned( a._banned ),
       _key( a._key ),
-      _invite_only( a._invite_only ) {}
+      _invite_only( a._invite_only ),
+      _limit( a._limit ) {}
 
 void Channel::removeClient( Client& rclient ) {
 	t_vector_client_ptr::iterator it = _clients.begin();
@@ -114,8 +116,8 @@ std::string Channel::removeModes( std::string modes ) {
 	return ( _modes );
 }
 
-void	Channel::sendAll(MessageBuilder &mb){
-	sendAll(mb.getBuff());
+void Channel::sendAll( MessageBuilder& mb ) {
+	sendAll( mb.getBuff() );
 	mb.clear();
 }
 
@@ -131,8 +133,8 @@ t_vector_client_ptr& Channel::getOps( void ) {
 	return ( _ops );
 }
 
-void Channel::sendAll( MessageBuilder &mb, Client& c) {
-	sendAll(mb.getBuff(), c);
+void Channel::sendAll( MessageBuilder& mb, Client& c ) {
+	sendAll( mb.getBuff(), c );
 	mb.clear();
 }
 

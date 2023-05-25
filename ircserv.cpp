@@ -13,7 +13,7 @@
 int            ircserv::_port   = 0;
 bool           ircserv::_failed = false;
 std::string    ircserv::_password;
-t_client_array ircserv::_clients;
+t_client_array ircserv::_clients( 1024 );
 std::string   ircserv::_servername = "ircserv.localhost";  //! pls do not change
 int           ircserv::_pollfd;
 int           ircserv::_tcp6_socket;
@@ -52,9 +52,9 @@ void ircserv::accept_client( epoll_event& ev ) {
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
-		ircserv::_clients.push_back( Client( fd, addr ) );
-		Client&     ptr   = ircserv::_clients.back();
-		epoll_event event = { EPOLLIN, { .ptr = &ptr } };
+		ircserv::_clients[fd] = Client( fd, addr );
+		Client&     ptr       = ircserv::_clients[fd];
+		epoll_event event     = { EPOLLIN, { .ptr = &ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 	} else
 		logger( "ERROR", "accept error" );
@@ -74,7 +74,6 @@ void ircserv::process_events( epoll_event& ev ) {
 			len = read( c->getFd(), buf, 512 );
 			if ( len < 0 ) {
 				logger( "WARNING", strerror( errno ) );
-				close( c->getFd() );
 				logger( "INFO", mb << "deleted: " << c->getFd() );
 				return;
 			}
@@ -82,7 +81,6 @@ void ircserv::process_events( epoll_event& ev ) {
 				logger( "INFO", mb << "deleted: " << c->getFd() );
 				c->buf.clear();
 				ircserv::removeClient( *c );
-				close( c->getFd() );
 				return;
 			}
 			c->buf.append( buf, len );
@@ -101,7 +99,7 @@ void ircserv::process_events( epoll_event& ev ) {
 				else
 					break;
 				//			logger( "DEBUG", "buf after mdr : %s",
-				//c->buf.c_str()
+				// c->buf.c_str()
 				//);
 			}
 		}
@@ -142,9 +140,8 @@ void ircserv::start( void ) {
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
 	// int b = 0;
-	_clients.reserve( 1024 );
 	signal( SIGINT, interupt_handler );
-	for ( ;; ) {
+	while ( !is_signaled ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
 		// logger( "DEBUG", "nev: %d", nev );
@@ -201,8 +198,8 @@ void ircserv::removeClient( Client& c ) {
 	t_client_array::iterator it = _clients.begin();
 	for ( ; it < _clients.end(); it++ ) {
 		if ( it->getFd() == c.getFd() ) {
+			epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL );
 			close( c.getFd() );
-			_clients.erase( it );
 			break;
 		}
 	}

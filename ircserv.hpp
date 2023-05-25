@@ -18,6 +18,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -44,9 +45,10 @@ class ircserv {
 	static void process_events( epoll_event& );
 
    public:
-	static void initialisation( char* pass, char* port );
-	static void start( void );
-	static void stop( void );
+	static std::sig_atomic_t is_signaled;
+	static void              initialisation( char* pass, char* port );
+	static void              start( void );
+	static void              stop( void );
 	//  static std::vector<Client>::iterator getClientFromVector(int fd);
 
 	static bool failed( void );
