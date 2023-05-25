@@ -270,10 +270,10 @@ void Channel::m_limit( Client& c, std::string args, t_ope operation ) {
 	MessageBuilder mb;
 
 	_limit = 0;
-	if ( operation == ADD && isValidPositiveNumber( args ) )
+	if ( operation == ADD && isValidPositiveNumber( args ) && !args.empty() )
 	{
 		_limit = std::atoi( args.c_str() );
-		sendAll( mb << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << "MODE" << _name << " +l " << _limit<< "\r\n");
+		sendAll( mb << ":"  << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name << " +l " << _limit << "\r\n");
 		addModes("l");
 	}
 	else
@@ -283,10 +283,10 @@ void Channel::m_limit( Client& c, std::string args, t_ope operation ) {
 	}
 	if (operation == SUB)
 	{
-		sendAll( mb << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << "MODE" << _name << " -l \r\n");
+		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name << " -l \r\n");
 		removeModes("l");
-}
 	}
+}
 
 void Channel::reply_ban_list( Client& c ) {
 	MessageBuilder mb;
@@ -447,7 +447,7 @@ bool Channel::isBanned( Client* c ) {
 }
 
 bool Channel::isFull( void ) {
-	if ( (int) _clients.size() > _limit && _limit > 0 )
+	if ( (int) _clients.size() >= _limit && _limit > 0 )
 		return ( true );
 	return ( false );
 }
