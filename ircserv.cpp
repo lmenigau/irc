@@ -13,7 +13,7 @@
 int            ircserv::_port   = 0;
 bool           ircserv::_failed = false;
 std::string    ircserv::_password;
-t_client_array ircserv::_clients( 1024 );
+t_client_array ircserv::_clients;
 std::string   ircserv::_servername = "ircserv.localhost";  //! pls do not change
 int           ircserv::_pollfd;
 int           ircserv::_tcp6_socket;
@@ -52,8 +52,8 @@ void ircserv::accept_client( epoll_event& ev ) {
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
-		ircserv::_clients[fd] = Client( fd, addr );
-		Client&     ptr       = ircserv::_clients[fd];
+		ircserv::_clients.push_back(Client( fd, addr ));
+		Client&     ptr       = _clients.back();
 		epoll_event event     = { EPOLLIN, { .ptr = &ptr } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 	} else
@@ -139,6 +139,7 @@ void ircserv::start( void ) {
 		return;
 	}
 	listen( _tcp6_socket, 256 );
+	_clients.reserve(1024);
 	// sockaddr_in6 peer_addr = {};
 	// socklen_t len = sizeof(peer_addr);
 	_pollfd           = epoll_create( 1 );
@@ -159,12 +160,16 @@ void ircserv::start( void ) {
 }
 
 void ircserv::stop( void ) {
+	MessageBuilder mb;
+
 	logger( "INFO", "safely ending ircserv !" );
 	close( _tcp6_socket );
 	close( _pollfd );
+	logger("DEBUG", mb << std::distance(_clients.begin(), _clients.end()));
 	forEach( _clients, close_client );
 	_clients.clear();
 	_channels.clear();
+	exit(0);
 }
 
 int ircserv::getPollfd( void ) {

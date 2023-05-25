@@ -33,6 +33,7 @@ class MessageBuilder{
 		MessageBuilder& operator<<(const MessageBuilder &);
 		MessageBuilder& operator<<(const int);
 		MessageBuilder& operator<<(const unsigned int);
+		MessageBuilder& operator<<(long);
 		operator std::string();
 };
 
