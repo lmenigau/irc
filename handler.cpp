@@ -8,7 +8,7 @@
 #include "messageBuilder.hpp"
 #include "utils.hpp"
 
-#define COMMAND_COUNT 16
+#define COMMAND_COUNT 17
 
 void capls( std::list<std::string>* args, Client& c ) {
 	(void) args;
@@ -87,10 +87,10 @@ void handler( std::list<std::string>* args, Client& c ) {
 	std::string commands[COMMAND_COUNT] = {
 	    "PASS",  "USER",   "NICK",   "JOIN",  "PRIVMSG", "CAPLS",
 	    "CAP",   "PING",   "MODE",   "WHOIS", "QUIT",    "PART",
-	    "TOPIC", "NOTICE", "INVITE", "OPER" };
+	    "TOPIC", "NOTICE", "INVITE", "OPER", "KICK" };
 	void ( *handlers[COMMAND_COUNT] )( std::list<std::string>*, Client& c ) = {
 	    &pass, &user,  &nick, &join, &privmsg, &capls,  &capls,  &pong,
-	    &mode, &whois, &quit, &part, &topic,   &notice, &invite, &oper };
+	    &mode, &whois, &quit, &part, &topic,   &notice, &invite, &oper, &kick };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
 		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
