@@ -170,7 +170,7 @@ void ircserv::stop( void ) {
 	forEach( _clients, close_client );
 	_clients.clear();
 	_channels.clear();
-	exit(0);
+	exit(130);
 }
 
 int ircserv::getPollfd( void ) {
