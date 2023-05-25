@@ -33,4 +33,6 @@ void part( std::list<std::string>* args, Client& c ) {
 		                     << " PART " << target << " :" << args->back()
 		                     << "\r\n" );
 	channel->removeClient( c );
+	if (channel->getClients().size() == 0)
+		ircserv::removeChannel(target);
 }
