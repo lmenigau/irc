@@ -50,6 +50,24 @@ void Channel::removeClient( Client& rclient ) {
 	                    << " not found in channel " << _name << " !" );
 }
 
+void Channel::removeClient( Client& rclient, std::string msg ) {
+	t_vector_client_ptr::iterator it = _clients.begin();
+	MessageBuilder                mb;
+
+	while ( it != _clients.end() ) {
+		if ( ( *it )->getNick() == rclient.getNick() ) {
+			_clients.erase( it );
+			sendAll( mb << ':' << rclient.getNick() << '!' << rclient.getUser()
+			            << '@' << rclient.getHostname() << " PART " << _name
+			            << " :" << msg <<"\r\n", rclient );
+			return;
+		}
+		it++;
+	}
+	logger( "ERROR", mb << "user " << rclient.getUser()
+	                    << " not found in channel " << _name << " !" );
+}
+
 void Channel::changeModes( int n_mode ) {
 	(void) n_mode;
 	(void) _modes;
@@ -274,8 +292,9 @@ void Channel::reply_ban_list( Client& c ) {
 		   << ( *it )->getHostname() << " ";
 	//	mb << ":Banned users\r\n";
 	mb << "\r\n";
-	c.reply( mb );
-	return ( c.reply( ":irvserv.localhost 368 :End of channel ban list\r\n" ) );
+	sendAll( mb );
+	(void) c;
+	sendAll(":irvserv.localhost 368 :End of channel ban list\r\n");
 }
 
 void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
@@ -302,20 +321,13 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 		if ( operation == ADD ) {
 			if ( it == _banned.end() )
 				_banned.push_back( client );
-			// client->reply( format( ":%s!%s@%s MODE %s %s :+b\r\n",
-			//                        c.getNick().c_str(), c.getUser().c_str(),
-			//                        c.getHostname().c_str(), _name.c_str(),
-			//                        target.c_str() ) );
-			// reply_ban_list( *client );
-
-			//? not sure those rpl are necessary tho
-			c.reply( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
+			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
 			            << c.getHostname() << " MODE " << _name << target
 			            << " :+b\r\n" );
 
 			reply_ban_list( c );
 			addModes("b");
-		} else {
+	} else {
 			if ( it == _banned.end() ) {
 				c.reply( mb << ":" << ircserv::getServername() << " 441 "
 				            << target << " " << _name
@@ -324,19 +336,13 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 			}
 			_banned.erase( it );
 			removeModes("b");
-			// client->reply( format( ":%s!%s@%s MODE %s: -b\r\n",
-			// 						c.getNick().c_str(), c.getUser().c_str(),
-			// 						c.getHostname().c_str(),
-			// 						_name.c_str() ) );
-
-			//?same here
-			c.reply( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
+			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
 			            << c.getHostname() << " MODE " << _name << target
 			            << " :-b\r\n" );
 			reply_ban_list( c );
-			// return ( reply_ban_list( c ) ); <- ???
 		}
 	}
+	std::cout << "OUT" << std::endl;
 }
 
 void Channel::reply_334( Client& c )

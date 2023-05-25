@@ -95,7 +95,7 @@ std::string getTarget( size_t& pos, std::string str ) {
 	std::size_t pos_comma;
 	std::string res;
 
-	if (pos == str.size())
+	if (pos >= str.size())
 		return ("");
 	pos_comma = str.find( ",", pos );
 	if ( pos_comma != std::string::npos ) {

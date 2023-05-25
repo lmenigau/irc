@@ -43,6 +43,7 @@ class Channel {
 	bool         isBanned( Client* c );
 	void         inviteUser( Client& );
 	void         removeClient( Client& );
+	void         removeClient( Client&, std::string );
 	void         changeModes( int );
 	bool         isOps( Client& c );
 	bool         topicRight(void);

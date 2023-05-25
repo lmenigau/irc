@@ -79,4 +79,9 @@ std::ostream& operator<<( std::ostream& os, MessageBuilder& m ) {
 	return ( os );
 }
 
+MessageBuilder& MessageBuilder::operator<<( long rhs ) {
+	buff += SSTR( rhs );
+	return ( *this );
+}
+
 MessageBuilder::operator std::string() { return ( buff ); }
