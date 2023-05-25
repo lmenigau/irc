@@ -26,10 +26,10 @@ void part( std::list<std::string>* args, Client& c ) {
 		return;
 	}
 	if ( args->size() == 1 )
-		channel->sendAll( mb << ":" << c.getNick() << "!~" << c.getHostname()
-		                     << " PART " << target << "\r\n" );
+		channel->sendAll( mb << ":" << c.getNick() << "!" << c.getUser() << '@' << c.getHostname()
+		                     << " PART " << target << " :left the channel\r\n" );
 	else
-		channel->sendAll( mb << ":" << c.getNick() << "!~" << c.getHostname()
+		channel->sendAll( mb << ":" << c.getNick() << "!" << c.getUser() << '@' << c.getHostname()
 		                     << " PART " << target << " :" << args->back()
 		                     << "\r\n" );
 	channel->removeClient( c );
