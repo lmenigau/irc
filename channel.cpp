@@ -187,6 +187,8 @@ void Channel::m_key( Client& c, std::string args, t_ope operation ) {
 	if ( operation == ADD )
 	{
 		_key = args;
+		if (args.empty())
+			return (reply_334(c));
 		addModes("k");
 		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
 			<< " +k " << args << "\r\n" );
@@ -204,6 +206,8 @@ void Channel::m_invite( Client& c, std::string args, t_ope operation ) {
 	MessageBuilder mb;
 	if ( operation == ADD )
 	{
+		if (_invite_only)
+			return (reply_334(c));
 		addModes("i");
 		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
 			<< " +i " << "\r\n" );
@@ -211,6 +215,8 @@ void Channel::m_invite( Client& c, std::string args, t_ope operation ) {
 	}
 	else
 	{
+		if (!_invite_only)
+			return (reply_334(c));
 		removeModes("i");
 		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
 			<< " -i " << "\r\n" );
@@ -254,7 +260,7 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 			}
 			_ops.erase( it );
 			removeModes("o");
-			this->sendAll( mb << ":" << c.getNick() << " MODE " << _name
+			this->sendAll( mb << ":" << c.getNick() << "~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
 			                  << " -o " << target << "\r\n" );
 		}
 	}
@@ -346,9 +352,8 @@ void Channel::reply_334( Client& c )
 {
 	MessageBuilder mb;
 
-	if (!_modes.empty())
-		c.reply( mb << ircserv::getServername() << " 324 " << c.getNick() << " "
-			<< _name << " +" << _modes <<  "\r\n" );
+	c.reply( mb << ":" << ircserv::getServername() << " 324 " << c.getNick() << " "
+		<< _name << " +" << _modes <<  "\r\n" );
 }
 
 void Channel::m_topic( Client& c, std::string args, t_ope operation ) {
@@ -356,12 +361,16 @@ void Channel::m_topic( Client& c, std::string args, t_ope operation ) {
 
 	if ( operation == ADD )
 	{
+		if (_topic_op)
+			return (reply_334(c));
 		_topic_op = true;
 		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
 			<< " +t " << "\r\n" );
 	}
 	else
 	{
+		if (!_topic_op)
+			return (reply_334(c));
 		_topic_op = false;
 		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
 			<< " -t " << "\r\n" );
