@@ -352,8 +352,14 @@ void Channel::reply_334( Client& c )
 {
 	MessageBuilder mb;
 
-	c.reply( mb << ":" << ircserv::getServername() << " 324 " << c.getNick() << " "
-		<< _name << " +" << _modes <<  "\r\n" );
+	mb << ":" << ircserv::getServername() << " 324 " << c.getNick() << " "
+		<< _name << " +" << _modes;
+	if (!getKey().empty())
+		mb << " " << getKey();
+	if (_limit)
+		mb << " " << _limit;
+	mb << "\r\n";
+	c.reply(mb);
 }
 
 void Channel::m_topic( Client& c, std::string args, t_ope operation ) {

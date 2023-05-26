@@ -222,10 +222,7 @@ void mode( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
 	if ( args->size() == 1 )
-		return ( c.reply( mb << ':' << ircserv::getServername() << " 324 "
-		                     << c.getNick() << " " << target << " "
-		                     << ircserv::getChannels().at( target ).getModes()
-		                     << "\r\n" ) );
+		return (ircserv::getChannels().at( target ).reply_334(c));
 	args->pop_front();
 
 	fill_from_string( args->front(), modes );
