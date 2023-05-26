@@ -30,7 +30,7 @@ static void reply_topic( t_map_channel::iterator it, Client& c ) {
 		            << "\r\n" );
 	else
 		c.reply( mb << ":" << ircserv::getServername() << " 331 " << c.getNick()
-		            << " " << it->first << " :No topic is set\r\n" );  // 331
+		            << " " << it->first << " :No topic is set\r\n" );
 }
 
 void join( std::list<std::string>* args, Client& c ) {
@@ -43,7 +43,6 @@ void join( std::list<std::string>* args, Client& c ) {
 		return;
 	}
 	logger( "INFO", mb << c.getNick() << " joined channel " << args->front() );
-
 	it = channels.find( args->front() );
 	if ( it == channels.end() ) {
 		ircserv::addChannel( args->front(), c );
@@ -81,5 +80,4 @@ void join( std::list<std::string>* args, Client& c ) {
 	reply_to_join( args->front(), c, it );
 	c.reply( mb << ":" << ircserv::getServername() << " 366 " << c.getNick()
 	            << " " << args->front() << " :End of NAMES list\r\n" );  // 366
-	//	c.reply( format( ":ircserv.localhost 353 : :\r\n" ) );
 }

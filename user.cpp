@@ -6,9 +6,8 @@
 #include "ircserv.hpp"
 #include "messageBuilder.hpp"
 #include "utils.hpp"
-// Function Parser
 
-std::string get_realname( std::list<std::string>* args ) {
+static std::string get_realname( std::list<std::string>* args ) {
 	std::string res;
 	size_t      pos;
 

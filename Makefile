@@ -2,14 +2,18 @@ $(if $(filter re as, $(MAKECMDGOALS)),\
 	$(shell $(RM) arte/*.o ft std))
 CXX=clang++
 CXXFLAGS=-std=c++98 -Wall -Werror -Wextra -g3
-SRC = channel.cpp\
+SRC =   ban_mode.cpp \
+		channel.cpp\
 	  	client.cpp\
 	  	handler.cpp\
 		ircserv.cpp\
 		invite.cpp\
+		invite_mode.cpp\
 		join.cpp\
+		key_mode.cpp\
 		kick.cpp \
 		leave.cpp\
+		limit_mode.cpp\
 		logger.cpp\
 		main.cpp\
 		messageBuilder.cpp\
@@ -17,6 +21,7 @@ SRC = channel.cpp\
 		notice.cpp \
 		nick.cpp \
 		oper.cpp \
+		operator_mode.cpp\
 		ostream.cpp\
 		parsing.cpp\
 		pass.cpp\
@@ -24,6 +29,7 @@ SRC = channel.cpp\
 		quit.cpp \
 		signal.cpp \
 		topic.cpp \
+		topic_mode.cpp\
 		user.cpp \
 		utils.cpp \
 		whois.cpp

@@ -74,19 +74,6 @@ void Channel::changeModes( int n_mode ) {
 	return;
 }
 
-void Channel::inviteUser( Client& c ) {
-	_invited.push_back( &c );
-}
-
-bool Channel::isOps( Client& c ) {
-	for ( t_vector_client_ptr::iterator it = _ops.begin(); it != _ops.end();
-	      it++ ) {
-		if ( c.getFd() == ( *it )->getFd() )
-			return ( true );
-	}
-	return ( false );
-}
-
 t_vector_client_ptr& Channel::getClients( void ) {
 	return _clients;
 }
@@ -97,20 +84,6 @@ void Channel::setModes( std::string modes ) {
 
 std::string Channel::getModes( void ) {
 	return _modes;
-}
-
-void Channel::setTopic( const std::string& topic ) {
-	_topic = topic;
-}
-
-bool Channel::hasTopic( void ) {
-	if ( !_topic.empty() )
-		return ( true );
-	return ( false );
-}
-
-std::string Channel::getTopic( void ) {
-	return _topic;
 }
 
 std::string Channel::addModes( std::string modes ) {
@@ -151,10 +124,6 @@ void Channel::sendAll( std::string msg ) {
 	}
 }
 
-t_vector_client_ptr& Channel::getOps( void ) {
-	return ( _ops );
-}
-
 void Channel::sendAll( MessageBuilder& mb, Client& c ) {
 	sendAll( mb.getBuff(), c );
 	mb.clear();
@@ -180,174 +149,6 @@ bool Channel::findClients( const std::string& nick ) {
 	return ( false );
 }
 
-void Channel::m_key( Client& c, std::string args, t_ope operation ) {
-	(void) c;
-	MessageBuilder mb;
-
-	if ( operation == ADD )
-	{
-		_key = args;
-		if (args.empty())
-			return (reply_334(c));
-		addModes("k");
-		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			<< " +k " << args << "\r\n" );
-	}
-	else
-	{
-		removeModes("k");
-		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			<< " -k " << "\r\n" );
-		_key = "";
-	}
-}
-
-void Channel::m_invite( Client& c, std::string args, t_ope operation ) {
-	MessageBuilder mb;
-	if ( operation == ADD )
-	{
-		if (_invite_only)
-			return (reply_334(c));
-		addModes("i");
-		this->sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			<< " +i " << "\r\n" );
-		_invite_only = true;
-	}
-	else
-	{
-		if (!_invite_only)
-			return (reply_334(c));
-		removeModes("i");
-		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			<< " -i " << "\r\n" );
-		_invite_only = false;
-	}
-	(void) args;
-}
-
-void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
-	std::string    target;
-	MessageBuilder mb;
-	Client*        client;
-	size_t         i = 0;
-
-	while (i != args.size())
-	{
-		target = getTarget( i, args );
-		if ( target.empty() )
-			continue;
-		client = find_client( target );
-		if ( !client ) {
-			c.reply( mb << ":" << ircserv::getServername() << " 441 "
-			            << c.getNick() << " " << target
-			            << " :They aren't on that channel\r\n" );
-			continue;
-		}
-		t_vector_client_ptr::iterator it =
-		    std::find( _ops.begin(), _ops.end(), client );
-		if ( operation == ADD ) {
-			this->sendAll( mb << ":" << c.getNick() << "~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			                  << " +o " << target << "\r\n" );
-			if ( it == _ops.end() )
-				_ops.push_back( client );
-			addModes("o");
-		} else {
-			if ( it == _ops.end() ) {
-				c.reply( mb << ":" << ircserv::getServername() << " 441 "
-				            << target << " " << _name
-				            << " :They aren't not op on that channel\r\n" );
-				continue;
-			}
-			_ops.erase( it );
-			removeModes("o");
-			this->sendAll( mb << ":" << c.getNick() << "~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			                  << " -o " << target << "\r\n" );
-		}
-	}
-}
-
-void Channel::m_limit( Client& c, std::string args, t_ope operation ) {
-	MessageBuilder mb;
-
-	_limit = 0;
-	if ( operation == ADD && isValidPositiveNumber( args ) && !args.empty() )
-	{
-		_limit = std::atoi( args.c_str() );
-		sendAll( mb << ":"  << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name << " +l " << _limit << "\r\n");
-		addModes("l");
-	}
-	else
-	{
-		_limit = 0;
-		reply_334(c);
-	}
-	if (operation == SUB)
-	{
-		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name << " -l \r\n");
-		removeModes("l");
-	}
-}
-
-void Channel::reply_ban_list( Client& c ) {
-	MessageBuilder mb;
-
-	for ( t_vector_client_ptr::iterator it = _banned.begin();
-	      it != _banned.end(); it++ ) {
-	mb << ":ircserv.locahost 367 " << c.getNick() << " " << _name;
-		mb << " " << ( *it )->getNick() << "!" << "*@*";
-	mb << " " << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << "\r\n";
-	sendAll( mb );
-	}
-	(void) c;
-	sendAll(":irvserv.localhost 368 :End of channel ban list\r\n");
-}
-
-void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
-	if ( operation == NONE )
-		return ( reply_ban_list( c ) );
-	std::string    target;
-	Client*        client;
-	MessageBuilder mb;
-	size_t         i = 0;
-
-	while (i != args.size())
-	{
-		target = getTarget( i, args );
-		if ( target.empty() )
-			continue;
-		client = find_client( target );
-		if ( !findClients( target ) ) {
-			c.reply( mb << ":" << ircserv::getServername() << " 441 " << target
-			            << " " << _name << " :is not on that channel\r\n" );
-			continue;
-		}
-		t_vector_client_ptr::iterator it =
-		    std::find( _banned.begin(), _banned.end(), client );
-		if ( operation == ADD ) {
-			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
-			            << c.getHostname() << " MODE " << _name << " +b " 
-						<< target + "!*@*\r\n");
-			if ( it == _banned.end() )
-				_banned.push_back( client );
-			reply_ban_list( c );
-			addModes("b");
-	} else {
-			if ( it == _banned.end() ) {
-				c.reply( mb << ":" << ircserv::getServername() << " 441 "
-				            << target << " " << _name
-				            << " :They aren't not banned on that channel\r\n" );
-				continue;
-			}
-			_banned.erase( it );
-			removeModes("b");
-			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
-			            << c.getHostname() << " MODE " << _name << " +b " 
-						<< target + "!*@*\r\n");
-			reply_ban_list( c );
-		}
-	}
-}
-
 void Channel::reply_334( Client& c )
 {
 	MessageBuilder mb;
@@ -360,28 +161,6 @@ void Channel::reply_334( Client& c )
 		mb << " " << _limit;
 	mb << "\r\n";
 	c.reply(mb);
-}
-
-void Channel::m_topic( Client& c, std::string args, t_ope operation ) {
-	MessageBuilder mb;
-
-	if ( operation == ADD )
-	{
-		if (_topic_op)
-			return (reply_334(c));
-		_topic_op = true;
-		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			<< " +t " << "\r\n" );
-	}
-	else
-	{
-		if (!_topic_op)
-			return (reply_334(c));
-		_topic_op = false;
-		sendAll( mb << ":" << c.getNick() << "!~" << c.getUser() << "@" << c.getHostname() << " MODE " << _name
-			<< " -t " << "\r\n" );
-	}
-	(void) args;
 }
 
 void Channel::handleModes( Client& c, std::string modes, std::string args ) {
@@ -430,35 +209,4 @@ void Channel::handleModes( Client& c, std::string modes, std::string args ) {
 				break;
 		}
 	}
-}
-
-bool Channel::getInviteMode( void ) {
-	return _invite_only;
-}
-
-std::string& Channel::getKey( void ) {
-	return _key;
-}
-
-bool Channel::isInvited( Client* c ) {
-	if ( std::find( _invited.begin(), _invited.end(), c ) != _invited.end() )
-		return ( true );
-	return ( false );
-}
-
-bool Channel::isBanned( Client* c ) {
-	if ( std::find( _banned.begin(), _banned.end(), c ) != _banned.end() )
-		return ( true );
-	return ( false );
-}
-
-bool Channel::isFull( void ) {
-	if ( (int) _clients.size() >= _limit && _limit > 0 )
-		return ( true );
-	return ( false );
-}
-
-bool         Channel::topicRight(void)
-{
-	return (_topic_op);
 }

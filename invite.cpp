@@ -24,7 +24,6 @@ void invite( std::list<std::string>* args, Client& c ) {
 		return ( c.reply( mb << ":" << ircserv::getServername() << " 442 "
 		                     << args->back()
 		                     << ":You're not on that channel\r\n" ) );
-	// Priviliges part : depending on modes, not done for the moment
 	while ( args->size() != 1 ) {
 		Client* client_target = find_client( args->front() );
 		if ( !client_target )
@@ -37,7 +36,6 @@ void invite( std::list<std::string>* args, Client& c ) {
 		else {
 			c.reply( mb << ":" << ircserv::getServername() << " 341 "
 			            << c.getNick() << args->front() << args->back() );
-
 			client_target->reply( mb << ":" << c.getNick() << "!~"
 			                         << c.getHostname() << " INVITE "
 			                         << args->front() << " " << args->back()
