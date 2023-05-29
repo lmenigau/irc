@@ -113,11 +113,11 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 
 Client::~Client( void ) {
 	MessageBuilder mb;
-	if (!_destroy)
-		return ;
-	logger("DEBUG", mb << "client " << _fd << " destroyed");
+	if ( !_destroy )
+		return;
+	logger( "DEBUG", mb << "client " << _fd << " destroyed" );
 	epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, _fd, NULL );
-	//ircserv::removeClient(*this);
+	// ircserv::removeClient(*this);
 	/*
 	std::map<std::string, Channel> channel_map = ircserv::getChannels();
 
@@ -245,12 +245,15 @@ void Client::setHostname( sockaddr_in6& addr ) {
 	char str_addr[256];
 	char hostname[256];
 
-	_hostname = "";
+	_hostname = "localhost";
 	if ( !inet_ntop( AF_INET6, &addr.sin6_addr, str_addr, 256 ) )
 		logger( "ERROR", strerror( errno ) );
-	if ( getnameinfo( (struct sockaddr*) &addr, sizeof( addr ), hostname, 256,
-	                  NULL, 0, 0 ) != 0 )
+	int ret = getnameinfo( (struct sockaddr*) &addr, sizeof( addr ), hostname,
+	                       256, NULL, 0, 0 );
+	if ( ret != 0 ) {
 		logger( "ERROR", strerror( errno ) );
+		return;
+	}
 	_hostname = hostname;
 }
 

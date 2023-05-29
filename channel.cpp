@@ -9,11 +9,13 @@
 #include "utils.hpp"
 
 Channel::~Channel() {}
-Channel::Channel( void ) : _limit( 0 ) {}
+Channel::Channel( void ) : _topic_op( false ), _limit( 0 ) {}
 
-Channel::Channel( std::string name ) : _name( name ), _modes(""), _topic_op(false), _limit(0) {}
+Channel::Channel( std::string name )
+    : _name( name ), _modes( "" ), _topic_op( false ), _limit( 0 ) {}
 
-Channel::Channel( Client& creator, const std::string& name ) : _name( name ), _modes(""), _limit(0){
+Channel::Channel( Client& creator, const std::string& name )
+    : _name( name ), _modes( "" ), _topic_op( false ), _limit( 0 ) {
 	_ops.push_back( &creator );
 	_clients.push_back( &creator );
 	_invite_only = false;
@@ -33,7 +35,7 @@ Channel::Channel( const Channel& a )
       _banned( a._banned ),
       _key( a._key ),
       _invite_only( a._invite_only ),
-      _topic_op(a._topic_op),
+      _topic_op( a._topic_op ),
       _limit( a._limit ) {}
 
 void Channel::removeClient( Client& rclient ) {
@@ -60,7 +62,8 @@ void Channel::removeClient( Client& rclient, std::string msg ) {
 			_clients.erase( it );
 			sendAll( mb << ':' << rclient.getNick() << '!' << rclient.getUser()
 			            << '@' << rclient.getHostname() << " PART " << _name
-			            << " :" << msg <<"\r\n", rclient );
+			            << " :" << msg << "\r\n",
+			         rclient );
 			return;
 		}
 		it++;
@@ -88,7 +91,7 @@ std::string Channel::getModes( void ) {
 }
 
 std::string Channel::addModes( std::string modes ) {
-	int	j;
+	int j;
 
 	j = 0;
 	for ( size_t i = 0; i < modes.size(); i++ ) {
@@ -120,7 +123,7 @@ void Channel::sendAll( std::string msg ) {
 	// std::cout << "clients : " << _clients <<
 	t_vector_client_ptr::iterator it = _clients.begin();
 	for ( ; it != _clients.end(); it++ ) {
-		if (!isBanned(*it))
+		if ( !isBanned( *it ) )
 			( *it )->reply( msg );
 	}
 }
@@ -150,18 +153,17 @@ bool Channel::findClients( const std::string& nick ) {
 	return ( false );
 }
 
-void Channel::reply_334( Client& c )
-{
+void Channel::reply_334( Client& c ) {
 	MessageBuilder mb;
 
 	mb << ":" << ircserv::getServername() << " 324 " << c.getNick() << " "
-		<< _name << " +" << _modes;
-	if (!getKey().empty())
+	   << _name << " +" << _modes;
+	if ( !getKey().empty() )
 		mb << " " << getKey();
-	if (_limit)
+	if ( _limit )
 		mb << " " << _limit;
 	mb << "\r\n";
-	c.reply(mb);
+	c.reply( mb );
 }
 
 void Channel::handleModes( Client& c, std::string modes, std::string args ) {
@@ -174,7 +176,8 @@ void Channel::handleModes( Client& c, std::string modes, std::string args ) {
 		return;
 	}
 
-	if (modes.size() >= 2 && modes[0] == '+' && modes[1] == 'b' && args.empty())
+	if ( modes.size() >= 2 && modes[0] == '+' && modes[1] == 'b' &&
+	     args.empty() )
 		operation = NONE;
 	else if ( modes[0] == '+' )
 		operation = ADD;

@@ -51,7 +51,7 @@ void nick( std::list<std::string>* args, Client& c ) {
 	} else {
 		buff = c.getNick();
 		c.setNick( args->front() );
-		c.reply( mb << ':' << buff << "!" << c.getUser() << "@"
+		c.reply( mb << ':' << buff << "!~" << c.getUser() << "@"
 		            << c.getHostname() << " NICK " << c.getNick() << "\r\n" );
 		c.setHasGivenNick( true );
 
