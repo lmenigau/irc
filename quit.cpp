@@ -15,10 +15,11 @@ void quit( std::list<std::string>* args, Client& c ) {
 	c.reply( mb << ':' << c.getNick() << "!" << c.getUser() << "@"
 	              << c.getHostname() << " QUIT :" << args->front() << "\r\n" );
 	c.reply( mb << "ERROR :" <<  " QUIT :" << args->front() << "\r\n" );
-	t_map_channel           channels = ircserv::getChannels();
-	t_map_channel::iterator it       = channels.begin();
-	for ( ; it != channels.end(); it++ ) {
-		it->second.removeClient( c, "left the server");
+	t_map_channel           *channels = &ircserv::getChannels();
+	t_map_channel::iterator it = channels->begin();
+		for ( ;it != channels->end(); it++) {
+			(*it).second.removeClient( c, "left the server");
 	}
-	c.setDestroy();
+		ircserv::removeClient(c);
+	//ircserv::removeClient(c);
 }
