@@ -42,37 +42,41 @@ void pong( std::list<std::string>* args, Client& c ) {
 static bool	check_cmd(std::string cmd)
 {
 	if (cmd == "PASS")
-			return (true);
+		return (true);
 	else if (cmd == "USER")
-			return (true);
+		return (true);
 	else if (cmd == "NICK")
-			return (true);
+		return (true);
 	else if (cmd == "JOIN")
-			return (true);
+		return (true);
 	else if (cmd == "PRIVMSG")
-			return (true);
+		return (true);
 	else if (cmd == "CAPLS")
-			return (true);
+		return (true);
 	else if (cmd == "CAP")
-			return (true);
+		return (true);
 	else if (cmd == "PING")
-			return (true);
+		return (true);
 	else if (cmd == "MODE")
-			return (true);
+		return (true);
 	else if (cmd == "QUIT")
-			return (true);
+		return (true);
 	else if (cmd == "PART")
-			return (true);
+		return (true);
 	else if (cmd == "TOPIC")
-			return (true);
+		return (true);
 	else if (cmd == "NOTICE")
-			return (true);
-	else if (cmd ==  "INVITE")
-			return (true);
+		return (true);
+	else if (cmd == "INVITE")
+		return (true);
 	else if (cmd == "OPER")
-			return (true);
+		return (true);
 	else if (cmd == "KICK")
-			return (true);
+		return (true);
+	else if (cmd == "WHO")
+		return (true);
+	else if (cmd == "WHOIS")
+		return (true);
 	else
 			return (false);
 }
