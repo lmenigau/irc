@@ -11,7 +11,7 @@
 Channel::~Channel() {}
 Channel::Channel( void ) : _limit( 0 ) {}
 
-Channel::Channel( std::string name ) : _name( name ), _modes(""), _limit(0) {}
+Channel::Channel( std::string name ) : _name( name ), _modes(""), _topic_op(false), _limit(0) {}
 
 Channel::Channel( Client& creator, const std::string& name ) : _name( name ), _modes(""), _limit(0){
 	_ops.push_back( &creator );
@@ -33,6 +33,7 @@ Channel::Channel( const Channel& a )
       _banned( a._banned ),
       _key( a._key ),
       _invite_only( a._invite_only ),
+      _topic_op(a._topic_op),
       _limit( a._limit ) {}
 
 void Channel::removeClient( Client& rclient ) {

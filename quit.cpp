@@ -14,6 +14,7 @@ void quit( std::list<std::string>* args, Client& c ) {
 		return;
 	c.reply( mb << ':' << c.getNick() << "!" << c.getUser() << "@"
 	              << c.getHostname() << " QUIT :" << args->front() << "\r\n" );
+	c.reply( mb << "ERROR :" <<  " QUIT :" << args->front() << "\r\n" );
 	t_map_channel           channels = ircserv::getChannels();
 	t_map_channel::iterator it       = channels.begin();
 	for ( ; it != channels.end(); it++ ) {
