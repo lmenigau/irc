@@ -179,7 +179,6 @@ void channel_mode( Client&                  c,
 			return;
 		}
 		Channel* channel = find_channel( target );
-		std::cout << "adr " << &channel->getClients() << " adr2 " << &(ircserv::getChannels().at( target )).getClients() << std::endl;
 		        for ( std::vector<std::string>::iterator it =
 		                       modes.begin();
 		                   it != modes.end(); it++ ) {
