@@ -39,6 +39,44 @@ void pong( std::list<std::string>* args, Client& c ) {
  *
  */
 
+static bool	check_cmd(std::string cmd)
+{
+	if (cmd == "PASS")
+			return (true);
+	else if (cmd == "USER")
+			return (true);
+	else if (cmd == "NICK")
+			return (true);
+	else if (cmd == "JOIN")
+			return (true);
+	else if (cmd == "PRIVMSG")
+			return (true);
+	else if (cmd == "CAPLS")
+			return (true);
+	else if (cmd == "CAP")
+			return (true);
+	else if (cmd == "PING")
+			return (true);
+	else if (cmd == "MODE")
+			return (true);
+	else if (cmd == "QUIT")
+			return (true);
+	else if (cmd == "PART")
+			return (true);
+	else if (cmd == "TOPIC")
+			return (true);
+	else if (cmd == "NOTICE")
+			return (true);
+	else if (cmd ==  "INVITE")
+			return (true);
+	else if (cmd == "OPER")
+			return (true);
+	else if (cmd == "KICK")
+			return (true);
+	else
+			return (false);
+}
+
 void not_registered( std::list<std::string>* args, Client& c ) {
 	size_t         i = 0;
 	MessageBuilder mb;
@@ -75,11 +113,12 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 void handler( std::list<std::string>* args, Client& c ) {
 	MessageBuilder mb;
 
-	if ( args->size() == 1 ) {
-		c.reply( mb << ":" << ircserv::getServername() << " 461 "
-		            << args->front() << " :Not enough parameters\r\n" );
-		return;
-	}
+	if (args->size() >= 1 && !check_cmd(args->front()))
+		return (c.reply( mb << ":" << ircserv::getServername()
+					<< " 421 " << args->front() << " :Unknown command\r\n"));
+	else if ( args->size() == 1 ) 
+		return (c.reply( mb << ":" << ircserv::getServername() << " 461 "
+		            << args->front() << " :Not enough parameters\r\n" ));
 	if ( !c.isRegistered() ) {
 		not_registered( args, c );
 		return;
@@ -92,7 +131,6 @@ void handler( std::list<std::string>* args, Client& c ) {
 	    &pass, &user,  &nick, &join, &privmsg, &capls,  &capls,  &pong,
 	    &mode, &quit, &part, &topic,  &notice, &invite, &oper, &kick };
 	for ( size_t i = 0; i < COMMAND_COUNT; i++ ) {
-		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
 			remove_backslash_r( args->back() );
