@@ -179,14 +179,16 @@ void channel_mode( Client&                  c,
 			return;
 		}
 		Channel* channel = find_channel( target );
-		for ( std::vector<std::string>::iterator it = modes.begin();
-		      it != modes.end(); it++ ) {
+		std::cout << "adr " << &channel->getClients() << " adr2 " << &(ircserv::getChannels().at( target )).getClients() << std::endl;
+		        for ( std::vector<std::string>::iterator it =
+		                       modes.begin();
+		                   it != modes.end(); it++ ) {
 			// Maybe a method of channel like handle_mode, taking the string of
 			// mode + args->back() which could parse string of mode and call
 			// function depending on it (void) channel; c.reply( format(
 			// ":ircserv.localhost 324 %s %s +o %s\r\n",
 			//  c.getNick().c_str(), target.c_str() , args->back().c_str()));
-			if (args->size() <= 1)
+			if ( args->size() <= 1 )
 				channel->handleModes( c, *it, "" );
 			else
 				channel->handleModes( c, *it, args->back() );
@@ -222,7 +224,7 @@ void mode( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
 	if ( args->size() == 1 )
-		return (ircserv::getChannels().at( target ).reply_334(c));
+		return ( ircserv::getChannels().at( target ).reply_334( c ) );
 	args->pop_front();
 
 	fill_from_string( args->front(), modes );

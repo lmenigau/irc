@@ -33,13 +33,13 @@ void Channel::m_operator( Client& c, std::string args, t_ope operation ) {
 		target = getTarget( i, args );
 		if ( target.empty() )
 			continue;
-		client = find_client( target );
-		if ( !client ) {
+		if (!findClients( target )) {
 			c.reply( mb << ":" << ircserv::getServername() << " 441 "
 			            << c.getNick() << " " << target
 			            << " :They aren't on that channel\r\n" );
 			continue;
 		}
+		client = find_client( target );
 		t_vector_client_ptr::iterator it =
 		    std::find( _ops.begin(), _ops.end(), client );
 		if ( operation == ADD ) {

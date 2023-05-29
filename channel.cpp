@@ -56,17 +56,20 @@ void Channel::removeClient( Client& rclient, std::string msg ) {
 	MessageBuilder                mb;
 
 	while ( it != _clients.end() ) {
-		if ( ( *it )->getNick() == rclient.getNick() ) {
-			_clients.erase( it );
+		if ( ( *it )->getNick()
+			 == rclient.getNick() ) {
+			this->_clients.erase( it );
 			sendAll( mb << ':' << rclient.getNick() << '!' << rclient.getUser()
 			            << '@' << rclient.getHostname() << " PART " << _name
 			            << " :" << msg <<"\r\n", rclient );
-			return;
+		//	return;
 		}
-		it++;
+		if (it != _clients.end())
+			it++;
 	}
-	logger( "ERROR", mb << "user " << rclient.getUser()
-	                    << " not found in channel " << _name << " !" );
+	std::cout << "Size 1 " << _clients.size() << " " << this << std::endl;
+	//logger( "ERROR", mb << "user " << rclient.getUser()
+	 //                   << " not found in channel " << _name << " !" );
 }
 
 void Channel::changeModes( int n_mode ) {
@@ -142,10 +145,13 @@ void Channel::sendAll( std::string msg, Client& c ) {
 
 bool Channel::findClients( const std::string& nick ) {
 	t_vector_client_ptr::iterator it = this->_clients.begin();
-	// std::cout << "clients : " << _clients << "\n";
+	std::cout << "Size 2 " << _clients.size() << " "  << this << std::endl;
 	for ( ; it != this->_clients.end(); it++ ) {
 		if ( ( *it )->getNick() == nick )
+		{
+			std::cout << "how " << &(*it) << " " << (*it)->getNick() << std::endl;
 			return ( true );
+		}
 	}
 	return ( false );
 }
