@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <netdb.h>
 #include <sys/select.h>
+#include <fstream>
 
 class Bot {
 	private:
@@ -22,5 +23,8 @@ class Bot {
 	public:
 		static bool connectToServer(char **av);
 		static void	intro(void);
+		static void	loop(void);
 		static void end(void);
+		static void ban_user(std::string reply);
+		static bool handleReply(char str[4096]);
 };

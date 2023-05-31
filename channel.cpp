@@ -14,10 +14,14 @@ Channel::Channel( void ) : _limit( 0 ) {}
 Channel::Channel( std::string name ) : _name( name ), _modes(""), _topic_op(false), _limit(0) {}
 
 Channel::Channel( Client& creator, const std::string& name ) : _name( name ), _modes(""), _limit(0){
+	Client	*bot = find_client("bot_irc");
 	_ops.push_back( &creator );
 	_clients.push_back( &creator );
-	_ops.push_back(find_client("bot") );
-	_clients.push_back( find_client("bot"));
+	if (bot)
+	{
+		_ops.push_back(bot);
+		_clients.push_back(bot);
+	}
 	_invite_only = false;
 }
 

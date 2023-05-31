@@ -10,5 +10,6 @@ int main(int ac, char **av)
 	if (!Bot::connectToServer(av))
 		return (2);
 	Bot::intro();
+	Bot::loop();
 	Bot::end();
 }
