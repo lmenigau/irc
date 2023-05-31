@@ -117,7 +117,6 @@ Client::~Client( void ) {
 		return;
 	logger( "DEBUG", mb << "client " << _fd << " destroyed" );
 	epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, _fd, NULL );
-	// ircserv::removeClient(*this);
 	/*
 	std::map<std::string, Channel> channel_map = ircserv::getChannels();
 

@@ -50,6 +50,9 @@ void ircserv::accept_client( epoll_event& ev ) {
 	len = sizeof( addr );
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
+	std::cout << _clients.size() << std::endl;
+	if (_clients.size() > 1020)
+		return ;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
 		ircserv::_clients.push_back(Client( fd, addr ));
@@ -207,6 +210,7 @@ void ircserv::removeClient( Client& c ) {
 		if ( it->getFd() == c.getFd() ) {
 			epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL );
 			close( c.getFd() );
+			_clients.erase(it);
 			break;
 		}
 	}
