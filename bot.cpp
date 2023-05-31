@@ -131,11 +131,14 @@ static bool injury(std::string reply)
 	while (pos != std::string::npos)
 	{
 		size_t buff_pos = pos;
-		pos = msg.find(" ", buff_pos + 1);
+		pos = msg.find(" ", buff_pos);
 		if (pos == std::string::npos)
 			word = msg.substr(buff_pos, (msg.find("\r") - buff_pos));
 		else
-			word = msg.substr(buff_pos, pos);
+		{
+			pos += 1;
+			word = msg.substr(buff_pos, pos - buff_pos - 1);
+		}
 		if (check(word))
 			return (true);
 	}
