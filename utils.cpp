@@ -123,3 +123,16 @@ bool isValidPositiveNumber( std::string args ) {
 		return ( false );
 	return ( true );
 }
+
+bool check_num(char *port)
+{
+	int i = 0;
+
+	while (port[i])
+	{
+		if (port[i] < 48 || port[i] > 57)
+			return (false);
+		i++;
+	}
+	return (true);
+}

@@ -35,5 +35,6 @@ void forEach( std::vector<T>& vec, void ( *f )( T& ) ) {
 }
 std::string getTarget( size_t& pos, std::string str );
 bool        isValidPositiveNumber( std::string args );
+bool		check_num(char *port);
 
 #endif

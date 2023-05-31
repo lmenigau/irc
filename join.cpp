@@ -34,7 +34,7 @@ static void reply_topic( t_map_channel::iterator it, Client& c ) {
 }
 
 void join( std::list<std::string>* args, Client& c ) {
-	t_map_channel           channels = ircserv::getChannels();
+	t_map_channel           *channels = &ircserv::getChannels();
 	t_map_channel::iterator it;
 	MessageBuilder          mb;
 	size_t					i = 0;
@@ -49,10 +49,10 @@ void join( std::list<std::string>* args, Client& c ) {
 			return;
 		}
 		logger( "INFO", mb << c.getNick() << " joined channel " << target );
-		it = channels.find( target );
-		if ( it == channels.end() ) {
+		it = channels->find( target );
+		if ( it == channels->end() ) {
 			ircserv::addChannel( target, c );
-			it = ircserv::getChannels().find( target );
+			it = channels->find( target );
 		} else {
 			if ( !it->second.getKey().empty() &&
 			     args->back() != it->second.getKey() )
@@ -66,7 +66,7 @@ void join( std::list<std::string>* args, Client& c ) {
 				                  << c.getNick() << " " << target
 				                  << " :Cannot join channel (+b)\r\n" ) );  // 474
 			else if ( it->second.getInviteMode() &&
-			          !ircserv::getChannels().at( target ).isInvited( &c ) )
+			          !channels->at( target ).isInvited( &c ) )
 				return ( c.reply( mb
 				                  << ":" << ircserv::getServername() << " 473 "
 				                  << c.getNick() << " " << target 
@@ -77,7 +77,7 @@ void join( std::list<std::string>* args, Client& c ) {
 				                  << c.getNick() << " " << target 
 				                  << " :Cannot join channel (+l)\r\n" ) );  // 471
 
-			ircserv::getChannels()[target].addClient( c );
+			(*channels)[target].addClient( c );
 		}
 		reply_topic( it, c );
 		it->second.sendAll( mb << ":" << c.getNick() << "!" << c.getUser() << "@"

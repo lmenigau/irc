@@ -26,7 +26,7 @@ void ircserv::initialisation( char* pass, char* port ) {
 		return;
 	}
 	_port = atoi( port );
-	if ( _port > MAX_PORT || _port <= 0 ) {
+	if ( _port > MAX_PORT || _port <= 0 || !check_num(port)) {
 		_failed = true;
 		logger( "ERROR", "incorrect port value !" );
 		return;
