@@ -24,9 +24,21 @@ static bool check_num(char *port)
 
 static void send_msg(std::string msg, int socket)
 {
+	fd_set	fds;
+	struct timeval tv;
+
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+
+	FD_ZERO(&fds);
+	FD_SET(socket, &fds);
+
 	msg += "\r\n";
-	if (!send(socket, msg.c_str(), msg.size(), MSG_DONTWAIT))
-		std::cerr << "cannot send msg" << std::endl;
+	if (select(socket + 1 , NULL, &fds, NULL, &tv) > 0)
+	{
+		if (!send(socket, msg.c_str(), msg.size(), MSG_DONTWAIT))
+			std::cerr << "cannot send msg" << std::endl;
+	}
 }
 
 bool Bot::connectToServer(char **av) {
@@ -83,23 +95,126 @@ void	Bot::intro(void)
 	tv.tv_sec = 1;
 	tv.tv_usec = 0;
 
-	send_msg("PASS " + _pwd, _socket);
-	send_msg("NICK bot", _socket);
-	send_msg("USER bot", _socket);
-
 	FD_ZERO(&fds);
 	FD_SET(_socket, &fds);
+
+	send_msg("PASS " + _pwd, _socket);
+	send_msg("NICK bot_irc", _socket);
+	send_msg("USER bot", _socket);
+
 
 	char str[4096];
 	if (select(_socket + 1 , &fds, NULL, NULL, &tv) > 0)
 	{
 		if (recv(_socket, &str, sizeof(str), 0) == -1)
-			std::cerr << "OUPSS" << std::endl;
+			std::cerr << "Failed to receive data" << std::endl;
 		std::cout << str << " " << std::endl;
 	}
 }
 
+bool check(std::string word)
+{
+	std::ifstream word_list;
+	std::string word_in_list;
 
+	word_list.open("word_list");
+	if (word_list.bad())
+		std::cerr << "Failed opening word_list" << std::endl;
+	while (getline(word_list, word_in_list))
+	{
+		if (word == word_in_list)
+			return (true);
+	}
+	word_list.close();
+	return (false);
+}
+
+//Loop on receiving data
+
+void Bot::ban_user(std::string reply)
+{
+	//Send a message to the user informing the reason of the ban
+	//Ban the user
+	size_t pos = reply.find("!");
+	if (pos != std::string::npos)
+	{
+		std::string nick = reply.substr(1, pos);
+		std::string chan_name = reply.substr(reply.find("#"), reply.find(" ", reply.find("#")));
+		std::cerr << "nick to ban :" << nick << " chan_name " << chan_name << std::endl;
+	 	send_msg("MODE " + chan_name + " +b " + nick, _socket);
+	 	send_msg("PRIVMSG " + nick + " :You got banned because you said some injury on a channel of our IRC server", _socket);
+	}
+	
+}
+
+bool injury(std::string reply)
+{
+	std::string msg;
+
+	size_t pos = reply.find(":");
+	if (pos != std::string::npos)
+		msg = reply.substr(pos);
+	else
+		return (false);
+	while (pos != std::string::npos)
+	{
+		size_t buff_pos = pos;
+		pos = reply.find(" ");
+		if (check(reply.substr(buff_pos, pos)))
+			return (true);
+	}
+	return (false);
+}
+
+void Bot::handleReply(char str[4096])
+{
+	std::string reply = str;
+	size_t	pos = 0;
+	size_t	buff_pos;
+
+	while (pos != std::string::npos)
+	{
+		buff_pos = pos;
+		pos = reply.find("\n");
+		if (injury(reply.substr(buff_pos, pos)))
+		{
+			ban_user(reply.substr(buff_pos, pos));
+		}
+	}
+}
+
+void	Bot::loop(void)
+{
+	fd_set	fds;
+	struct timeval tv;
+	char str[4096];
+
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+	FD_ZERO(&fds);
+	FD_SET(_socket, &fds);
+	while (1)
+	{
+		if (select(_socket + 1 , &fds, NULL, NULL, &tv) > 0)
+		{
+			if (recv(_socket, &str, sizeof(str), 0) == -1)
+				std::cerr << "Failed to receive data" << std::endl;
+			else
+			{
+				handleReply(str);
+				continue;
+			}
+		}
+		FD_CLR(_socket, &fds);
+		FD_ZERO(&fds);
+		FD_SET(_socket, &fds);
+	}
+}
+
+
+//Recuperer les reponse du server et les parser
+//Faire en sorte que le bot join tous les channels (si il veux les modere)
+//List de mot
 
 void	Bot::end(void)
 {
