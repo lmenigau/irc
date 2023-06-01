@@ -112,11 +112,6 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 }
 
 Client::~Client( void ) {
-	MessageBuilder mb;
-	if ( !_destroy )
-		return;
-	logger( "DEBUG", mb << "client " << _fd << " destroyed" );
-	epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, _fd, NULL );
 	/*
 	std::map<std::string, Channel> channel_map = ircserv::getChannels();
 

@@ -62,7 +62,7 @@ class ircserv {
 	static void addChannel( std::string&, Client& );
 	static void removeChannel( std::string );
 
-	static void removeClient( Client& c );
+	static void removeClient( Client* c );
 };
 
 #endif

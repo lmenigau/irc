@@ -1,4 +1,5 @@
 #include "ircserv.hpp"
+#include <sys/epoll.h>
 #include <cerrno>
 #include <csignal>
 #include "handler.hpp"
@@ -13,7 +14,7 @@
 int            ircserv::_port   = 0;
 bool           ircserv::_failed = false;
 std::string    ircserv::_password;
-t_client_array ircserv::_clients;
+t_client_array ircserv::_clients( 1024 );
 std::string   ircserv::_servername = "ircserv.localhost";  //! pls do not change
 int           ircserv::_pollfd;
 int           ircserv::_tcp6_socket;
@@ -26,7 +27,7 @@ void ircserv::initialisation( char* pass, char* port ) {
 		return;
 	}
 	_port = atoi( port );
-	if ( _port > MAX_PORT || _port <= 0 || !check_num(port)) {
+	if ( _port > MAX_PORT || _port <= 0 || !check_num( port ) ) {
 		_failed = true;
 		logger( "ERROR", "incorrect port value !" );
 		return;
@@ -50,17 +51,13 @@ void ircserv::accept_client( epoll_event& ev ) {
 	len = sizeof( addr );
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
-	std::cout << _clients.size() << std::endl;
-	if (_clients.size() > 1020)
-		return ;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
-		ircserv::_clients.push_back(Client( fd, addr ));
-		Client&     ptr       = _clients.back();
-		epoll_event event     = { EPOLLIN, { .ptr = &ptr } };
+		_clients[fd]      = Client( fd, addr );
+		epoll_event event = { EPOLLIN, { .ptr = &_clients[fd] } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
 	} else
-		logger( "ERROR", "accept error" );
+		logger( "INFO", "accept limit reached" );
 }
 
 void ircserv::process_events( epoll_event& ev ) {
@@ -76,15 +73,13 @@ void ircserv::process_events( epoll_event& ev ) {
 			c   = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
 			if ( len < 0 ) {
+				abort();
 				logger( "WARNING", strerror( errno ) );
 				logger( "INFO", mb << "deleted: " << c->getFd() );
 				return;
 			}
 			if ( len == 0 ) {
-				logger( "INFO", mb << "deleted: " << c->getFd() );
-				c->buf.clear();
-				c->setDestroy();
-				ircserv::removeClient( *c );
+				removeClient( c );
 				return;
 			}
 			c->buf.append( buf, len );
@@ -119,6 +114,8 @@ void ircserv::process_events( epoll_event& ev ) {
 		if ( c->out.empty() ) {
 			epoll_event event = { EPOLLIN, { c } };
 			epoll_ctl( _pollfd, EPOLL_CTL_MOD, c->getFd(), &event );
+			if ( c->end )
+				removeClient( c );
 		}
 	} else {
 		std::cerr << ev;
@@ -126,8 +123,8 @@ void ircserv::process_events( epoll_event& ev ) {
 }
 
 void ircserv::start( void ) {
-	_tcp6_socket             = socket( AF_INET6, SOCK_STREAM, 0 );
-	int                 a    = 1;
+	_tcp6_socket          = socket( AF_INET6, SOCK_STREAM | SOCK_NONBLOCK, 0 );
+	int                 a = 1;
 	struct sockaddr_in6 addr = { AF_INET6, 0, 0, {}, 0 };
 	addr.sin6_port           = htons( _port );
 	addr.sin6_addr           = in6addr_any;
@@ -138,7 +135,7 @@ void ircserv::start( void ) {
 		return;
 	}
 	listen( _tcp6_socket, 256 );
-	_clients.reserve(1024);
+	_clients.reserve( 1024 );
 	// sockaddr_in6 peer_addr = {};
 	// socklen_t len = sizeof(peer_addr);
 	_pollfd           = epoll_create( 1 );
@@ -149,13 +146,14 @@ void ircserv::start( void ) {
 	signal( SIGINT, interupt_handler );
 	while ( !is_signaled ) {
 		epoll_event events[64];
-		int         nev = epoll_wait( _pollfd, events, 64, -1 );
+		int         nev = epoll_wait( _pollfd, events, 64, 64 );
 		// logger( "DEBUG", "nev: %d", nev );
 		for ( int i = 0; i < nev; i++ ) {
 			process_events( events[i] );
 		}
 		// b++;
 	}
+	ircserv::stop();
 }
 
 void ircserv::stop( void ) {
@@ -164,11 +162,11 @@ void ircserv::stop( void ) {
 	logger( "INFO", "safely ending ircserv !" );
 	close( _tcp6_socket );
 	close( _pollfd );
-	logger("DEBUG", mb << std::distance(_clients.begin(), _clients.end()));
+	logger( "DEBUG", mb << std::distance( _clients.begin(), _clients.end() ) );
 	forEach( _clients, close_client );
 	_clients.clear();
 	_channels.clear();
-	exit(130);
+	exit( 130 );
 }
 
 int ircserv::getPollfd( void ) {
@@ -204,14 +202,11 @@ std::string ircserv::getServername( void ) {
 	return _servername;
 }
 
-void ircserv::removeClient( Client& c ) {
-	t_client_array::iterator it = _clients.begin();
-	for ( ; it < _clients.end(); it++ ) {
-		if ( it->getFd() == c.getFd() ) {
-			epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL );
-			close( c.getFd() );
-			_clients.erase(it);
-			break;
-		}
-	}
+void ircserv::removeClient( Client* c ) {
+	MessageBuilder mb;
+	logger( "INFO", mb << "deleted" << c->getFd() );
+	c->buf.clear();
+	c->setDestroy();
+	epoll_ctl( _pollfd, EPOLL_CTL_DEL, c->getFd(), NULL );
+	close( c->getFd() );
 }

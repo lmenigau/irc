@@ -84,21 +84,19 @@ void welcome( Client* client ) {
 
 void close_client( Client& client ) {
 	MessageBuilder mb;
-	if ( client.getNick() != "" )
-		ircserv::removeClient( client );
 	client.reply( mb << ':' << ircserv::getServername()
 	                 << "QUIT :Connection closed\r\n" );
-	close( client.getFd() );
+	if ( client.getFd() != -1 )
+		close( client.getFd() );
 }
 
 std::string getTarget( size_t& pos, std::string str ) {
 	std::size_t pos_comma;
 	std::string res;
 
-	if (pos >= str.size() || str.empty())
-	{
+	if ( pos >= str.size() || str.empty() ) {
 		pos = str.size();
-		return ("");
+		return ( "" );
 	}
 	pos_comma = str.find( ",", pos );
 	if ( pos_comma != std::string::npos ) {
@@ -124,15 +122,13 @@ bool isValidPositiveNumber( std::string args ) {
 	return ( true );
 }
 
-bool check_num(char *port)
-{
+bool check_num( char* port ) {
 	int i = 0;
 
-	while (port[i])
-	{
-		if (port[i] < 48 || port[i] > 57)
-			return (false);
+	while ( port[i] ) {
+		if ( port[i] < 48 || port[i] > 57 )
+			return ( false );
 		i++;
 	}
-	return (true);
+	return ( true );
 }

@@ -9,7 +9,7 @@
 class Client {
    public:
 	int         start;
-	int         end;
+	bool        end;
 	std::string buf;
 	std::string out;
 
@@ -22,7 +22,7 @@ class Client {
 	// methods
 
 	void        reply( std::string const& str );
-	void        reply( MessageBuilder &mb );
+	void        reply( MessageBuilder& mb );
 	std::string addModes( std::string );
 	std::string removeModes( std::string );
 	// getters
@@ -89,7 +89,7 @@ class Client {
 	bool        _isBot;
 	bool        _isOper;
 	bool        _invisible;
-	bool		_destroy;
+	bool        _destroy;
 };
 
 // std::map<std::string, Client> users;
