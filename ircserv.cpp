@@ -73,7 +73,6 @@ void ircserv::process_events( epoll_event& ev ) {
 			c   = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
 			if ( len < 0 ) {
-				abort();
 				logger( "WARNING", strerror( errno ) );
 				logger( "INFO", mb << "deleted: " << c->getFd() );
 				return;
