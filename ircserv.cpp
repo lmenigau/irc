@@ -48,19 +48,24 @@ void ircserv::accept_client( epoll_event& ev ) {
 	socklen_t    len;
 	memset( &addr, 0, sizeof( addr ) );
 	len = sizeof( addr );
+	std::cout << "New Cli" << std::endl;
 	// socklen_t addrlen = sizeof(sockaddr_in6);
 	(void) ev;
-	std::cout << _clients.size() << std::endl;
-	if (_clients.size() > 1020)
+	if (_clients.size() > 1018)
 		return ;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
 		ircserv::_clients.push_back(Client( fd, addr ));
 		Client&     ptr       = _clients.back();
 		epoll_event event     = { EPOLLIN, { .ptr = &ptr } };
-		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
+		if (epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event ) == -1)
+		{
+			std::cerr << "EPOLL_CTL_ADD ERROR";
+			strerror( errno );
+		}
 	} else
-		logger( "ERROR", "accept error" );
+		std::cout << "Error accept" << std::endl;
+		//logger( "ERROR", "accept error" );
 }
 
 void ircserv::process_events( epoll_event& ev ) {
@@ -84,6 +89,7 @@ void ircserv::process_events( epoll_event& ev ) {
 				logger( "INFO", mb << "deleted: " << c->getFd() );
 				c->buf.clear();
 				c->setDestroy();
+				std::cout << "len dewad" << std::endl;
 				ircserv::removeClient( *c );
 				return;
 			}
@@ -147,10 +153,11 @@ void ircserv::start( void ) {
 	logger( "INFO", "server started successfuly" );
 	// int b = 0;
 	signal( SIGINT, interupt_handler );
+	MessageBuilder mb;
 	while ( !is_signaled ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, -1 );
-		// logger( "DEBUG", "nev: %d", nev );
+		logger( "DEBUG", mb << "nev: "<< nev );
 		for ( int i = 0; i < nev; i++ ) {
 			process_events( events[i] );
 		}
@@ -208,9 +215,15 @@ void ircserv::removeClient( Client& c ) {
 	t_client_array::iterator it = _clients.begin();
 	for ( ; it < _clients.end(); it++ ) {
 		if ( it->getFd() == c.getFd() ) {
-			epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL );
+			if (epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL ) == -1)
+			{
+				std::cerr << "EPOLL_CTL_DEL ERROR";
+				strerror( errno );
+			}
 			close( c.getFd() );
+			(*it) = NULL;
 			_clients.erase(it);
+
 			break;
 		}
 	}
