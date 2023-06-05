@@ -8,5 +8,4 @@ void              interupt_handler( int signal ) {
         return;
     ircserv::is_signaled = true;
     logger( "WARNING", "INTERRUPT DETECTED" );
-    ircserv::stop();
 }
