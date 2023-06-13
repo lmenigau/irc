@@ -10,6 +10,7 @@
 #include "utils.hpp"
 
 #define MAX_PORT 65535
+#define MAX_FD   1024
 
 int            ircserv::_port   = 0;
 bool           ircserv::_failed = false;
@@ -19,6 +20,7 @@ std::string   ircserv::_servername = "ircserv.localhost";  //! pls do not change
 int           ircserv::_pollfd;
 int           ircserv::_tcp6_socket;
 t_map_channel ircserv::_channels;
+int           ircserv::_connected_client = 0;
 
 void ircserv::initialisation( char* pass, char* port ) {
 	if ( strlen( port ) > 5 ) {
@@ -49,14 +51,16 @@ void ircserv::accept_client( epoll_event& ev ) {
 	socklen_t    len;
 	memset( &addr, 0, sizeof( addr ) );
 	len = sizeof( addr );
-	std::cout << "New Cli" << std::endl;
-	// socklen_t addrlen = sizeof(sockaddr_in6);
+
+	if (_connected_client >= MAX_FD - 5)
+		return (logger( "WARNING", "accept limit reached" ));
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
 		_clients[fd]      = Client( fd, addr );
 		epoll_event event = { EPOLLIN, { .ptr = &_clients[fd] } };
 		epoll_ctl( _pollfd, EPOLL_CTL_ADD, fd, &event );
+		_connected_client += 1;
 	} else
 		logger( "INFO", "accept limit reached" );
 }
@@ -228,4 +232,5 @@ void ircserv::removeClient( Client* c ) {
 	c->setDestroy();
 	epoll_ctl( _pollfd, EPOLL_CTL_DEL, c->getFd(), NULL );
 	close( c->getFd() );
+	_connected_client -= 1;
 }
