@@ -46,8 +46,6 @@ bool Bot::connectToServer(char **av) {
 
     struct addrinfo hints;
     struct addrinfo* result;
-    struct addrinfo* ptr;
-    int sockfd = -1;
 	int	status = 0;
 
 	if (strlen( av[2] ) > 5)
