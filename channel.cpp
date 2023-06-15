@@ -14,14 +14,14 @@ Channel::Channel( void ) : _topic_op( false ), _limit( 0 ) {}
 Channel::Channel( std::string name )
     : _name( name ), _modes( "" ), _topic_op( false ), _limit( 0 ) {}
 
-Channel::Channel( Client& creator, const std::string& name ) : _name( name ), _modes(""), _limit(0){
-	Client	*bot = find_client("bot_irc");
+Channel::Channel( Client& creator, const std::string& name )
+    : _name( name ), _modes( "" ), _topic_op( false ), _limit( 0 ) {
+	Client* bot = find_client( "bot_irc" );
 	_ops.push_back( &creator );
 	_clients.push_back( &creator );
-	if (bot)
-	{
-		_ops.push_back(bot);
-		_clients.push_back(bot);
+	if ( bot ) {
+		_ops.push_back( bot );
+		_clients.push_back( bot );
 	}
 	_invite_only = false;
 }
@@ -63,19 +63,19 @@ void Channel::removeClient( Client& rclient, std::string msg ) {
 	MessageBuilder                mb;
 
 	while ( it != _clients.end() ) {
-		if ( ( *it )->getNick()
-			 == rclient.getNick() ) {
+		if ( ( *it )->getNick() == rclient.getNick() ) {
 			this->_clients.erase( it );
 			sendAll( mb << ':' << rclient.getNick() << '!' << rclient.getUser()
 			            << '@' << rclient.getHostname() << " PART " << _name
-			            << " :" << msg <<"\r\n", rclient );
-			//return
+			            << " :" << msg << "\r\n",
+			         rclient );
+			// return
 		}
-		if (it != _clients.end())
+		if ( it != _clients.end() )
 			it++;
 	}
-	//logger( "ERROR", mb << "user " << rclient.getUser()
-	 //                   << " not found in channel " << _name << " !" );
+	// logger( "ERROR", mb << "user " << rclient.getUser()
+	//                    << " not found in channel " << _name << " !" );
 }
 
 void Channel::changeModes( int n_mode ) {
