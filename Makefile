@@ -45,7 +45,9 @@ $(OBJ) $(DEPS): | arte
 arte:
 	mkdir -p arte
 
-bonus: all
+bonus: ircbot all
+
+ircbot:
 	$(CXX) $(CXXFLAGS) bot.cpp Bot_run.cpp logger.cpp messageBuilder.cpp -o ircbot
 
 $(NAME): $(OBJ)
