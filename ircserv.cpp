@@ -10,7 +10,7 @@
 #include "utils.hpp"
 
 #define MAX_PORT 65535
-#define MAX_FD   1024
+#define MAX_FD 1024
 
 int            ircserv::_port   = 0;
 bool           ircserv::_failed = false;
@@ -52,8 +52,8 @@ void ircserv::accept_client( epoll_event& ev ) {
 	memset( &addr, 0, sizeof( addr ) );
 	len = sizeof( addr );
 
-	if (_connected_client >= MAX_FD - 5)
-		return (logger( "WARNING", "accept limit reached" ));
+	if ( _connected_client >= MAX_FD - 5 )
+		return ( logger( "WARNING", "accept limit reached" ) );
 	(void) ev;
 	int fd = accept( _tcp6_socket, (sockaddr*) &addr, &len );
 	if ( fd >= 0 ) {
@@ -136,6 +136,7 @@ void ircserv::start( void ) {
 	int ret = bind( _tcp6_socket, (sockaddr*) &addr, sizeof( addr ) );
 	if ( ret < 0 ) {
 		logger( "ERROR", strerror( errno ) );
+		close(_tcp6_socket);
 		return;
 	}
 	listen( _tcp6_socket, 256 );
@@ -208,21 +209,22 @@ std::string ircserv::getServername( void ) {
 }
 /*
 void ircserv::removeClient( Client& c ) {
-	t_client_array::iterator it = _clients.begin();
-	for ( ; it < _clients.end(); it++ ) {
-		if ( it->getFd() == c.getFd() ) {
-			if (epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL ) == -1)
-			{
-				std::cerr << "EPOLL_CTL_DEL ERROR";
-				strerror( errno );
-			}
-			close( c.getFd() );
-			(*it) = NULL;
-			_clients.erase(it);
+    t_client_array::iterator it = _clients.begin();
+    for ( ; it < _clients.end(); it++ ) {
+        if ( it->getFd() == c.getFd() ) {
+            if (epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL
+) == -1)
+            {
+                std::cerr << "EPOLL_CTL_DEL ERROR";
+                strerror( errno );
+            }
+            close( c.getFd() );
+            (*it) = NULL;
+            _clients.erase(it);
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 }
 */
 void ircserv::removeClient( Client* c ) {
@@ -233,4 +235,8 @@ void ircserv::removeClient( Client* c ) {
 	epoll_ctl( _pollfd, EPOLL_CTL_DEL, c->getFd(), NULL );
 	close( c->getFd() );
 	_connected_client -= 1;
+	std::map<std::string, Channel>::iterator it = _channels.begin();
+	for ( ; it != _channels.end(); it++ ) {
+		it->second.removeClient( *c, "Left the server" );
+	}
 }
