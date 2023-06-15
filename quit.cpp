@@ -2,7 +2,6 @@
 #include <iostream>
 #include <list>
 #include "client.hpp"
-#include "irc.hpp"
 #include "ircserv.hpp"
 #include "messageBuilder.hpp"
 #include "utils.hpp"

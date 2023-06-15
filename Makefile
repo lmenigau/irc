@@ -2,7 +2,7 @@ $(if $(filter re as, $(MAKECMDGOALS)),\
 	$(shell $(RM) arte/*.o ft std))
 
 CXX=clang++
-CXXFLAGS=-std=c++98 -Wall -Werror -Wextra -g 
+CXXFLAGS=-std=c++98 -Wall -Werror -Wextra -g
 SRC =   ban_mode.cpp \
 		channel.cpp\
 	  	client.cpp\
@@ -32,8 +32,7 @@ SRC =   ban_mode.cpp \
 		topic.cpp \
 		topic_mode.cpp\
 		user.cpp \
-		utils.cpp \
-		whois.cpp
+		utils.cpp
 
 OBJ = $(addprefix arte/, $(SRC:.cpp=.o))
 NAME = ircserv

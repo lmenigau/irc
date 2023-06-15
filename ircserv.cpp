@@ -73,7 +73,6 @@ void ircserv::process_events( epoll_event& ev ) {
 	if ( ev.events & EPOLLIN ) {
 		if ( ev.data.fd == _tcp6_socket ) {
 			accept_client( ev );
-			// std::cout << ircserv::_clients.front().getFd() << std::endl;
 		} else {
 			c   = reinterpret_cast<Client*>( ev.data.ptr );
 			len = read( c->getFd(), buf, 512 );
@@ -102,9 +101,6 @@ void ircserv::process_events( epoll_event& ev ) {
 					c->buf.erase( 0, pos + 1 );
 				else
 					break;
-				//			logger( "DEBUG", "buf after mdr : %s",
-				// c->buf.c_str()
-				//);
 			}
 		}
 	} else if ( ev.events & EPOLLOUT ) {
@@ -141,23 +137,18 @@ void ircserv::start( void ) {
 	}
 	listen( _tcp6_socket, 256 );
 	_clients.reserve( 1024 );
-	// sockaddr_in6 peer_addr = {};
-	// socklen_t len = sizeof(peer_addr);
 	_pollfd           = epoll_create( 1 );
 	epoll_event event = { EPOLLIN, { .fd = _tcp6_socket } };
 	epoll_ctl( _pollfd, EPOLL_CTL_ADD, _tcp6_socket, &event );
 	logger( "INFO", "server started successfuly" );
-	// int b = 0;
 	signal( SIGINT, interupt_handler );
 	MessageBuilder mb;
 	while ( !is_signaled ) {
 		epoll_event events[64];
 		int         nev = epoll_wait( _pollfd, events, 64, 64 );
-		// logger( "DEBUG", "nev: %d", nev );
 		for ( int i = 0; i < nev; i++ ) {
 			process_events( events[i] );
 		}
-		// b++;
 	}
 	ircserv::stop();
 }
@@ -207,26 +198,7 @@ void ircserv::removeChannel( std::string name ) {
 std::string ircserv::getServername( void ) {
 	return _servername;
 }
-/*
-void ircserv::removeClient( Client& c ) {
-    t_client_array::iterator it = _clients.begin();
-    for ( ; it < _clients.end(); it++ ) {
-        if ( it->getFd() == c.getFd() ) {
-            if (epoll_ctl( ircserv::getPollfd(), EPOLL_CTL_DEL, c.getFd(), NULL
-) == -1)
-            {
-                std::cerr << "EPOLL_CTL_DEL ERROR";
-                strerror( errno );
-            }
-            close( c.getFd() );
-            (*it) = NULL;
-            _clients.erase(it);
 
-            break;
-        }
-    }
-}
-*/
 void ircserv::removeClient( Client* c ) {
 	MessageBuilder mb;
 	logger( "INFO", mb << "deleted" << c->getFd() );

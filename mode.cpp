@@ -3,6 +3,7 @@
 #include "ircserv.hpp"
 #include "messageBuilder.hpp"
 #include "utils.hpp"
+
 // Modes string should not overexceed 3 letter
 // Some modes are not combinables : like k is ok with i / t but not o or l
 //  o is ok with i / t not k or l
@@ -107,7 +108,6 @@ static bool check_channel_modes( std::vector<std::string> modes,
 	}
 	if ( i && ( b || l ) )
 		return ( false );
-	// We are not handling special case with +o
 	if ( o && ( t || b || i || k || l ) )
 		return ( false );
 	if ( b && ( k || l || t ) )
@@ -166,8 +166,6 @@ void channel_mode( Client&                  c,
 		}
 		try {
 			ircserv::getChannels().at( target );
-			// else
-			// channel->callModes(modes)
 		} catch ( std::exception& e ) {
 			c.reply( mb << ':' << ircserv::getServername() << " 403 "
 			            << c.getNick() << " " << target
@@ -177,11 +175,6 @@ void channel_mode( Client&                  c,
 		Channel* channel = find_channel( target );
 		for ( std::vector<std::string>::iterator it = modes.begin();
 		      it != modes.end(); it++ ) {
-			// Maybe a method of channel like handle_mode, taking the string of
-			// mode + args->back() which could parse string of mode and call
-			// function depending on it (void) channel; c.reply( format(
-			// ":ircserv.localhost 324 %s %s +o %s\r\n",
-			//  c.getNick().c_str(), target.c_str() , args->back().c_str()));
 			if ( args->size() <= 1 )
 				channel->handleModes( c, *it, "" );
 			else

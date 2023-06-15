@@ -3,7 +3,6 @@
 #include <iostream>
 #include <list>
 #include "client.hpp"
-#include "irc.hpp"
 #include "ircserv.hpp"
 #include "messageBuilder.hpp"
 #include "utils.hpp"
@@ -46,17 +45,11 @@ void privmsg( std::list<std::string>* args, Client& c ) {
 	if ( args->empty() )
 		return;
 	std::string target = args->front();
-	// std::cout << target << std::endl;
 	while ( args->size() != 1 ) {
-		//	std::cout << "args :" << args->front() << std::endl;
 		if ( isChannel( target ) )
 			privmsg_channel( args, c );
 		else
 			privmsg_client( args, c );
 		args->pop_front();
 	}
-
-	// void *buf = (const_cast<char *>(args->back().c_str()));
-
-	// logger( "INFO", "%s wants to send a message", c.getNick().c_str() );
 }

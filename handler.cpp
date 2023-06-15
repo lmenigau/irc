@@ -3,7 +3,6 @@
 #include <iostream>
 #include <list>
 #include "client.hpp"
-#include "irc.hpp"
 #include "ircserv.hpp"
 #include "messageBuilder.hpp"
 #include "utils.hpp"
@@ -89,7 +88,6 @@ void not_registered( std::list<std::string>* args, Client& c ) {
 	void ( *handlers[4] )( std::list<std::string>*, Client& c ) = {
 	    pass, user, nick_notregistered, capls };
 	for ( ; i < 4; i++ ) {
-		//	std::cout << args->front() << std::endl;
 		if ( !args->front().compare( commands[i] ) ) {
 			args->pop_front();
 			remove_backslash_r( args->back() );
@@ -120,7 +118,7 @@ void handler( std::list<std::string>* args, Client& c ) {
 	if (args->size() >= 1 && !check_cmd(args->front()))
 		return (c.reply( mb << ":" << ircserv::getServername()
 					<< " 421 " << args->front() << " :Unknown command\r\n"));
-	else if ( args->size() == 1 ) 
+	else if ( args->size() == 1 )
 		return (c.reply( mb << ":" << ircserv::getServername() << " 461 "
 		            << args->front() << " :Not enough parameters\r\n" ));
 	if ( !c.isRegistered() ) {
@@ -142,5 +140,4 @@ void handler( std::list<std::string>* args, Client& c ) {
 			return;
 		}
 	}
-//	logger( "WARNING", mb << args->front() << " COMMAND DO NOT EXIST (YET?)" );
 }

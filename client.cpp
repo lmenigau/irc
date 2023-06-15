@@ -112,39 +112,8 @@ Client::Client( int fd, sockaddr_in6& addr ) {
 }
 
 Client::~Client( void ) {
-	/*
-	std::map<std::string, Channel> channel_map = ircserv::getChannels();
-
-	for (std::map<std::string, Channel>::iterator it = channel_map.begin(); it
-	!= channel_map.end(); it ++)
-	{
-	    std::vector<Client *>::iterator it_chan =
-	std::find(it->second.getClients().begin(), it->second.getClients().end(),
-	this);; if (it_chan != it->second.getClients().end())
-	        it->second.getClients().erase(it_chan);
-	}
-	ircserv::_clients.erase(std::remove(ircserv::_clients.begin(),
-	ircserv::_clients.end(), this));*/
-	// t_client_array::iterator it = ircserv::_clients.begin();
-	// for(; it != ircserv::_clients.end(); it++)
-	// {
-	// 	if (it->getFd() == _fd) {
-	// 		ircserv::_clients.erase(it);
-	// 		break;
-	// 	}
-	// }
-
-	//! PLEASE DO NOT CHANGE ANYTHING HERE IF WE WANT THIS TO WORK AS NOW !
-	//? making the destructor close the fd or removing it from vector will reset
-	//? the connection and lose the client !
-	// * we will close the fd at the moment needed in the main loop or in
-	// * commands
-	// * merci de comprendre la situation ! :)
-
-	// logger("DEBUG", "destructor client called");
 }
 
-// getters
 
 int Client::getFd( void ) {
 	return _fd;
@@ -153,6 +122,8 @@ int Client::getFd( void ) {
 std::string Client::getCap( void ) {
 	return _cap;
 }
+
+//getters
 
 std::string Client::getNick( void ) {
 	return _nick;

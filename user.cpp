@@ -2,7 +2,6 @@
 #include <iostream>
 #include <list>
 #include "client.hpp"
-#include "irc.hpp"
 #include "ircserv.hpp"
 #include "messageBuilder.hpp"
 #include "utils.hpp"
@@ -46,8 +45,6 @@ void user( std::list<std::string>* args, Client& c ) {
 		                   << args->front() );
 		c.setHasGivenUser( true );
 		c.setUser( args->front() );
-		// Checker la command 0 *: (real name)
 		c.setRealUser( get_realname( args ) );
-		// c.reply( format("~%s\r\n", c->getUser().c_str()));
 	}
 }

@@ -58,28 +58,22 @@ bool Bot::connectToServer(char **av) {
 	_pwd = av[3];
 
 	_addr = av[1];
-    // Set up hints
     memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;   // Allow IPv4 or IPv6
-    hints.ai_socktype = SOCK_STREAM; // TCP socket
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
 
     status = getaddrinfo(_addr.c_str(), av[2], &hints, &result);
     if (status != 0) {
         std::cerr << "getaddrinfo error: " << gai_strerror(status) << std::endl;
         return 1;
     }
-    //for (ptr = result; ptr != nullptr; ptr = ptr->ai_next) {
-        // Create socket
         _socket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-        if (_socket == -1) 
+        if (_socket == -1)
             std::cerr << "socket creation error" << std::endl;
-        // Connect to the server
         if (connect(_socket, result->ai_addr, result->ai_addrlen) == 0) {
-            // Connection successful
 		    freeaddrinfo(result);
 			return (true);
         } else {
-            // Connection failed, close the socket
             close(_socket);
             _socket = -1;
         }

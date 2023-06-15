@@ -69,13 +69,10 @@ void Channel::removeClient( Client& rclient, std::string msg ) {
 			            << '@' << rclient.getHostname() << " PART " << _name
 			            << " :" << msg << "\r\n",
 			         rclient );
-			// return
 		}
 		if ( it != _clients.end() )
 			it++;
 	}
-	// logger( "ERROR", mb << "user " << rclient.getUser()
-	//                    << " not found in channel " << _name << " !" );
 }
 
 void Channel::changeModes( int n_mode ) {
@@ -126,7 +123,6 @@ void Channel::sendAll( MessageBuilder& mb ) {
 }
 
 void Channel::sendAll( std::string msg ) {
-	// std::cout << "clients : " << _clients <<
 	t_vector_client_ptr::iterator it = _clients.begin();
 	for ( ; it != _clients.end(); it++ ) {
 		if ( !isBanned( *it ) )
@@ -141,7 +137,6 @@ void Channel::sendAll( MessageBuilder& mb, Client& c ) {
 
 void Channel::sendAll( std::string msg, Client& c ) {
 	t_vector_client_ptr::iterator it = _clients.begin();
-	// std::cout << "clients : " << _clients << "\n";
 	for ( ; it != _clients.end(); it++ ) {
 		if ( ( *it )->getFd() != c.getFd() ) {
 			( *it )->reply( msg );
@@ -214,7 +209,6 @@ void Channel::handleModes( Client& c, std::string modes, std::string args ) {
 				m_limit( c, args, operation );
 				break;
 			default:
-				// DEBUG
 				break;
 		}
 	}

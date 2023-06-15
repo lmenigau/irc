@@ -1,14 +1,7 @@
-// Function to check if the nick is already in the db or not
-// If it's the case return 433 "<client> <nick> :Nickname is already in use"
-
-// We can define our accepted character list, if not corresping,
-// return 432 "<client> <nick> :Erroneus nickname"
-
 #include <unistd.h>
 #include <iostream>
 #include <list>
 #include "client.hpp"
-#include "irc.hpp"
 #include "ircserv.hpp"
 #include "messageBuilder.hpp"
 #include "utils.hpp"
@@ -25,10 +18,6 @@ bool authorize_setting_name( const std::string& name, Client& c ) {
 void nick( std::list<std::string>* args, Client& c ) {
 	std::string    buff;
 	MessageBuilder mb;
-	// for ( std::list<std::string>::iterator it = args->begin();
-	//       it != args->end(); it++ ) {
-	// 	std::cout << "sent :" << *it << std::endl;
-	// }
 	if ( args->empty() || args->front() == "" ) {
 		c.reply( mb << ":" << ircserv::getServername()
 		            << " 431 * NICK :Not enough parameters\r\n" );
