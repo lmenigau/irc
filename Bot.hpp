@@ -28,3 +28,5 @@ class Bot {
 		static void ban_user(std::string reply);
 		static bool handleReply(char str[4096]);
 };
+
+void logger( std::string level, std::string string );

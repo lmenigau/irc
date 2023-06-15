@@ -1,5 +1,6 @@
 $(if $(filter re as, $(MAKECMDGOALS)),\
 	$(shell $(RM) arte/*.o ft std))
+
 CXX=clang++
 CXXFLAGS=-std=c++98 -Wall -Werror -Wextra -g 
 SRC =   ban_mode.cpp \
@@ -33,6 +34,7 @@ SRC =   ban_mode.cpp \
 		user.cpp \
 		utils.cpp \
 		whois.cpp
+
 OBJ = $(addprefix arte/, $(SRC:.cpp=.o))
 NAME = ircserv
 
@@ -43,6 +45,9 @@ $(OBJ) $(DEPS): | arte
 
 arte:
 	mkdir -p arte
+
+bonus: all
+	$(CXX) $(CXXFLAGS) bot.cpp Bot_run.cpp logger.cpp messageBuilder.cpp -o ircbot
 
 $(NAME): $(OBJ)
 	$(CXX) -o $(NAME) $(OBJ)
@@ -60,6 +65,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f ircbot
 
 re: all
 
