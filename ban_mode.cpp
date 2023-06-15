@@ -68,7 +68,7 @@ void Channel::m_ban( Client& c, std::string args, t_ope operation ) {
 			_banned.erase( it );
 			removeModes( "b" );
 			sendAll( mb << ':' << c.getNick() << '!' << c.getUser() << '@'
-			            << c.getHostname() << " MODE " << _name << " +b "
+			            << c.getHostname() << " MODE " << _name << " -b "
 			            << target + "!*@*\r\n" );
 			reply_ban_list( c );
 		}
